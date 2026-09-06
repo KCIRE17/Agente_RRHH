@@ -70,6 +70,17 @@ class JsonStore:
         documento.update(campos)
         self._escribir(ruta, documento)
 
+    def candidatos(self, estado: str | None = None) -> list[dict[str, Any]]:
+        """Lista todos los candidatos, opcionalmente filtrados por estado."""
+        docs: list[dict[str, Any]] = []
+        for ruta in sorted(self._dir.glob("*.json")):
+            doc = self._leer(ruta)
+            if doc is None:
+                continue
+            if estado is None or doc.get("estado_procesamiento") == estado:
+                docs.append(doc)
+        return docs
+
     def cerrar(self) -> None:
         pass
 

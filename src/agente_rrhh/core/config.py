@@ -16,8 +16,16 @@ ESTADO_ILEGIBLE = "Error: Archivo Ilegible"
 ESTADO_FORMATO = "Error: Formato No Permitido"
 ESTADO_REINTENTO = "Pendiente: Reintento IA"
 
+# Estados de la FASE 2 — Evaluación (capa gold).
+ESTADO_EVALUADO = "Evaluado"
+ESTADO_EVALUACION_REINTENTO = "Pendiente: Reintento Evaluación"
+
 PREFIJO_ASUNTO = "POSTULACION - "
 EXTENSIONES_PERMITIDAS = {".pdf", ".docx", ".txt", ".md"}
+
+# Modelos por defecto (editable via .env, sin tocar codigo).
+MODELO_GEMINI_DEFAULT = "gemini-3.5-flash"
+MODELO_EVALUADOR_DEFAULT = "openai/gpt-oss-120b"
 
 
 def _parsear_int(valor: str | None, por_defecto: int) -> int:
@@ -32,7 +40,7 @@ class Config:
     email: str = ""
     password: str = ""
     gemini_api_key: str = ""
-    modelo_gemini: str = "gemini-3.5-flash"
+    modelo_gemini: str = MODELO_GEMINI_DEFAULT
     asunto: str = PREFIJO_ASUNTO
     dias_atras: int = 1
     data_dir: str = "data"
@@ -40,6 +48,11 @@ class Config:
     retencion_dias: int = 90
     hora_ingesta: str = "18:00"
     imap_timeout: int = 30
+    groq_api_key: str = ""
+    proveedor_evaluador: str = "groq"
+    modelo_evaluador: str = MODELO_EVALUADOR_DEFAULT
+    prompt_evaluador: str = "prompt/evaluador.md"
+    rutas_vacantes: str = "config/vacantes"
 
     # ------------------------------------------------------------------ rutas
     @property
@@ -73,7 +86,10 @@ class Config:
             email=os.getenv("EMAIL", "").strip(),
             password=app_password,
             gemini_api_key=os.getenv("GEMINI_API_KEY", "").strip(),
-            modelo_gemini=os.getenv("MODELO_GEMINI", "gemini-3.5-flash").strip(),
+            modelo_gemini=(
+                os.getenv("MODELO_GEMINI") or MODELO_GEMINI_DEFAULT
+            ).strip()
+            or MODELO_GEMINI_DEFAULT,
             asunto=(os.getenv("ASUNTO") or PREFIJO_ASUNTO).strip() or PREFIJO_ASUNTO,
             dias_atras=_parsear_int(os.getenv("DIAS_ATRAS"), 1),
             data_dir=(os.getenv("DATA_DIR") or "data").strip() or "data",
@@ -84,4 +100,21 @@ class Config:
             retencion_dias=_parsear_int(os.getenv("RAWDATA_RETENCION_DIAS"), 90),
             hora_ingesta=(os.getenv("HORA_INGESTA") or "18:00").strip() or "18:00",
             imap_timeout=_parsear_int(os.getenv("IMAP_TIMEOUT"), 30),
+            groq_api_key=os.getenv("GROQ_API_KEY", "").strip(),
+            proveedor_evaluador=(
+                os.getenv("PROVEEDOR_EVALUADOR") or "groq"
+            ).strip()
+            or "groq",
+            modelo_evaluador=(
+                os.getenv("MODELO_EVALUADOR") or MODELO_EVALUADOR_DEFAULT
+            ).strip()
+            or MODELO_EVALUADOR_DEFAULT,
+            prompt_evaluador=(
+                os.getenv("PROMPT_EVALUADOR") or "prompt/evaluador.md"
+            ).strip()
+            or "prompt/evaluador.md",
+            rutas_vacantes=(
+                os.getenv("RUTA_VACANTES") or "config/vacantes"
+            ).strip()
+            or "config/vacantes",
         )

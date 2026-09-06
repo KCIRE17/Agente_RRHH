@@ -19,7 +19,7 @@ tiers* de las APIs de IA).
 | Fase | Nombre | Agente | Estado |
 | :--- | :--- | :--- | :--- |
 | **F1** | Ingesta y Extracción de Candidaturas | Agente 1 (Gemini, por `MODELO_GEMINI`) | ✅ Implementada |
-| **F2** | Evaluación y Match Score | Agente 2 (modelo compatible) | 🟡 Esqueleto |
+| **F2** | Evaluación y Match Score | Agente 2 (Groq, por `MODELO_EVALUADOR`/`PROVEEDOR_EVALUADOR`) | ✅ Implementada |
 | **F3** | Dashboard y Visualización (Streamlit) | — | 🟡 Esqueleto |
 | **F4** | Chatbot de consultas de RRHH | — | 🟡 Esqueleto |
 
@@ -70,8 +70,9 @@ tiers* de las APIs de IA).
 - **Entorno**: desarrollo local en **VS Code**.
 - **Lenguaje**: **Python 3.12** + gestor de dependencias **uv**.
 - **Procesamiento**: `pdfplumber` (PDFs), `python-docx` (Word).
-- **IA**: Gemini (Agente Extractor; modelo por `MODELO_GEMINI`); modelo
-  compatible (ej. GPT-OSS 120B o Llama) para el Agente Evaluador.
+- **IA**: Gemini (Agente Extractor; modelo por `MODELO_GEMINI`); Groq vía API
+  compatible OpenAI (Agente Evaluador; proveedor/modelo por
+  `PROVEEDOR_EVALUADOR`/`MODELO_EVALUADOR`, default `openai/gpt-oss-120b`).
 
 ---
 
@@ -87,26 +88,37 @@ Agente_RRHH/
 ├── AGENTS.md                  # convenciones para agentes de IA
 ├── logs/                      # logs de ejecución (ingesta.log)
 ├── prompt/                    # prompts de IA editables (.md)
-│   └── extractor.md           #   prompt del Agente Extractor
+│   ├── extractor.md           #   prompt del Agente Extractor (F1)
+│   └── evaluador.md           #   prompt del Agente Evaluador (F2)
+├── config/
+│   └── vacantes/              # requisitos por vacante (regla de negocio)
+│       └── ANALISTA_DE_DATOS.json
 ├── data/                      # datos de candidatos (dato personal, NO a git)
 │   ├── bronze/                # originales brutos por <fecha>/<vacante>/
 │   ├── silver/                # candidatos JSON estandarizados (idempotentes)
 │   │   └── candidatos/        #   <sha1(mensaje_id)>.json
 │   └── gold/                  # evaluaciones/rankings (F2+)
-│       └── evaluacion/        #   <vacante_id>/<id_candidato>.json
+│       └── evaluacion/        #   <vacante_id>/<id_candidato>.json + ranking.json
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases
     │   ├── config.py          # .env, estados, parámetros (DATA_DIR, ASUNTO, ...)
     │   ├── json_store.py      # capa silver: un JSON por candidato (idempotente)
     │   ├── sanitizer.py       # normalización de texto (sin tildes, UTF-8)
     │   ├── raw_store.py       # capa bronze: originales + purga/dedupe
-    │   └── logging_setup.py   # logging consola + archivo
+    │   ├── logging_setup.py   # logging consola + archivo
+    │   ├── llm.py             # fachada IA: Gemini o Groq (+ uso de tokens)
+    │   ├── prompts.py         # carga de prompts .md y parseo JSON de la IA
+    │   ├── vacantes.py        # requisitos por vacante (config/vacantes/)
+    │   └── gold_store.py      # capa gold: evaluaciones + ranking, escritura atómica
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     │   ├── imap_client.py     # IMAP SSL, filtro asunto/fecha, BODY.PEEK[]
     │   ├── extractor.py       # texto de PDF/DOCX/TXT/MD + errores (Ilegible/Formato)
     │   ├── agent_extractor.py # Gemini: texto → JSON (prompt desde prompt/)
     │   └── pipeline.py        # orquestación del lote + reintentos IA
-    ├── evaluation/            # FASE 2 — Match Score (Agente 2) [ESQUELETO]
+    ├── evaluation/            # FASE 2 — Match Score (Agente 2)
+    │   ├── reglas.py          # pesos 50/30/20 y umbrales Alta/Media/Baja
+    │   ├── agente_evaluador.py# Groq: perfil + requisitos → JSON (prompt/ing)
+    │   └── pipeline_evaluacion.py # silver "Listo" → gold (evaluación + ranking)
     ├── dashboard/             # FASE 3 — Streamlit [ESQUELETO]
     └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
 ```
@@ -208,6 +220,11 @@ Un archivo JSON por candidato en `data/silver/candidatos/` (nombre =
     "email_remitente": "postulante@email.com",
     "formato_origen": "PDF"
   },
+  "datos_contacto": {
+    "nombre_completo": "Nombre Apellido",
+    "telefono": "51987654321",
+    "email": "postulante@email.com"
+  },
   "datos_estructurados": {
     "habilidades": ["Python", "SQL", "Power BI", "Git"],
     "experiencia_laboral": [
@@ -237,21 +254,107 @@ Un archivo JSON por candidato en `data/silver/candidatos/` (nombre =
 Los prompts de IA viven en **`prompt/`** como archivos `.md` editables (no en
 código). El Agente Extractor usa `prompt/extractor.md` (configurable con
 `PROMPT_EXTRACTOR`). El placeholder `{{texto_candidato}}` se sustituye con el
-texto del candidato en cada llamada. Si el archivo falta, el lote lo reporta
-con un error claro. Las fases F2/F4 podrán añadir `prompt/evaluador.md` y
-`prompt/chatbot.md`.
+texto del candidato en cada llamada y `{{requisitos_vacante}}` con los
+requisitos en F2. Si el archivo falta, el lote lo reporta con un error
+claro. F4 podrá añadir `prompt/chatbot.md`.
 
 ---
 
-## 5. Configuración y uso
+## 5. Especificación — FASE 2: Evaluación y Match Score
 
-### 5.1 Requisitos
+### 5.1 Requisitos de la vacante (regla de negocio)
+
+Los requisitos viven en **`config/vacantes/<SLUG>.json`**, editables sin tocar
+código y versionables en git. El slug se deriva del `vacante_id` (mayúsculas,
+sin tildes, espacios → `_`; ej. `ANALISTA DE DATOS` → `ANALISTA_DE_DATOS.json`).
+El directorio se configura con `RUTA_VACANTES`.
+
+```json
+{
+  "vacante_id": "ANALISTA DE DATOS",
+  "requisitos": {
+    "habilidades": {
+      "esenciales": ["Python", "Microsoft SQL Server", "Power BI", "Excel",
+                     "Pensamiento analítico", "Resolución de problemas"],
+      "opcionales": ["Oracle", "C++", "Java", "Office", "Inglés",
+                     "Trabajo en equipo", "Organizado",
+                     "Orientación a resultados", "Adaptabilidad",
+                     "Mejora Continua"]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": ["Ingeniería de Sistemas", "Ingeniería de Datos",
+                   "Estadística", "Ciencias de la Computación"]
+    }
+  }
+}
+```
+
+Un candidato sin requisitos configurados para su vacante se omite con aviso en
+el log (el documento gold guarda los requisitos usados para trazabilidad).
+
+### 5.2 Flujo operativo
+
+```
+[ data/silver/candidatos/*.json ]  →  filtro estado "Listo para Evaluación"
+        │                                    (+ opcional --vacante)
+        ▼
+[ Core ]  →  cargar requisitos de config/vacantes/<slug>.json
+        │
+        ▼
+[ Agente Evaluador (Groq, prompt/prompt/evaluador.md) ]  →  JSON de evaluación
+        │
+        ▼
+[ reglas.py ]  →  score compuesto 50/30/20 + clasificación y clamps a 0–100
+        │
+        ▼
+[ data/gold/evaluacion/<vacante>/<id>.json ]  +  ranking.json (ordenado desc)
+```
+
+- **1 sola llamada de IA por candidato** (minimiza cuota): el prompt lleva el
+  perfil del candidato y los requisitos de la vacante; el score final y la
+  clasificación se **calculan en código** con `evaluation/reglas.py` (el modelo
+  propone un `desglose_puntos` por bloque que se compone y valida localmente).
+- Los atributos sensibles para contacto pasan al documento gold (nombre,
+  teléfono, correo); NO se usan en la puntuación (bloqueo de sesgo en F1).
+- **Idempotencia**: un candidato ya evaluado se omite en lotes siguientes.
+
+### 5.3 Documento de evaluación (capa gold)
+
+| Campo | Contenido |
+| :--- | :--- |
+| `id_candidato`, `vacante_id`, `mensaje_id` | Identificadores (idempotencia) |
+| `nombre_completo`, `telefono`, `email_remitente` | Datos de contacto (no puntúan) |
+| `fecha_envio` / `fecha_evaluacion` | Cabecera / momento de la evaluación (ISO) |
+| `match_score` | Puntaje 0–100 calculado por `reglas.py` |
+| `clasificacion` | `Alta` (≥80), `Media` (≥50), `Baja` (<50) |
+| `desglose` | Peso, parcial y puntos por bloque (habilidades/experiencia/formación) |
+| `fortalezas` / `brechas` | Listas que reporta la IA |
+| `requisito_esencial_ausente` | Alertas de campos obligatorios sin evidencia |
+| `requisitos_evaluados` | Snapshot de los requisitos usados |
+| `proveedor` / `modelo` / `uso_tokens` | Trazabilidad de la llamada (tokens del prompt, completado y total) |
+| `estado_procesamiento` | `Evaluado` (o `Pendiente: Reintento Evaluación`) |
+
+### 5.4 Matriz de excepciones (F2)
+
+| Escenario | Acción del sistema | Estado registrado |
+| :--- | :--- | :--- |
+| Sin requisitos para la vacante | Se omite y se avisa en el log | N/A |
+| Candidato ya evaluado | Se omite (idempotencia) | `Evaluado` (previo) |
+| Fallo de la API de IA o JSON inválido | No se escribe gold; reintenta en el siguiente lote | `Pendiente: Reintento Evaluación` |
+| Éxito | Evaluación + ranking | `Evaluado` |
+
+---
+
+## 6. Configuración y uso
+
+### 6.1 Requisitos
 
 - Python **3.12** (`.python-version`), gestor **uv**, editor **VS Code**.
 - Una cuenta de Gmail dedicada al proceso de selección con **2FA activado**.
 - Sin dependencias externas de bases de datos (persistencia en archivos).
 
-### 5.2 Instalación de dependencias
+### 6.2 Instalación de dependencias
 
 ```bash
 uv add python-dotenv pdfplumber python-docx google-genai schedule
@@ -263,6 +366,7 @@ uv add python-dotenv pdfplumber python-docx google-genai schedule
 | `pdfplumber` | Extrae texto de PDFs |
 | `python-docx` | Extrae texto de Word (`.docx`) |
 | `google-genai` | Llama a **Gemini** (Agente Extractor; modelo por `MODELO_GEMINI`) |
+| `openai` | Cliente para **Groq** (Agente Evaluador; endpoint compatible OpenAI) |
 | `schedule` | Ejecución programada (`--programar`) |
 
 > `imaplib` (IMAP a Gmail) es parte de la librería estándar: no se instala.
@@ -286,9 +390,16 @@ GEMINI_API_KEY=tu_clave_AiZa...  # requerida
 MODELO_GEMINI=gemini-3.5-flash   # modelo (opcional)
 PROMPT_EXTRACTOR=prompt/extractor.md   # prompt del extractor (opcional)
 
-# 3) Persistencia (arquitectura medallion)
+# 3) Evaluación (F2 — Groq, Agente Evaluador)
+GROQ_API_KEY=tu_clave_groq            # requiere PROVEEDOR_EVALUADOR=groq
+PROVEEDOR_EVALUADOR=groq              # proveedor del Agente Evaluador
+MODELO_EVALUADOR=openai/gpt-oss-120b  # modelo (ver modelos disponibles)
+PROMPT_EVALUADOR=prompt/evaluador.md  # prompt del evaluador (opcional)
+
+# 4) Persistencia (arquitectura medallion)
 DATA_DIR=data                    # raíz de datos (bronze/silver/gold)
 RAWDATA_RETENCION_DIAS=90        # retención de originales en bronze
+RUTA_VACANTES=config/vacantes    # requisitos por vacante (regla de negocio)
 ```
 
 - **`EMAIL`** — usuario de la conexión IMAP (tu cuenta Gmail).
@@ -311,20 +422,33 @@ RAWDATA_RETENCION_DIAS=90        # retención de originales en bronze
   `gemini-3.5-flash`). Cambiar si la API Key tiene acceso a otro modelo.
 - **`PROMPT_EXTRACTOR`** — ruta del prompt Markdown del extractor (default
   `prompt/extractor.md`).
+- **`GROQ_API_KEY`** — clave de Groq en `console.groq.com` (tier "Forever
+  Free", sin tarjeta). Requerida por F2 fuera de `--dry-run`.
+- **`PROVEEDOR_EVALUADOR`** — proveedor del Agente Evaluador (`groq`, por
+  ahora). Default `groq`.
+- **`MODELO_EVALUADOR`** — modelo del evaluador (default
+  `openai/gpt-oss-120b`); se consultan los disponibles con
+  `GET /openai/v1/models` (el modelo exacto depende de la cuenta).
+- **`PROMPT_EVALUADOR`** — ruta del prompt Markdown del evaluador (default
+  `prompt/evaluador.md`).
 - **`DATA_DIR`** — raíz de la arquitectura medallion (default `data`).
 - **`RAWDATA_RETENCION_DIAS`** — antigüedad máxima de los originales de bronze
   durante `limpiar` (default `90`).
+- **`RUTA_VACANTES`** — directorio con los requisitos por vacante (default
+  `config/vacantes`).
 
-### 5.4 Ejecución
+### 6.4 Ejecución
 
 ```bash
-uv run python main.py                  # lote real (IMAP + Gemini + silver)
-uv run python main.py --dry-run        # sin gastar cuota ni guardar en silver
-uv run python main.py --max 5          # procesa máximo 5 correos
-uv run python main.py --programar      # lote diario a HORA_INGESTA (loop)
-uv run python main.py limpiar          # purga bronze (retención del .env)
-uv run python main.py limpiar --dias 7 # purga bronze de más de 7 días
-uv run python main.py --verbose        # logs DEBUG
+uv run python main.py                  # F1: lote real (IMAP + Gemini + silver)
+uv run python main.py --dry-run        # F1: sin gastar cuota ni guardar en silver
+uv run python main.py --max 5          # F1: procesa máximo 5 correos
+uv run python main.py --programar      # F1: lote diario a HORA_INGESTA (loop)
+uv run python main.py limpiar          # F1: purga bronze (retención del .env)
+uv run python main.py limpiar --dias 7 # F1: purga bronze de más de 7 días
+uv run python main.py evaluar [--vacante "ANALISTA DE DATOS"]  # F2: evaluación real
+uv run python main.py evaluar --dry-run            # F2: simula sin llamar a Groq
+uv run python main.py evaluar --verbose            # F2: logs DEBUG
 ```
 
 - **`--dry-run`**: extrae y sanitiza, pero **no llama a Gemini, no guarda en
@@ -333,25 +457,34 @@ uv run python main.py --verbose        # logs DEBUG
 - **`--programar`** agenda el lote diario a `HORA_INGESTA`.
 - **`limpiar`** deduplica copias `_<uuid>` repetidas y borra de `bronze/` los
   archivos con más de `--dias` días (default `RAWDATA_RETENCION_DIAS`).
+- **`evaluar`** lee silver (`Listo para Evaluación`), evalúa contra
+  `config/vacantes/` y escribe `data/gold/`. Sin `--vacante` procesa todos los
+  candidatos listos. `--dry-run` simula la evaluación sin llamar a Groq.
 
-### 5.5 Salidas
+### 6.5 Salidas
 
 - **`data/bronze/<fecha_envio>/<vacante>/<archivo>`** — copia idempotente del
   adjunto usado (o del cuerpo como `.txt`); se conserva aunque el PDF resulte
   ilegible, para revisión manual.
 - **`data/silver/candidatos/<sha1(mensaje_id)>.json`** — un documento por
   candidato (estado, JSON estandarizado y metadatos).
-- **`data/gold/`** — preparado para que F2 escriba evaluaciones/rankings.
+- **`data/gold/evaluacion/<vacante>/<id_candidato>.json`** — evaluación F2 por
+  candidato (score, desglose, fortalezas/brechas, uso de tokens).
+- **`data/gold/evaluacion/<vacante>/ranking.json`** — ranking ordenado (score
+  desc) para el futuro dashboard F3.
 - **`logs/ingesta.log`** — trazabilidad del lote (asunto → remitente →
   estado), más el resumen final.
 
 ---
 
-## 6. Seguridad
+## 7. Seguridad
 
 - Las credenciales viven **solo** en `.env` (ignorado por git); nunca se
   hardcodean ni se loguean secretos.
 - `data/` y `logs/` contienen **datos personales** de postulantes y no se
   suben a git.
 - El Agente 1 descarta explícitamente foto, edad, género, dirección y estado
-  civil del JSON resultante.
+  civil del JSON resultante. F2 solo recibe, a efectos de contacto/ranking,
+  nombre completo, teléfono y correo — que **no participan** en la puntuación.
+- Los requisitos de vacante (`config/vacantes/`) y los prompts (`prompt/`) son
+  regla de negocio y **sí** se versionan.

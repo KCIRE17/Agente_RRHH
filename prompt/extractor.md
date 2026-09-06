@@ -12,6 +12,11 @@ este esquema:
     "email_remitente": "string",
     "formato_origen": "string"
   },
+  "datos_contacto": {
+    "nombre_completo": "string",
+    "telefono": "string",
+    "email": "string"
+  },
   "datos_estructurados": {
     "habilidades": ["string"],
     "experiencia_laboral": [
@@ -35,8 +40,11 @@ Reglas obligatorias:
 2. No pierdas ni agregues informacion del texto original.
 3. Excluye deliberadamente datos personales no pertinentes: fotografia, edad,
    genero, direccion y estado civil. No los incluyas en ningun campo.
-4. Si un campo no aparece en el CV, usa una lista vacia [] o el valor null.
-5. Responde SOLO con el JSON valido, sin texto adicional, sin comentarios.
+4. En `datos_contacto` captura solo datos de contacto: nombre completo tal como
+   aparece en el CV, numero de telefono (con su prefijo, sin simbolos extras) y
+   correo electronico. Si alguno no aparece en el CV, usa null.
+5. Si un campo no aparece en el CV, usa una lista vacia [] o el valor null.
+6. Responde SOLO con el JSON valido, sin texto adicional, sin comentarios.
 
 ## Texto del candidato
 

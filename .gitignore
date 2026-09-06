@@ -1,3 +1,12 @@
+# Credenciales (todos los .env; .env.example sí se puede versionar)
+.env
+.env.*
+!.env.example
+
+# Archivos originales y datos de candidatos (datos personales)
+data/
+logs/
+
 # Python-generated files
 __pycache__/
 *.py[oc]
@@ -7,9 +16,27 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
-.env
+.venv/
 
-# Archivos originales y datos de candidatos (datos personales)
-data/
-logs/
+# Cachés de Python / testing
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editor / SO (Windows + macOS + IDE)
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+*.swo
+
+# Temporales y de respaldo
+*.log
+*.tmp
+*.bak
+*.orig
+*.pid

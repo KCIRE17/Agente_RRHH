@@ -74,35 +74,66 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 ---
 
-## FASE 2 — Evaluación y Match Score (Agente 2) 🟡 No iniciada
+## FASE 2 — Evaluación y Match Score (Agente 2) ✅
 
-Carpeta `src/agente_rrhh/evaluation/` (esqueleto).
+### Hecho
 
-### Por desarrollar
+- [x] 🔴 **Ponderación fija 50/30/20**: Habilidades (50 %), Experiencia
+  (30 %), Formación académica (20 %) — `evaluation/reglas.py`.
+  *Aceptación: el puntaje se compone con estos pesos y los parciales se
+  suman a 100.*
+- [x] 🔴 **Match Score 0–100** y clasificación: **Alta (80–100)**, **Media
+  (50–79)**, **Baja (< 50)** — calculados en código, con clamps a 0–100.
+- [x] 🟡 **Requisitos por vacante** como regla de negocio editable y
+  versionable en `config/vacantes/<SLUG>.json` (ej. `ANALISTA_DE_DATOS.json`
+  con esenciales/opcionales, `experiencia_minima_anos` y carreras).
+- [x] 🟡 **Fortalezas y brechas**: reporte de la IA de requisitos cumplidos y de
+  campo obligatorio ausente (`requisito_esencial_ausente`) con puntaje 0.
+- [x] 🟡 **Mitigación de sesgos**: el cálculo solo puntúa habilidades,
+  experiencia y formación; los datos de contacto (nombre, teléfono, correo)
+  van al gold sin participar en la puntuación.
+- [x] 🟡 **Modelo de IA**: **Groq** (tier "Forever Free") vía SDK `openai`
+  con `response_format=json`; default `openai/gpt-oss-120b` (los `llama-3.3-*`
+  no están habilitados en esta cuenta; se listan vía `GET /models`).
+  **1 llamada por candidato**; `uso_tokens` guardado en el doc gold.
+- [x] 🟡 **Core promotido para F2**: `core/llm.py` (fachada Gemini/Groq +
+  tokens), `core/prompts.py` (prompts `.md` + parseo JSON tolerante),
+  `core/vacantes.py`, `core/gold_store.py` (escritura atómica + ranking).
+- [x] 🟡 **Comando CLI**: `uv run python main.py evaluar [--vacante X]`.
+  *Aceptación: escribe `match_score`, `clasificacion`, fortalezas, brechas y
+  `uso_tokens` en `data/gold/evaluacion/<vacante>/<id>.json` + `ranking.json`.*
+- [x] 🟡 **Idempotencia**: un candidato ya evaluado se omite; fallos de IA van a
+  `Pendiente: Reintento Evaluación` y reintentan en el siguiente lote.
+- [x] 🔵 **Extracción de contacto en F1**: `datos_contacto`
+  (`nombre_completo`, `telefono`, `email`) añadido a `prompt/extractor.md`
+  y al JSON silver; re-extraído el candidato real vía Gemini.
+- [x] 🔵 **`.gitignore` blindado** para GitHub: `.env.*`, caches, SO/editor,
+  temporales; se sigue ignorando `data/` y `logs/` (datos personales).
 
-- [ ] 🔴 **Ponderación fija 50/30/20**: Habilidades (50 %), Experiencia
-  (30 %), Formación académica (20 %).
-  *Aceptación: el puntaje se compone con estos pesos y suma 100 %.*
-- [ ] 🔴 **Match Score 0–100** y clasificación: **Alta (80–100)**, **Media
-  (50–79)**, **Baja (< 50)**.
-  *Aceptación: caso manual conocido da el mismo ranking que el sistema.*
-- [ ] 🔴 **Diccionario de habilidades por nivel negocio** (regla de negocio):
-  herramienta → nivel (SQL avanzado, básico...) y qué representa para la
-  empresa.
-- [ ] 🟡 **Fortalezas y brechas**: reporte de requisitos cumplidos y de campo
-  obligatorio ausente (puntaje 0 + descripción de alerta).
-- [ ] 🟡 **Mitigación de sesgos**: verificar que el cálculo ignora foto/edad/
-  género/dirección/estado civil.
-- [ ] 🟡 **Modelo de IA**: definir e integrar un modelo compatible para el
-  Agente 2 (razonamiento sobre el `datos_json` de F1).
+> Lote real F2 (2026-09-06): `main.py evaluar --vacante "ANALISTA DE DATOS"`
+> → el candidato real se evaluó con Groq (`openai/gpt-oss-120b`): score **70**
+> **Media**, desglose 50/10/10, `uso_tokens: {prompt 1386, completado 1305,
+> total 2691}`; gold + `ranking.json` escritos en `data/gold/evaluacion/`.
+> Antes se re-extrajo su silver con `datos_contacto`
+> (`telefono: 51956488518`) para el ranking.
+
+> Nota de costo: la sesión F2 real gastó **2 llamadas de LLM** (1 Gemini de
+> re-extracción + 1 Groq de evaluación), todas dentro de los free tiers.
+
+### Backlog / mejoras futuras F2
+
+- [ ] 🟡 **Diccionario de habilidades por nivel negocio** (`config/`): definir
+  qué nivel de cada herramienta representa valor real para la empresa (hoy la
+  coincidencia de habilidades se delega a la IA con `requisitos_evaluados`).
 - [ ] 🟡 **Límite de candidatos filtrados** por vacante (regla de negocio).
-- [ ] 🟡 **Comando CLI**: `uv run python main.py evaluar [--vacante X]`.
-  *Aceptación: escribe `match_score`, `clasificacion`, fortalezas y brechas
-  en el JSON del candidato (capa gold).*
+- [ ] 🔵 **Lote "desde la última ejecución"** compartido con F1 (F1 puede
+  perder correos si no corre un día y F2 depende del estado silver).
+- [ ] 🔵 **Agregador de tokens**: si el consumo crece, acumular `uso_tokens`
+  por fase/lote en un resumen (hoy se controla en el panel del proveedor).
 
 ### Definición de listo F2
 
-- [ ] Todos los candidatos `Listo para Evaluación` de una vacante tienen
+- [x] Todos los candidatos `Listo para Evaluación` de una vacante tienen
   puntaje, clasificación, fortalezas y brechas documentados; el comando
   cierra con código 0.
 
@@ -153,6 +184,7 @@ Carpeta `src/agente_rrhh/chatbot/` (esqueleto).
 | 2026-09-05 | Reestructuración por fases + doc consolidada (README, PENDIENTES, AGENTS) | ✅ |
 | 2026-09-06 | F1 end-to-end real (Gemini, prompt de archivo, silver JSON verificados) | ✅ |
 | 2026-09-06 | Migración a `data/` medallion (bronze/silver/gold) sin MongoDB; prompts editables; 7 bugs críticos + purga `limpiar`; docs sincronizadas | ✅ |
+| 2026-09-06 | F2 end-to-end real: Groq (`openai/gpt-oss-120b`), reglas 50/30/20, requisitos por vacante en `config/`, gold + ranking, `datos_contacto` en F1, `.gitignore` blindado | ✅ |
 | — | F2 Match Score funcionando | ⏳ |
 | — | F3 Dashboard Streamlit | ⏳ |
 | — | F4 Chatbot | ⏳ |

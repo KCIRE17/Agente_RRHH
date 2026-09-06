@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Punto de entrada del Módulo de Ingesta (Fase 1).
+"""Punto de entrada del proyecto (Fase 1 Ingesta y Fase 2 Evaluacion).
 
 Uso:
     uv run python main.py                 # lote real (IMAP + Gemini + JSON silver)
@@ -8,6 +8,8 @@ Uso:
     uv run python main.py --programar     # programa el lote diario a las 18:00
     uv run python main.py limpiar         # purga bronze (retención de .env)
     uv run python main.py limpiar --dias 7  # purga bronze de más de 7 días
+    uv run python main.py evaluar [--vacante X] [--dry-run]
+    uv run python main.py evaluar --dry-run  --vacante "ANALISTA DE DATOS"  # simula
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ import time
 from src.agente_rrhh.core.config import Config
 from src.agente_rrhh.core.logging_setup import configurar_logging
 from src.agente_rrhh.core.raw_store import RawStore
+from src.agente_rrhh.evaluation.pipeline_evaluacion import PipelineEvaluacion
 from src.agente_rrhh.ingestion.imap_client import ImapClient
 from src.agente_rrhh.ingestion.pipeline import PipelineIngesta
 
@@ -74,20 +77,41 @@ def ejecutar_limpieza(cfg: Config, dias: int | None) -> int:
     return 0
 
 
+def ejecutar_evaluacion(
+    cfg: Config, vacante: str | None, dry_run: bool
+) -> int:
+    if not cfg.groq_api_key and not dry_run:
+        LOG.warning(
+            "GROQ_API_KEY vacía en .env: sin la clave real solo se puede "
+            "usar el modo --dry-run."
+        )
+
+    pipeline = PipelineEvaluacion(cfg, dry_run=dry_run, vacante=vacante)
+    try:
+        pipeline.ejecutar()
+    except Exception as exc:
+        LOG.exception("Error durante la evaluacion: %s", exc)
+        return 1
+    finally:
+        pipeline.cerrar()
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Ingesta de postulaciones desde Gmail (IMAP) a la capa silver."
+        description="Ingesta de postulaciones (IMAP -> silver) y evaluacion "
+        "(silver -> gold)."
     )
     parser.add_argument(
         "comando",
         nargs="?",
-        choices=["limpiar"],
-        help="'limpiar' purga bronze (archivos originales viejos y copias duplicadas).",
+        choices=["limpiar", "evaluar"],
+        help="'limpiar' purga bronze; 'evaluar' corre el Match Score (F2).",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Simula el flujo sin llamar a Gemini ni guardar en silver.",
+        help="Simula el flujo sin llamar a la IA ni guardar en silver/gold.",
     )
     parser.add_argument(
         "--max",
@@ -100,6 +124,12 @@ def main() -> int:
         type=int,
         default=None,
         help="Con 'limpiar': retención en días (default RAWDATA_RETENCION_DIAS).",
+    )
+    parser.add_argument(
+        "--vacante",
+        type=str,
+        default=None,
+        help="Con 'evaluar': filtra los candidatos de una sola vacante.",
     )
     parser.add_argument(
         "--programar",
@@ -116,6 +146,9 @@ def main() -> int:
 
     if args.comando == "limpiar":
         return ejecutar_limpieza(cfg, args.dias)
+
+    if args.comando == "evaluar":
+        return ejecutar_evaluacion(cfg, args.vacante, args.dry_run)
 
     if args.programar:
         import schedule
