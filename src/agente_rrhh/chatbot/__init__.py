@@ -1,0 +1,1 @@
+"""FASE 4 — Chatbot de consultas de RRHH sobre la información procesada. ESQUELETO."""

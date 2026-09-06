@@ -1,0 +1,1 @@
+"""FASE 3 — Dashboard Streamlit (visualización y ranking de candidatos). ESQUELETO."""
