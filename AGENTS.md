@@ -22,7 +22,7 @@ Agente_RRHH/
 │   ├── extractor.md           #   F1: texto → JSON estandarizado
 │   └── evaluador.md           #   F2: perfil + requisitos → evaluación
 ├── config/vacantes/           # requisitos por vacante (regla de negocio)
-├── data/                      # datos candidatos (archi. medallion) — NO a git
+├── data/                      # datos candidatos (arquitectura medallion) — NO a git
 │   ├── bronze/                # originales brutos por <fecha>/<vacante>/
 │   ├── silver/candidatos/     # <sha1(mensaje_id)>.json (idempotente)
 │   └── gold/evaluacion/       # <vacante>/<id>.json + ranking.json (F2+)

@@ -145,9 +145,10 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 - [x] 🟡 **Lanzamiento integrado**: `uv run python main.py dashboard [--port N]`
   (un solo punto de entrada; `streamlit run src/agente_rrhh/dashboard/app.py`).
-- [x] 🟡 **Ranking por vacante**: selector de vacante → candidatos ordenados por
-  `match_score`, fila de métricas (Total/Alta/Media/Baja/Promedio) y
-  distribución por clasificación (`st.bar_chart`).
+- [x] 🟡 **Ranking por vacante**: selector de vacante → postulantes ordenados por
+  puntaje de compatibilidad, fila de métricas (Postulantes evaluados,
+  Compatibilidad alta/media/baja, Puntaje promedio) y distribución por
+  nivel de compatibilidad (`st.bar_chart`).
 - [x] 🟡 **Ficha del postulante**: puntaje de compatibilidad, nivel, datos de
   contacto (teléfono/correo), fortalezas, aspectos por reforzar,
   requisito esencial ausente resaltado, resumen del análisis, explicación del
@@ -166,8 +167,9 @@ Actualizar este archivo al cerrar o abrir una tarea.
 - [x] 🔵 **Capa de datos separada**: `dashboard/consultas.py` (lectura
   gold/silver sin UI), caché 30 s + botón "Actualizar".
 
-> Verificación (2026-09-06): AppTest de Streamlit sin excepciones (Ranking +
-> Ficha RRHH + Ingesta renderizan con el candidato real de ANALISTA DE DATOS);
+> Verificación (2026-09-06): AppTest de Streamlit sin excepciones en las 4
+> vistas (Ranking de postulantes + Postulante + Postulaciones + Metodología
+> renderizan con el candidato real de ANALISTA DE DATOS, incluidos filtros);
 > arranque real `main.py dashboard --port 8510` → `/_stcore/health` = "ok";
 > "evaluados" derivado de gold (F2 no muta silver).
 
@@ -204,6 +206,6 @@ Carpeta `src/agente_rrhh/chatbot/` (esqueleto).
 | 2026-09-06 | F1 end-to-end real (Gemini, prompt de archivo, silver JSON verificados) | ✅ |
 | 2026-09-06 | Migración a `data/` medallion (bronze/silver/gold) sin MongoDB; prompts editables; 7 bugs críticos + purga `limpiar`; docs sincronizadas | ✅ |
 | 2026-09-06 | F2 end-to-end real: Groq (`openai/gpt-oss-120b`), reglas 50/30/20, requisitos por vacante en `config/`, gold + ranking, `datos_contacto` en F1, `.gitignore` blindado | ✅ |
-| 2026-09-06 | F3 Dashboard Streamlit end-to-end: `main.py dashboard`, vistas Ranking/Ficha RRHH/Ingesta, tema visual, `consultas.py` (gold+silver), verificado con AppTest + health check | ✅ |
+| 2026-09-06 | F3 Dashboard Streamlit end-to-end: `main.py dashboard`, vistas Ranking de postulantes / Postulante / Postulaciones / Metodología en lenguaje de RRHH, tema visual, `consultas.py` (gold+silver), verificado con AppTest + health check | ✅ |
 | — | F4 Chatbot | ⏳ |
 | — | F4 Chatbot | ⏳ |

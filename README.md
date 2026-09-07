@@ -123,7 +123,8 @@ Agente_RRHH/
     │   └── pipeline_evaluacion.py # silver "Listo" → gold (evaluación + ranking)
     ├── dashboard/             # FASE 3 — Dashboard Streamlit
     │   ├── consultas.py       #   lectura gold/silver (sin UI)
-    │   └── app.py             #   UI (Ranking / Ficha RRHH / Ingesta)
+    │   └── app.py             #   UI (Ranking de postulantes / Postulante /
+    │                          #   Postulaciones / Metodología)
     └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
 ```
 
@@ -374,14 +375,15 @@ Todo el panel usa **lenguaje del área de talento**: los términos internos
   **Media** → "Revisión manual", **Baja** → "No avanza".
 - **Candidatos evaluados** se derivan de **gold** (F2 no muta silver);
   "listos" = total − evaluados − errores − reintentos.
-- Lecturas cacheadas 30 s + botón "Actualizar datos" (cumple el listo de F3:
+- Lecturas cacheadas 30 s + botón "Actualizar información" (cumple el listo de F3:
   consulta real en menos de 3 s sobre archivos locales).
 
 ### 6.3 Estructura
 
 - `src/agente_rrhh/dashboard/consultas.py` — capa de lectura (gold/silver),
   independiente de Streamlit y testeable.
-- `src/agente_rrhh/dashboard/app.py` — UI (Ranking / Ficha RRHH / Ingesta).
+- `src/agente_rrhh/dashboard/app.py` — UI (Ranking de postulantes /
+  Postulante / Postulaciones / Metodología).
 - `.streamlit/config.toml` — tema visual (colores, fuente).
 
 ### 6.4 Definición de listo
