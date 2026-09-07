@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Punto de entrada del proyecto (Fase 1 Ingesta y Fase 2 Evaluacion).
+"""Punto de entrada del proyecto (Fases 1, 2 y 3).
 
 Uso:
     uv run python main.py                 # lote real (IMAP + Gemini + JSON silver)
@@ -10,13 +10,17 @@ Uso:
     uv run python main.py limpiar --dias 7  # purga bronze de más de 7 días
     uv run python main.py evaluar [--vacante X] [--dry-run]
     uv run python main.py evaluar --dry-run  --vacante "ANALISTA DE DATOS"  # simula
+    uv run python main.py dashboard [--port 8501]  # panel Streamlit (F3)
 """
 
 from __future__ import annotations
 
 import argparse
 import logging
+import subprocess
+import sys
 import time
+from pathlib import Path
 
 from src.agente_rrhh.core.config import Config
 from src.agente_rrhh.core.logging_setup import configurar_logging
@@ -97,16 +101,24 @@ def ejecutar_evaluacion(
     return 0
 
 
+def ejecutar_dashboard(puerto: int) -> int:
+    app = Path(__file__).parent / "src/agente_rrhh/dashboard/app.py"
+    LOG.info("Arrancando dashboard en http://localhost:%d (Ctrl+C para salir).", puerto)
+    cmd = [sys.executable, "-m", "streamlit", "run", str(app), "--server.port", str(puerto)]
+    return subprocess.run(cmd, cwd=Path(__file__).parent).returncode
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Ingesta de postulaciones (IMAP -> silver) y evaluacion "
-        "(silver -> gold)."
+        description="Ingesta (IMAP -> silver), evaluacion (silver -> gold) y "
+        "dashboard (Streamlit)."
     )
     parser.add_argument(
         "comando",
         nargs="?",
-        choices=["limpiar", "evaluar"],
-        help="'limpiar' purga bronze; 'evaluar' corre el Match Score (F2).",
+        choices=["limpiar", "evaluar", "dashboard"],
+        help="'limpiar' purga bronze; 'evaluar' corre el Match Score (F2); "
+        "'dashboard' abre el panel F3.",
     )
     parser.add_argument(
         "--dry-run",
@@ -132,6 +144,12 @@ def main() -> int:
         help="Con 'evaluar': filtra los candidatos de una sola vacante.",
     )
     parser.add_argument(
+        "--port",
+        type=int,
+        default=8501,
+        help="Con 'dashboard': puerto del panel Streamlit (default 8501).",
+    )
+    parser.add_argument(
         "--programar",
         action="store_true",
         help="Programa la ejecución diaria a la hora HORA_INGESTA.",
@@ -149,6 +167,9 @@ def main() -> int:
 
     if args.comando == "evaluar":
         return ejecutar_evaluacion(cfg, args.vacante, args.dry_run)
+
+    if args.comando == "dashboard":
+        return ejecutar_dashboard(args.port)
 
     if args.programar:
         import schedule

@@ -20,7 +20,7 @@ tiers* de las APIs de IA).
 | :--- | :--- | :--- | :--- |
 | **F1** | Ingesta y Extracción de Candidaturas | Agente 1 (Gemini, por `MODELO_GEMINI`) | ✅ Implementada |
 | **F2** | Evaluación y Match Score | Agente 2 (Groq, por `MODELO_EVALUADOR`/`PROVEEDOR_EVALUADOR`) | ✅ Implementada |
-| **F3** | Dashboard y Visualización (Streamlit) | — | 🟡 Esqueleto |
+| **F3** | Dashboard y Visualización (Streamlit) | — | ✅ Implementada |
 | **F4** | Chatbot de consultas de RRHH | — | 🟡 Esqueleto |
 
 > El estado y los pendientes de cada fase se controlan en **`PENDIENTES.md`**
@@ -73,6 +73,7 @@ tiers* de las APIs de IA).
 - **IA**: Gemini (Agente Extractor; modelo por `MODELO_GEMINI`); Groq vía API
   compatible OpenAI (Agente Evaluador; proveedor/modelo por
   `PROVEEDOR_EVALUADOR`/`MODELO_EVALUADOR`, default `openai/gpt-oss-120b`).
+- **Dashboard**: Streamlit 1.6x (con pandas) — panel local interactivo F3.
 
 ---
 
@@ -86,6 +87,7 @@ Agente_RRHH/
 ├── README.md                  # este documento (documentación completa)
 ├── PENDIENTES.md              # bitácora Scrum de pendientes
 ├── AGENTS.md                  # convenciones para agentes de IA
+├── .streamlit/config.toml     # tema del dashboard (Streamlit)
 ├── logs/                      # logs de ejecución (ingesta.log)
 ├── prompt/                    # prompts de IA editables (.md)
 │   ├── extractor.md           #   prompt del Agente Extractor (F1)
@@ -119,7 +121,9 @@ Agente_RRHH/
     │   ├── reglas.py          # pesos 50/30/20 y umbrales Alta/Media/Baja
     │   ├── agente_evaluador.py# Groq: perfil + requisitos → JSON (prompt/ing)
     │   └── pipeline_evaluacion.py # silver "Listo" → gold (evaluación + ranking)
-    ├── dashboard/             # FASE 3 — Streamlit [ESQUELETO]
+    ├── dashboard/             # FASE 3 — Dashboard Streamlit
+    │   ├── consultas.py       #   lectura gold/silver (sin UI)
+    │   └── app.py             #   UI (Ranking / Ficha RRHH / Ingesta)
     └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
 ```
 
@@ -346,15 +350,56 @@ el log (el documento gold guarda los requisitos usados para trazabilidad).
 
 ---
 
-## 6. Configuración y uso
+## 6. Especificación — FASE 3: Dashboard y Visualización (Streamlit)
 
-### 6.1 Requisitos
+Panel local interactivo para el área de RRHH. Lee directamente de **gold**
+(rankings y evaluaciones) y **silver** (resumen de ingesta); no toca la IA ni
+las fases de escritura.
+
+### 6.1 Vistas
+
+| Vista | Contenido |
+| :--- | :--- |
+| **Ranking de postulantes** | Vacante → métricas (postulantes evaluados, compatibilidad alta/media/baja, puntaje promedio), tabla con puntaje y nivel (filtrable) y distribución |
+| **Postulante** | Puntaje de compatibilidad, nivel, datos de contacto, fortalezas, aspectos por reforzar (con requisitos indispensables faltantes resaltados), resumen del análisis, explicación del cálculo y resumen de la hoja de vida |
+| **Postulaciones** | Resumen de lo recibido por situación y por vacante; avisa postulaciones pendientes de evaluación |
+| **Metodología** | Explicación en lenguaje de RRHH: proceso en 4 pasos, fórmula 50/30/20, niveles de compatibilidad, evaluación sin sesgos y significado de cada situación |
+
+Todo el panel usa **lenguaje del área de talento**: los términos internos
+(silver/gold, estados técnicos, tokens) quedan fuera de la interfaz.
+
+### 6.2 Reglas de negocio del dashboard
+
+- **Sugerencia RRHH** (estática, no IA): **Alta** → "Pase a fase técnica",
+  **Media** → "Revisión manual", **Baja** → "No avanza".
+- **Candidatos evaluados** se derivan de **gold** (F2 no muta silver);
+  "listos" = total − evaluados − errores − reintentos.
+- Lecturas cacheadas 30 s + botón "Actualizar datos" (cumple el listo de F3:
+  consulta real en menos de 3 s sobre archivos locales).
+
+### 6.3 Estructura
+
+- `src/agente_rrhh/dashboard/consultas.py` — capa de lectura (gold/silver),
+  independiente de Streamlit y testeable.
+- `src/agente_rrhh/dashboard/app.py` — UI (Ranking / Ficha RRHH / Ingesta).
+- `.streamlit/config.toml` — tema visual (colores, fuente).
+
+### 6.4 Definición de listo
+
+- [x] Una consulta de ranking de una vacante real responde en < 3 s desde la
+  interfaz con los datos de silver/gold.
+
+---
+
+## 7. Configuración y uso
+
+### 7.1 Requisitos
 
 - Python **3.12** (`.python-version`), gestor **uv**, editor **VS Code**.
 - Una cuenta de Gmail dedicada al proceso de selección con **2FA activado**.
 - Sin dependencias externas de bases de datos (persistencia en archivos).
 
-### 6.2 Instalación de dependencias
+### 7.2 Instalación de dependencias
 
 ```bash
 uv add python-dotenv pdfplumber python-docx google-genai schedule
@@ -368,10 +413,11 @@ uv add python-dotenv pdfplumber python-docx google-genai schedule
 | `google-genai` | Llama a **Gemini** (Agente Extractor; modelo por `MODELO_GEMINI`) |
 | `openai` | Cliente para **Groq** (Agente Evaluador; endpoint compatible OpenAI) |
 | `schedule` | Ejecución programada (`--programar`) |
+| `streamlit` | Dashboard interactivo F3 (incluye pandas) |
 
 > `imaplib` (IMAP a Gmail) es parte de la librería estándar: no se instala.
 
-### 5.3 Variables del `.env`
+### 7.3 Variables del `.env`
 
 ```dotenv
 # 1) Cuenta de correo y acceso IMAP
@@ -437,7 +483,7 @@ RUTA_VACANTES=config/vacantes    # requisitos por vacante (regla de negocio)
 - **`RUTA_VACANTES`** — directorio con los requisitos por vacante (default
   `config/vacantes`).
 
-### 6.4 Ejecución
+### 7.4 Ejecución
 
 ```bash
 uv run python main.py                  # F1: lote real (IMAP + Gemini + silver)
@@ -449,6 +495,7 @@ uv run python main.py limpiar --dias 7 # F1: purga bronze de más de 7 días
 uv run python main.py evaluar [--vacante "ANALISTA DE DATOS"]  # F2: evaluación real
 uv run python main.py evaluar --dry-run            # F2: simula sin llamar a Groq
 uv run python main.py evaluar --verbose            # F2: logs DEBUG
+uv run python main.py dashboard [--port 8501]      # F3: panel Streamlit
 ```
 
 - **`--dry-run`**: extrae y sanitiza, pero **no llama a Gemini, no guarda en
@@ -460,8 +507,11 @@ uv run python main.py evaluar --verbose            # F2: logs DEBUG
 - **`evaluar`** lee silver (`Listo para Evaluación`), evalúa contra
   `config/vacantes/` y escribe `data/gold/`. Sin `--vacante` procesa todos los
   candidatos listos. `--dry-run` simula la evaluación sin llamar a Groq.
+- **`dashboard`** abre el panel Streamlit en
+  `http://localhost:8501` (puerto con `--port`). Se recomienda **solo red
+  local**: muestra datos personales de candidatos.
 
-### 6.5 Salidas
+### 7.5 Salidas
 
 - **`data/bronze/<fecha_envio>/<vacante>/<archivo>`** — copia idempotente del
   adjunto usado (o del cuerpo como `.txt`); se conserva aunque el PDF resulte
@@ -471,13 +521,13 @@ uv run python main.py evaluar --verbose            # F2: logs DEBUG
 - **`data/gold/evaluacion/<vacante>/<id_candidato>.json`** — evaluación F2 por
   candidato (score, desglose, fortalezas/brechas, uso de tokens).
 - **`data/gold/evaluacion/<vacante>/ranking.json`** — ranking ordenado (score
-  desc) para el futuro dashboard F3.
+  desc) que alimenta el dashboard F3.
 - **`logs/ingesta.log`** — trazabilidad del lote (asunto → remitente →
   estado), más el resumen final.
 
 ---
 
-## 7. Seguridad
+## 8. Seguridad
 
 - Las credenciales viven **solo** en `.env` (ignorado por git); nunca se
   hardcodean ni se loguean secretos.
@@ -488,3 +538,5 @@ uv run python main.py evaluar --verbose            # F2: logs DEBUG
   nombre completo, teléfono y correo — que **no participan** en la puntuación.
 - Los requisitos de vacante (`config/vacantes/`) y los prompts (`prompt/`) son
   regla de negocio y **sí** se versionan.
+- El dashboard F3 muestra datos personales en pantalla: ejecutarlo **solo en
+  red local** (no exponer el puerto a Internet).

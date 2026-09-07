@@ -139,22 +139,41 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 ---
 
-## FASE 3 — Dashboard y Visualización (Streamlit) 🟡 No iniciada
+## FASE 3 — Dashboard y Visualización (Streamlit) ✅
 
-Carpeta `src/agente_rrhh/dashboard/` (esqueleto).
+### Hecho
 
-### Por desarrollar
+- [x] 🟡 **Lanzamiento integrado**: `uv run python main.py dashboard [--port N]`
+  (un solo punto de entrada; `streamlit run src/agente_rrhh/dashboard/app.py`).
+- [x] 🟡 **Ranking por vacante**: selector de vacante → candidatos ordenados por
+  `match_score`, fila de métricas (Total/Alta/Media/Baja/Promedio) y
+  distribución por clasificación (`st.bar_chart`).
+- [x] 🟡 **Ficha del postulante**: puntaje de compatibilidad, nivel, datos de
+  contacto (teléfono/correo), fortalezas, aspectos por reforzar,
+  requisito esencial ausente resaltado, resumen del análisis, explicación del
+  cálculo 50/30/20 y **hoja de vida unida con silver**.
+- [x] 🟡 **Filtros**: por clasificación (Alta/Media/Baja) en el ranking.
+- [x] 🔵 **Resumen de postulaciones**: conteo de lo recibido por situación y
+  por vacante + aviso de postulaciones pendientes de evaluación.
+- [x] 🔵 **Regla visual RRHH**: sugerencia por clasificación (Alta → fase
+  técnica, Media → revisión manual, Baja → no avanza).
+- [x] 🔵 **Lenguaje del área de talento**: términos técnicos traducidos a la
+  interfaz (hoja de vida, aspectos por reforzar, puntaje de compatibilidad,
+  postulaciones) + pestaña **Metodología** que explica el cálculo y cada
+  situación de forma amigable (estados internos mapeados en `consultas.py`).
+- [x] 🔵 **Tema estético**: `.streamlit/config.toml` + CSS propio (tarjetas,
+  badges por clasificación, chips de habilidades).
+- [x] 🔵 **Capa de datos separada**: `dashboard/consultas.py` (lectura
+  gold/silver sin UI), caché 30 s + botón "Actualizar".
 
-- [ ] 🟡 **Ranking por vacante**: selector de vacante → candidatos ordenados
-  por `match_score`.
-- [ ] 🟡 **Detalle del candidato**: habilidades, experiencia, formación,
-  certificaciones, fortalezas y brechas.
-- [ ] 🟡 **Filtros**: por clasificación (Alta/Media/Baja) y por estado.
-- [ ] 🔵 **Resumen visual** del desglose de estados de ingesta.
+> Verificación (2026-09-06): AppTest de Streamlit sin excepciones (Ranking +
+> Ficha RRHH + Ingesta renderizan con el candidato real de ANALISTA DE DATOS);
+> arranque real `main.py dashboard --port 8510` → `/_stcore/health` = "ok";
+> "evaluados" derivado de gold (F2 no muta silver).
 
 ### Definición de listo F3
 
-- [ ] Responder a una consulta de ranking de una vacante real en menos de 3 s
+- [x] Responder a una consulta de ranking de una vacante real en menos de 3 s
   desde la interfaz, con los datos de silver/gold.
 
 ---
@@ -185,6 +204,6 @@ Carpeta `src/agente_rrhh/chatbot/` (esqueleto).
 | 2026-09-06 | F1 end-to-end real (Gemini, prompt de archivo, silver JSON verificados) | ✅ |
 | 2026-09-06 | Migración a `data/` medallion (bronze/silver/gold) sin MongoDB; prompts editables; 7 bugs críticos + purga `limpiar`; docs sincronizadas | ✅ |
 | 2026-09-06 | F2 end-to-end real: Groq (`openai/gpt-oss-120b`), reglas 50/30/20, requisitos por vacante en `config/`, gold + ranking, `datos_contacto` en F1, `.gitignore` blindado | ✅ |
-| — | F2 Match Score funcionando | ⏳ |
-| — | F3 Dashboard Streamlit | ⏳ |
+| 2026-09-06 | F3 Dashboard Streamlit end-to-end: `main.py dashboard`, vistas Ranking/Ficha RRHH/Ingesta, tema visual, `consultas.py` (gold+silver), verificado con AppTest + health check | ✅ |
+| — | F4 Chatbot | ⏳ |
 | — | F4 Chatbot | ⏳ |

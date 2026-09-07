@@ -32,7 +32,8 @@ Agente_RRHH/
     │                          # llm, prompts, vacantes, gold_store)
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     ├── evaluation/            # FASE 2 — Match Score (Agente 2)
-    ├── dashboard/             # FASE 3 — Streamlit [ESQUELETO]
+    ├── dashboard/             # FASE 3 — Dashboard Streamlit (consultas.py,
+    │                          #          app.py, .streamlit/config.toml)
     └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
 ```
 
@@ -64,9 +65,11 @@ Agente_RRHH/
 - **Puntaje y clasificación se calculan en código** (`core`/`evaluation/
   reglas.py`), nunca se cree ciegamente el `match_score` que devuelve la IA
   (pesos 50/30/20, umbrales 80/50, clamps 0–100).
-- **Ejecución**: usar `uv run python main.py` (uv gestiona el entorno).
+- **Ejecución**: usar `uv run python main.py` (uv gestiona el entorno). El
+  dashboard F3 se abre con `uv run python main.py dashboard [--port N]`.
 - **Archivos personales**: `data/` y `logs/` no se suben a git
-  (datos personales de candidatos).
+  (datos personales de candidatos). El dashboard F3 solo se ejecuta en red
+  local.
 - **Pendientes**: al avanzar, reflejar el progreso en `PENDIENTES.md`
   (metodología Scrum del proyecto).
 
@@ -76,4 +79,5 @@ Agente_RRHH/
 uv run python -m compileall -q src main.py
 uv run python main.py --dry-run        # simula la ingesta sin gastar cuota
 uv run python main.py limpiar          # purga bronze (retención de .env)
+uv run python main.py dashboard --port 8510 &   # F3: boot + GET /_stcore/health
 ```
