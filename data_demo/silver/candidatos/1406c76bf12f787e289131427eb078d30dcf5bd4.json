@@ -1,0 +1,73 @@
+{
+  "mensaje_id": "<913006e4ffde2090b243189b35f5adfa.demo@correo.local>",
+  "id_candidato": "913006e4ffde2090b243189b35f5adfa",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "MERCEDES ALEXANDRA TAPIA RODAS <mercedes.tapia@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "MERCEDES ALEXANDRA TAPIA RODAS",
+    "email": "mercedes.tapia@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "MERCEDES ALEXANDRA TAPIA RODAS",
+      "telefono": "51993456732",
+      "email": "mercedes.tapia@hotmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva",
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Asesor comercial",
+          "duracion_anos": 2.5,
+          "descripcion": "Soporte y ejecución de tareas operativas del área."
+        },
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 4.5,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Marketing",
+          "institucion": "Universidad de Lima"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.473311+00:00",
+  "fecha_reintento": null
+}

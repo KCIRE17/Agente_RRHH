@@ -1,0 +1,61 @@
+{
+  "mensaje_id": "<1929af03c300ed51c029fde6af0be0f8.demo@correo.local>",
+  "id_candidato": "1929af03c300ed51c029fde6af0be0f8",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "SILVIA ELIANA CABRERA AGUIRRE <silvia.cabrera@yahoo.com>",
+  "remitente_metadatos": {
+    "nombre": "SILVIA ELIANA CABRERA AGUIRRE",
+    "email": "silvia.cabrera@yahoo.com",
+    "dominio": "yahoo.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "SILVIA ELIANA CABRERA AGUIRRE",
+      "telefono": "51992345620",
+      "email": "silvia.cabrera@yahoo.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 0.5,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Estudiante (3er ciclo)",
+          "carrera": "Derecho",
+          "institucion": "UNMSM"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.543915+00:00",
+  "fecha_reintento": null
+}

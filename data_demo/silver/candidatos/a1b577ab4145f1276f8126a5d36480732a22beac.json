@@ -1,0 +1,64 @@
+{
+  "mensaje_id": "<6d84e214fbbe0acb7a7805de06dbf482.demo@correo.local>",
+  "id_candidato": "6d84e214fbbe0acb7a7805de06dbf482",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "PATRICIA SOLEDAD MARCELO CORDOVA <patricia.marcelo@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "PATRICIA SOLEDAD MARCELO CORDOVA",
+    "email": "patricia.marcelo@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "PATRICIA SOLEDAD MARCELO CORDOVA",
+      "telefono": "51997890127",
+      "email": "patricia.marcelo@hotmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Oracle"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 2.0,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Administración",
+          "institucion": "Universidad de Lima"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.415552+00:00",
+  "fecha_reintento": null
+}

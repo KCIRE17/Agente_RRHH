@@ -1,0 +1,74 @@
+{
+  "mensaje_id": "<0b56dfadc01302f1329f403e6fc2535c.demo@correo.local>",
+  "id_candidato": "0b56dfadc01302f1329f403e6fc2535c",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "ALVARO RICARDO PACHECO GUILLEN <alvaro.pacheco@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "ALVARO RICARDO PACHECO GUILLEN",
+    "email": "alvaro.pacheco@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "ALVARO RICARDO PACHECO GUILLEN",
+      "telefono": "51993456731",
+      "email": "alvaro.pacheco@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas",
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Desarrollador Junior",
+          "duracion_anos": 2.0,
+          "descripcion": "Soporte y ejecución de tareas operativas del área."
+        },
+        {
+          "puesto": "Desarrollador Backend",
+          "duracion_anos": 4.0,
+          "descripcion": "Funciones propias de desarrollador backend en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Titulado",
+          "carrera": "Ingeniería de Software",
+          "institucion": "PUCP"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.549912+00:00",
+  "fecha_reintento": null
+}

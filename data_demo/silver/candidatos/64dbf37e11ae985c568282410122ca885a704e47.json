@@ -1,0 +1,64 @@
+{
+  "mensaje_id": "<ba147726c240515b9e1e6804f3bb8d15.demo@correo.local>",
+  "id_candidato": "ba147726c240515b9e1e6804f3bb8d15",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "NATALY FABIOLA HUAMAN GONZALES <nataly.huaman@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "NATALY FABIOLA HUAMAN GONZALES",
+    "email": "nataly.huaman@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "NATALY FABIOLA HUAMAN GONZALES",
+      "telefono": "51991234518",
+      "email": "nataly.huaman@outlook.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Java",
+        "SQL",
+        "Docker",
+        "PostgreSQL"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Desarrollador Backend",
+          "duracion_anos": 0.5,
+          "descripcion": "Funciones propias de desarrollador backend en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Estudiante (7mo ciclo)",
+          "carrera": "Ingeniería de Sistemas",
+          "institucion": "UNMSM"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.588180+00:00",
+  "fecha_reintento": null
+}

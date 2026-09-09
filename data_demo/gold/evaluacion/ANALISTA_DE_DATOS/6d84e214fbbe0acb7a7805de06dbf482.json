@@ -1,0 +1,84 @@
+{
+  "id_candidato": "6d84e214fbbe0acb7a7805de06dbf482",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<6d84e214fbbe0acb7a7805de06dbf482.demo@correo.local>",
+  "nombre_completo": "PATRICIA SOLEDAD MARCELO CORDOVA",
+  "telefono": "51997890127",
+  "email_remitente": "PATRICIA SOLEDAD MARCELO CORDOVA <patricia.marcelo@hotmail.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 64,
+  "clasificacion": "Media",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 67,
+      "puntos": 34
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 60,
+      "puntos": 18
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 60,
+      "puntos": 12
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Aporta experiencia laboral alineada (2 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Pensamiento analítico.",
+    "No se evidencia dominio de Resolución de problemas."
+  ],
+  "requisito_esencial_ausente": [
+    "Pensamiento analítico",
+    "Resolución de problemas"
+  ],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 64/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1364,
+    "completado": 1132,
+    "total": 2496
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.417549+00:00"
+}

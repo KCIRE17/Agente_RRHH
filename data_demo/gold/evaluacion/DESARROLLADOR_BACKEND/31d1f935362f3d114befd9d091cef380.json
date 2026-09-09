@@ -1,0 +1,85 @@
+{
+  "id_candidato": "31d1f935362f3d114befd9d091cef380",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<31d1f935362f3d114befd9d091cef380.demo@correo.local>",
+  "nombre_completo": "EDUARDO ANTONY SAAVEDRA VILCA",
+  "telefono": "51992345629",
+  "email_remitente": "EDUARDO ANTONY SAAVEDRA VILCA <eduardo.saavedra@gmail.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 44,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 50,
+      "puntos": 25
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 35,
+      "puntos": 10
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 45,
+      "puntos": 9
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de REST APIs.",
+    "No se evidencia dominio de Git.",
+    "No se evidencia dominio de Diseño de sistemas.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "REST APIs",
+    "Git",
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 44/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1344,
+    "completado": 1122,
+    "total": 2466
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.594695+00:00"
+}

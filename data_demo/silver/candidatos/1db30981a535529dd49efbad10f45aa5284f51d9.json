@@ -1,0 +1,67 @@
+{
+  "mensaje_id": "<c22eb1b64a8488f5198d22e7a95e10c2.demo@correo.local>",
+  "id_candidato": "c22eb1b64a8488f5198d22e7a95e10c2",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "EVELYN NICOLE ORTIZ BARRANTES <evelyn.ortiz@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "EVELYN NICOLE ORTIZ BARRANTES",
+    "email": "evelyn.ortiz@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "EVELYN NICOLE ORTIZ BARRANTES",
+      "telefono": "51995678954",
+      "email": "evelyn.ortiz@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 3.5,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Ingeniería Comercial",
+          "institucion": "Universidad Católica San Pablo"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.495433+00:00",
+  "fecha_reintento": null
+}

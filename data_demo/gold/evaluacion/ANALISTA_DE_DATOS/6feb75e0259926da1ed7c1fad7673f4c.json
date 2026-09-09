@@ -1,0 +1,80 @@
+{
+  "id_candidato": "6feb75e0259926da1ed7c1fad7673f4c",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<6feb75e0259926da1ed7c1fad7673f4c.demo@correo.local>",
+  "nombre_completo": "DIEGO ANTONIO SALAZAR LUNA",
+  "telefono": "51992345672",
+  "email_remitente": "DIEGO ANTONIO SALAZAR LUNA <diego.salazar@hotmail.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 90,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 80,
+      "puntos": 24
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 80,
+      "puntos": 16
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (3.5 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 90/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1390,
+    "completado": 1145,
+    "total": 2535
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.389986+00:00"
+}

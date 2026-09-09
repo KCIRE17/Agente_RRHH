@@ -1,0 +1,62 @@
+{
+  "mensaje_id": "<31d1f935362f3d114befd9d091cef380.demo@correo.local>",
+  "id_candidato": "31d1f935362f3d114befd9d091cef380",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "EDUARDO ANTONY SAAVEDRA VILCA <eduardo.saavedra@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "EDUARDO ANTONY SAAVEDRA VILCA",
+    "email": "eduardo.saavedra@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "EDUARDO ANTONY SAAVEDRA VILCA",
+      "telefono": "51992345629",
+      "email": "eduardo.saavedra@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Java",
+        "SQL"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Desarrollador Backend",
+          "duracion_anos": 1.0,
+          "descripcion": "Funciones propias de desarrollador backend en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Ingeniería Mecatrónica",
+          "institucion": "UNI"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.593695+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,86 @@
+{
+  "id_candidato": "b3c1739d3d2d7d171deb0652ea27ac8f",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<b3c1739d3d2d7d171deb0652ea27ac8f.demo@correo.local>",
+  "nombre_completo": "ROSA ELENA FLORES PAZ",
+  "telefono": "51990123409",
+  "email_remitente": "ROSA ELENA FLORES PAZ <rosa.flores@gmail.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 43,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 50,
+      "puntos": 25
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 35,
+      "puntos": 10
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 40,
+      "puntos": 8
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Excel.",
+    "No se evidencia dominio de Pensamiento analítico.",
+    "No se evidencia dominio de Resolución de problemas.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "Excel",
+    "Pensamiento analítico",
+    "Resolución de problemas"
+  ],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 43/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1343,
+    "completado": 1121,
+    "total": 2464
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.428071+00:00"
+}

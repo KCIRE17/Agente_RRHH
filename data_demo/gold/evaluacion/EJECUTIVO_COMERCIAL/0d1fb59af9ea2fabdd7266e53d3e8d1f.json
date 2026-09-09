@@ -1,0 +1,82 @@
+{
+  "id_candidato": "0d1fb59af9ea2fabdd7266e53d3e8d1f",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<0d1fb59af9ea2fabdd7266e53d3e8d1f.demo@correo.local>",
+  "nombre_completo": "VANESSA ANDREA VARGAS SAAVEDRA",
+  "telefono": "51997890176",
+  "email_remitente": "VANESSA ANDREA VARGAS SAAVEDRA <vanessa.vargas@gmail.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 68,
+  "clasificacion": "Media",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 67,
+      "puntos": 34
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 70,
+      "puntos": 21
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 65,
+      "puntos": 13
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Aporta experiencia laboral alineada (3 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Prospección de clientes.",
+    "No se evidencia dominio de Comunicación efectiva."
+  ],
+  "requisito_esencial_ausente": [
+    "Prospección de clientes",
+    "Comunicación efectiva"
+  ],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 68/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1368,
+    "completado": 1134,
+    "total": 2502
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.521028+00:00"
+}

@@ -1,0 +1,35 @@
+{
+  "vacante": "DESARROLLADOR BACKEND",
+  "requisitos": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  }
+}

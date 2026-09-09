@@ -1,0 +1,65 @@
+{
+  "mensaje_id": "<0d1fb59af9ea2fabdd7266e53d3e8d1f.demo@correo.local>",
+  "id_candidato": "0d1fb59af9ea2fabdd7266e53d3e8d1f",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "VANESSA ANDREA VARGAS SAAVEDRA <vanessa.vargas@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "VANESSA ANDREA VARGAS SAAVEDRA",
+    "email": "vanessa.vargas@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "VANESSA ANDREA VARGAS SAAVEDRA",
+      "telefono": "51997890176",
+      "email": "vanessa.vargas@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Ventas B2B",
+        "Inglés"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 3.0,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Comunicaciones",
+          "institucion": "Universidad de Lima"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.518510+00:00",
+  "fecha_reintento": null
+}

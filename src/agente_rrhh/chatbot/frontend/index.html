@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RRHH · Asistente</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-name">Área de Talento</div>
+          <div class="brand-sub" id="brand-mode">asistente</div>
+          <div class="brand-sub demo" id="brand-demo" hidden></div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-view="chat">
+          <span class="nav-ico">💬</span> Chat
+        </button>
+        <button class="nav-item" data-view="simulador">
+          <span class="nav-ico">⚖️</span> Simulador de pesos
+        </button>
+        <button class="nav-item" data-view="brechas">
+          <span class="nav-ico">📊</span> Brechas de mercado
+        </button>
+        <button class="nav-item" data-view="costos">
+          <span class="nav-ico">💰</span> Costos
+        </button>
+        <button class="nav-item" data-view="tecnica">
+          <span class="nav-ico">🎯</span> Fase técnica
+        </button>
+      </nav>
+      <div class="sidebar-foot" id="sidebar-health"></div>
+    </aside>
+
+    <main class="content">
+      <!-- VISTA: CHAT -->
+      <section class="view active" id="view-chat">
+        <header class="view-head">
+          <h1>Asistente de RRHH</h1>
+          <p class="subtle">Consultas sobre evaluaciones, ranking y costos (sin tocar la base).</p>
+        </header>
+        <div class="chat-shell">
+          <div class="chat-log" id="chat-log"></div>
+          <div class="chat-inputbar">
+            <button class="ghost" id="btn-nuevo-chat" title="Nuevo chat">Nuevo chat</button>
+            <input id="chat-input" type="text" maxlength="500" placeholder="Escribe tu consulta…" autocomplete="off" />
+            <button class="primary" id="btn-enviar">Enviar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISTA: SIMULADOR -->
+      <section class="view" id="view-simulador">
+        <header class="view-head">
+          <h1>Simulador de pesos</h1>
+          <p class="subtle">Recalcula el match score con otros pesos, usando el desglose guardado (sin IA, $0).</p>
+        </header>
+        <div class="grid-2">
+          <div class="card">
+            <label>Habilidades (50%): <output id="out-hab">50</output></label>
+            <input type="range" id="peso-hab" min="0" max="100" step="5" value="50" />
+            <label>Experiencia (30%): <output id="out-exp">30</output></label>
+            <input type="range" id="peso-exp" min="0" max="100" step="5" value="30" />
+            <label>Formación (20%): <output id="out-for">20</output></label>
+            <input type="range" id="peso-for" min="0" max="100" step="5" value="20" />
+            <p class="subtle">Los pesos se normalizan a 100% automáticamente.</p>
+            <label>Vacante
+              <select id="sim-vacante"><option value="">Todas</option></select>
+            </label>
+            <button class="primary full" id="btn-simular">Simular re-ranking</button>
+            <p id="sim-note" class="subtle"></p>
+          </div>
+          <div class="card">
+            <h3>Resultado</h3>
+            <div class="table-wrap"><table id="sim-tabla"><thead></thead><tbody></tbody></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISTA: BRECHAS -->
+      <section class="view" id="view-brechas">
+        <header class="view-head">
+          <h1>Brechas de mercado</h1>
+          <p class="subtle">Las debilidades más frecuentes entre los postulantes evaluados.</p>
+        </header>
+        <div class="card">
+          <div id="brechas-resumen"></div>
+          <div class="table-wrap"><table id="brechas-tabla"><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- VISTA: COSTOS -->
+      <section class="view" id="view-costos">
+        <header class="view-head">
+          <h1>Costos de uso de IA</h1>
+          <p class="subtle">Tokens registrados y costo estimado (tarifas editables en config/tarifas.json).</p>
+        </header>
+        <div class="metric-row" id="costos-metricas"></div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Últimas llamadas del chat</h3>
+            <div class="table-wrap"><table id="costos-chat"><tbody></tbody></table></div>
+          </div>
+          <div class="card">
+            <h3>Tarifas aplicadas</h3>
+            <div class="table-wrap"><table id="costos-tarifas"><tbody></tbody></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISTA: FASE TÉCNICA -->
+      <section class="view" id="view-tecnica">
+        <header class="view-head">
+          <h1>Fase técnica</h1>
+          <p class="subtle">Postulantes con compatibilidad Alta (80–100) que avanzan a la siguiente etapa.</p>
+        </header>
+        <div id="tecnica-tarjetas"></div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

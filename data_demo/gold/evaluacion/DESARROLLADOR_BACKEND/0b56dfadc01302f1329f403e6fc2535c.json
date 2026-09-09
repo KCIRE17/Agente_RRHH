@@ -1,0 +1,79 @@
+{
+  "id_candidato": "0b56dfadc01302f1329f403e6fc2535c",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<0b56dfadc01302f1329f403e6fc2535c.demo@correo.local>",
+  "nombre_completo": "ALVARO RICARDO PACHECO GUILLEN",
+  "telefono": "51993456731",
+  "email_remitente": "ALVARO RICARDO PACHECO GUILLEN <alvaro.pacheco@gmail.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 95,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 90,
+      "puntos": 27
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 90,
+      "puntos": 18
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (4 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 95/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1395,
+    "completado": 1147,
+    "total": 2542
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.551417+00:00"
+}

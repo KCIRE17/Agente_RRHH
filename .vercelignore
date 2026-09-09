@@ -1,0 +1,14 @@
+# Credenciales y datos personales (nunca al deployment)
+.env
+.env.*
+data/
+logs/
+data_pruebas/
+
+# Entornos y temporales
+.venv/
+*.pdf
+*.log
+
+# Herramientas auxiliares (no afectan el runtime)
+tools/

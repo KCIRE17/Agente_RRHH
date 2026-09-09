@@ -26,6 +26,15 @@ EXTENSIONES_PERMITIDAS = {".pdf", ".docx", ".txt", ".md"}
 # Modelos por defecto (editable via .env, sin tocar codigo).
 MODELO_GEMINI_DEFAULT = "gemini-3.5-flash"
 MODELO_EVALUADOR_DEFAULT = "openai/gpt-oss-120b"
+MODELO_CHAT_DEFAULT = "openai/gpt-oss-120b"
+
+# Proveedor de chat: vacío/"ninguno" = modo offline (0 llamadas, costo $0).
+PROVEEDOR_CHAT_OFFLINE = ""
+
+# Límite de consultas con IA por conversación en el modo demo (MVP Vercel).
+# Solo aplica cuando PROVEEDOR_CHAT está activo; al agotarse, el motor
+# code-first sigue respondiendo con datos verificados (0 tokens).
+CONSULTAS_IA_DEMO_DEFAULT = 3
 
 
 def _parsear_int(valor: str | None, por_defecto: int) -> int:
@@ -53,6 +62,10 @@ class Config:
     modelo_evaluador: str = MODELO_EVALUADOR_DEFAULT
     prompt_evaluador: str = "prompt/evaluador.md"
     rutas_vacantes: str = "config/vacantes"
+    proveedor_chat: str = PROVEEDOR_CHAT_OFFLINE
+    modelo_chat: str = MODELO_CHAT_DEFAULT
+    tarifas_costo: str = "config/tarifas.json"
+    consultas_ia_demo: int = CONSULTAS_IA_DEMO_DEFAULT
 
     # ------------------------------------------------------------------ rutas
     @property
@@ -117,4 +130,18 @@ class Config:
                 os.getenv("RUTA_VACANTES") or "config/vacantes"
             ).strip()
             or "config/vacantes",
+            proveedor_chat=(
+                os.getenv("PROVEEDOR_CHAT") or PROVEEDOR_CHAT_OFFLINE
+            ).strip(),
+            modelo_chat=(
+                os.getenv("MODELO_CHAT") or MODELO_CHAT_DEFAULT
+            ).strip()
+            or MODELO_CHAT_DEFAULT,
+            tarifas_costo=(
+                os.getenv("RUTA_TARIFAS") or "config/tarifas.json"
+            ).strip()
+            or "config/tarifas.json",
+            consultas_ia_demo=_parsear_int(
+                os.getenv("DEMO_CONSULTAS_IA"), CONSULTAS_IA_DEMO_DEFAULT
+            ),
         )

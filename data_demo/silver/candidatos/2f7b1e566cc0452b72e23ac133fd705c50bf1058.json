@@ -1,0 +1,67 @@
+{
+  "mensaje_id": "<6feb75e0259926da1ed7c1fad7673f4c.demo@correo.local>",
+  "id_candidato": "6feb75e0259926da1ed7c1fad7673f4c",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "DIEGO ANTONIO SALAZAR LUNA <diego.salazar@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "DIEGO ANTONIO SALAZAR LUNA",
+    "email": "diego.salazar@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "DIEGO ANTONIO SALAZAR LUNA",
+      "telefono": "51992345672",
+      "email": "diego.salazar@hotmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas",
+        "Oracle",
+        "C++"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 3.5,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Ingeniería de Datos",
+          "institucion": "Universidad Nacional Mayor de San Marcos"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.388990+00:00",
+  "fecha_reintento": null
+}

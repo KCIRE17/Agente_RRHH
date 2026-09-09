@@ -1,0 +1,63 @@
+{
+  "mensaje_id": "<9453f1cb9c6c20032ea429942aba5930.demo@correo.local>",
+  "id_candidato": "9453f1cb9c6c20032ea429942aba5930",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "OSCAR FIDEL CAMACHO HUAYTA <oscar.camacho@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "OSCAR FIDEL CAMACHO HUAYTA",
+    "email": "oscar.camacho@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "OSCAR FIDEL CAMACHO HUAYTA",
+      "telefono": "51998901287",
+      "email": "oscar.camacho@hotmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 2.0,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Técnico",
+          "carrera": "Marketing Digital",
+          "institucion": "Instituto Certus"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.526042+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,13 @@
+{
+  "moneda": "USD",
+  "unidad": "por 1M tokens",
+  "nota": "Valores de referencia editables (regla de negocio). Ajustalos a la tarifa real de tu proveedor; si un modelo no aparece, se usa 'defecto'.",
+  "tarifas": {
+    "openai/gpt-oss-120b": { "entrada": 0.12, "salida": 0.3 },
+    "openai/gpt-oss-20b": { "entrada": 0.07, "salida": 0.18 },
+    "qwen/qwen3.6-27b": { "entrada": 0.05, "salida": 0.08 },
+    "qwen/qwen3.8-27b": { "entrada": 0.05, "salida": 0.08 },
+    "gemini-3.5-flash": { "entrada": 0.0, "salida": 0.0 },
+    "defecto": { "entrada": 0.1, "salida": 0.3 }
+  }
+}

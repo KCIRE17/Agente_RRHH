@@ -1,0 +1,34 @@
+{
+  "vacante": "EJECUTIVO COMERCIAL",
+  "requisitos": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "mensaje_id": "<e708f185bdcf2caeb592349a7ef6eb45.demo@correo.local>",
+  "id_candidato": "e708f185bdcf2caeb592349a7ef6eb45",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "WALTER EFRAIN QUISPE MANRIQUE <walter.quispe@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "WALTER EFRAIN QUISPE MANRIQUE",
+    "email": "walter.quispe@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "WALTER EFRAIN QUISPE MANRIQUE",
+      "telefono": "51990123497",
+      "email": "walter.quispe@hotmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Docker"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Desarrollador Backend",
+          "duracion_anos": 3.0,
+          "descripcion": "Funciones propias de desarrollador backend en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Técnico",
+          "carrera": "Computación e Informática",
+          "institucion": "Senati"
+        },
+        {
+          "grado": "Curso",
+          "carrera": "Backend con Python",
+          "institucion": "Platzi"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.583180+00:00",
+  "fecha_reintento": null
+}

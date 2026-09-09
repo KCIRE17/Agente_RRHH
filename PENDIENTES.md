@@ -180,20 +180,66 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 ---
 
-## FASE 4 — Chatbot de consultas RRHH 🟡 No iniciada
+## FASE 4 — Chatbot de consultas RRHH ✅
 
-Carpeta `src/agente_rrhh/chatbot/` (esqueleto).
+App web responsiva (FastAPI + SPA) en `src/agente_rrhh/chatbot/`, lanzada con
+`uv run python main.py chat [--port N]` (solo localhost). Costo de uso **$0**:
+el motor responde 100 % en código y la IA es opcional (`PROVEEDOR_CHAT` vacío =
+offline, cero tokens).
 
-### Por desarrollar
+### Hecho
 
-- [ ] 🟡 **Consulta sobre el ranking** ("¿quiénes pasan a fase técnica?").
-- [ ] 🟡 **Consulta por candidato** (fortalezas, brechas, puntaje).
-- [ ] 🟡 **Recomendación de fase técnica** para los candidatos que quedan.
+- [x] 🔴 **Motor code-first (modo offline default)**: clasificación de intención
+  por reglas + datos desde `dashboard.consultas`/`core` y bloques visuales
+  (tablas, tarjetas, listas) generados **sin gastar tokens**.
+- [x] 🔴 **Contexto ligero**: sesión en memoria que recuerda la entidad en foco
+  (vacante/candidato) para seguimientos como "¿su teléfono?". Se resetea con
+  "Nuevo chat".
+- [x] 🟡 **8 utilidades**: ranking, detalle de candidato, fase técnica,
+  pipeline por estado/vacante, brechas de mercado, comparador de candidatos,
+  origen por dominio de correo y borradores de comunicación (avance/rechazo).
+- [x] 🟡 **Simulador de pesos**: re-pesaje con `desglose` guardado (puro código,
+  clamp 0–100, umbrales 80/50), panel con sliders (50/30/20 ↔ alternativos).
+- [x] 🟡 **Costos dentro de la app**: momento por llamada de chat en
+  `data/gold/costo/uso_chat.jsonl` + suma de `uso_tokens` de F2 (gold) +
+  tarifas editables en `config/tarifas.json`. En modo offline = $0.
+- [x] 🟡 **IA opcional**: `core/llm.py` admite `formato_json=False` (texto de
+  chat); `PROVEEDOR_CHAT`/`MODELO_CHAT` en `.env`; default `groq` con
+  `openai/gpt-oss-120b`. Cuando falla o no hay clave, responde offline y avisa.
+- [x] 🟡 **Fallback amable**: si no se entiende la consulta, avisa + ofrece
+  opciones y respuestas generales (FAQ en `chatbot/preguntas_generales.py`).
+- [x] 🟡 **Frontend responsivo**: SPA vanilla (HTML/CSS/JS, sin dependencias en
+  el navegador) con vistas Chat, Simulador, Brechas, Costos y Fase técnica.
+- [x] 🔵 **Prompt editable** `prompt/chatbot.md` (solo se usa si IA activada).
+- [x] 🔵 **Datos sintéticos de prueba**: `tools/generar_datos_prueba.py`
+  (**standalone**, no lo ejecuta el proyecto) → `data_pruebas/` (gitignored),
+  2 vacantes, 4 evaluados + errores/reintentos; se prueba con
+  `DATA_DIR=data_pruebas`.
+- [x] 🔵 **Verificación**: `compileall` ok; TestClient sobre `/api/*` con
+  `data_pruebas` (ranking, candidato, seguimiento, comparador, brechas, origen,
+  borrador, costos, simulador, fallback/FAQ); arranque real `main.py chat`
+  → `/api/health` ok; 0 tokens en modo offline.
+- [x] 🟡 **Modo demo MVP (Vercel)**: `DEMO_CONSULTAS_IA` (default 3) limita las
+  consultas IA por conversación; al agotarse el motor code-first responde con
+  datos verificados ($0). Contador visible en la SPA y reseteo con "Nuevo chat".
+- [x] 🟡 **Deploy Vercel listo**: `api/index.py` (ASGI `app`), `vercel.json`,
+  `runtime.txt` (3.12), `requirements.txt` (subset chatbot), `.vercelignore`,
+  `data_demo/` con **30+ candidatos ficticios** generados por
+  `tools/generar_datos_demo.py`, `.env.example` y docs en `README.md` §8.
 
 ### Definición de listo F4
 
-- [ ] El encargado de RRHH puede responder una pregunta operativa sobre los
-  datos mediante lenguaje natural, sin ver la BD.
+- [x] El encargado de RRHH responde una pregunta operativa sobre los datos
+  mediante lenguaje natural, sin ver la BD, con costo $0 (modo offline) y
+  costos/tokens visibles en la app.
+
+### Backlog / mejoras futuras F4
+
+- [ ] 🔵 **Persistencia de sesiones**: pasar el contexto ligero a archivo para
+  no perder la entidad en foco al reiniciar el proceso.
+- [ ] 🔵 **Historial del chat** opcional (hoy se priva al recargar la página).
+- [ ] 🟡 **Modelo de chat fuera de Groq**: al sumar un proveedor (OpenRouter/
+  Cerebras/Ollama), añadir su cliente en `core/llm.py` respetando la fachada.
 
 ---
 
@@ -207,5 +253,5 @@ Carpeta `src/agente_rrhh/chatbot/` (esqueleto).
 | 2026-09-06 | Migración a `data/` medallion (bronze/silver/gold) sin MongoDB; prompts editables; 7 bugs críticos + purga `limpiar`; docs sincronizadas | ✅ |
 | 2026-09-06 | F2 end-to-end real: Groq (`openai/gpt-oss-120b`), reglas 50/30/20, requisitos por vacante en `config/`, gold + ranking, `datos_contacto` en F1, `.gitignore` blindado | ✅ |
 | 2026-09-06 | F3 Dashboard Streamlit end-to-end: `main.py dashboard`, vistas Ranking de postulantes / Postulante / Postulaciones / Metodología en lenguaje de RRHH, tema visual, `consultas.py` (gold+silver), verificado con AppTest + health check | ✅ |
-| — | F4 Chatbot | ⏳ |
-| — | F4 Chatbot | ⏳ |
+| 2026-09-07 | F4 Chatbot end-to-end: app web responsiva FastAPI + SPA, motor code-first costo $0, 8 utilidades, simulador de pesos, costos/tokens en la app, IA opcional (Groq), fallback + FAQ, datos sintéticos en `data_pruebas/`, verificado con TestClient + health check | ✅ |
+| 2026-09-08 | Deploy MVP Vercel listo: modo demo `DEMO_CONSULTAS_IA` (3 IA por conversación → motor offline $0), contador en SPA, `api/index.py` + `vercel.json` + `runtime.txt` + `requirements.txt` + `.vercelignore`, `data_demo/` con 30+ candidatos ficticios (`tools/generar_datos_demo.py`), 2 vacantes nuevas en `config/`, `.env.example`, README §8 | ✅ |

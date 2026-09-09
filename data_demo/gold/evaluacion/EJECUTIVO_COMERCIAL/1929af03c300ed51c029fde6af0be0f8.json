@@ -1,0 +1,85 @@
+{
+  "id_candidato": "1929af03c300ed51c029fde6af0be0f8",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<1929af03c300ed51c029fde6af0be0f8.demo@correo.local>",
+  "nombre_completo": "SILVIA ELIANA CABRERA AGUIRRE",
+  "telefono": "51992345620",
+  "email_remitente": "SILVIA ELIANA CABRERA AGUIRRE <silvia.cabrera@yahoo.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 31,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 33,
+      "puntos": 16
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 25,
+      "puntos": 8
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 35,
+      "puntos": 7
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de CRM.",
+    "No se evidencia dominio de Excel.",
+    "No se evidencia dominio de Prospección de clientes.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "CRM",
+    "Excel",
+    "Prospección de clientes",
+    "Comunicación efectiva"
+  ],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 31/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1331,
+    "completado": 1115,
+    "total": 2446
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.544913+00:00"
+}

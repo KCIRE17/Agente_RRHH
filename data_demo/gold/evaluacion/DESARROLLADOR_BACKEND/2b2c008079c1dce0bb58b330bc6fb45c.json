@@ -1,0 +1,81 @@
+{
+  "id_candidato": "2b2c008079c1dce0bb58b330bc6fb45c",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<2b2c008079c1dce0bb58b330bc6fb45c.demo@correo.local>",
+  "nombre_completo": "EMILIO JAVIER MOLINA ARCE",
+  "telefono": "51997890175",
+  "email_remitente": "EMILIO JAVIER MOLINA ARCE <emilio.molina@yahoo.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 76,
+  "clasificacion": "Media",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 83,
+      "puntos": 42
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 65,
+      "puntos": 20
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 70,
+      "puntos": 14
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Aporta experiencia laboral alineada (2 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Diseño de sistemas."
+  ],
+  "requisito_esencial_ausente": [
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 76/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1376,
+    "completado": 1138,
+    "total": 2514
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.572641+00:00"
+}

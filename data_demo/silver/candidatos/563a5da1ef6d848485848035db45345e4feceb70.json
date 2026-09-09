@@ -1,0 +1,66 @@
+{
+  "mensaje_id": "<b437197c065ab3400a67e1e180b6f117.demo@correo.local>",
+  "id_candidato": "b437197c065ab3400a67e1e180b6f117",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "PAOLA CRISTINA MELENDEZ PALOMINO <paola.melendez@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "PAOLA CRISTINA MELENDEZ PALOMINO",
+    "email": "paola.melendez@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "PAOLA CRISTINA MELENDEZ PALOMINO",
+      "telefono": "51998901286",
+      "email": "paola.melendez@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Docker",
+        "PostgreSQL",
+        "MongoDB"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Desarrollador Backend",
+          "duracion_anos": 1.0,
+          "descripcion": "Funciones propias de desarrollador backend en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Ingeniería Informática",
+          "institucion": "UNFV"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.577650+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,21 @@
+{
+  "mensaje_id": "<f5af109911f19717ae76fd70349e44de.demo@correo.local>",
+  "id_candidato": "f5af109911f19717ae76fd70349e44de",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "LETICIA MERCEDES QUISPE FLORES <leticia.q@hotmail.com>",
+  "remitente_metadatos": {
+    "nombre": "LETICIA MERCEDES QUISPE FLORES",
+    "email": "leticia.q@hotmail.com",
+    "dominio": "hotmail.com"
+  },
+  "fecha_envio": "2026-09-06T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": null,
+  "texto_crudo": "Hoja de vida en formato escaneado sin OCR... Leticia Mercedes Quispe Flores. Reconocimientos.",
+  "estado_procesamiento": "Pendiente: Reintento IA",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.607218+00:00",
+  "fecha_reintento": null
+}

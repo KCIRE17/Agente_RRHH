@@ -6,6 +6,7 @@
 # Archivos originales y datos de candidatos (datos personales)
 data/
 logs/
+data_pruebas/
 
 # Python-generated files
 __pycache__/

@@ -1,0 +1,64 @@
+{
+  "mensaje_id": "<cd52f191841d2b466af670f8ec5317c2.demo@correo.local>",
+  "id_candidato": "cd52f191841d2b466af670f8ec5317c2",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "JOSE LUIS INFANTES CORONADO <jose.infantes@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "JOSE LUIS INFANTES CORONADO",
+    "email": "jose.infantes@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "JOSE LUIS INFANTES CORONADO",
+      "telefono": "51998901238",
+      "email": "jose.infantes@outlook.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Oracle",
+        "C++"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 1.0,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Técnico",
+          "carrera": "Computación e Informática",
+          "institucion": "TECSUP"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.422063+00:00",
+  "fecha_reintento": null
+}

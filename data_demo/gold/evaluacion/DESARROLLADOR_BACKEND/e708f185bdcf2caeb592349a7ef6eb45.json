@@ -1,0 +1,83 @@
+{
+  "id_candidato": "e708f185bdcf2caeb592349a7ef6eb45",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<e708f185bdcf2caeb592349a7ef6eb45.demo@correo.local>",
+  "nombre_completo": "WALTER EFRAIN QUISPE MANRIQUE",
+  "telefono": "51990123497",
+  "email_remitente": "WALTER EFRAIN QUISPE MANRIQUE <walter.quispe@hotmail.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 67,
+  "clasificacion": "Media",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 67,
+      "puntos": 34
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 70,
+      "puntos": 21
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 60,
+      "puntos": 12
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Aporta experiencia laboral alineada (3 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Git.",
+    "No se evidencia dominio de Diseño de sistemas."
+  ],
+  "requisito_esencial_ausente": [
+    "Git",
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 67/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1367,
+    "completado": 1133,
+    "total": 2500
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.584181+00:00"
+}

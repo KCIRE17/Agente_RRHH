@@ -1,0 +1,62 @@
+{
+  "mensaje_id": "<8390f7aaffa2c5235bc0593e111afb8f.demo@correo.local>",
+  "id_candidato": "8390f7aaffa2c5235bc0593e111afb8f",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "MIKE ANDERSON BUSTAMANTE SANCHEZ <mike.bustamante@yahoo.com>",
+  "remitente_metadatos": {
+    "nombre": "MIKE ANDERSON BUSTAMANTE SANCHEZ",
+    "email": "mike.bustamante@yahoo.com",
+    "dominio": "yahoo.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "MIKE ANDERSON BUSTAMANTE SANCHEZ",
+      "telefono": "51991234510",
+      "email": "mike.bustamante@yahoo.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Oracle"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 1.0,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Derecho",
+          "institucion": "UNFV"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.433607+00:00",
+  "fecha_reintento": null
+}

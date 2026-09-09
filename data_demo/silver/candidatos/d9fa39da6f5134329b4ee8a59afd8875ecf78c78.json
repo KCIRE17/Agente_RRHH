@@ -1,0 +1,73 @@
+{
+  "mensaje_id": "<32dab2dac6b164d660662236f33094c2.demo@correo.local>",
+  "id_candidato": "32dab2dac6b164d660662236f33094c2",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "ANA MARIA GOMEZ QUISPE <ana.gomez@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "ANA MARIA GOMEZ QUISPE",
+    "email": "ana.gomez@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "ANA MARIA GOMEZ QUISPE",
+      "telefono": "51991234561",
+      "email": "ana.gomez@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas",
+        "Oracle",
+        "C++",
+        "Java"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Asistente de análisis de datos",
+          "duracion_anos": 2.0,
+          "descripcion": "Soporte y ejecución de tareas operativas del área."
+        },
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 4.0,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Titulada",
+          "carrera": "Ingeniería de Sistemas",
+          "institucion": "Universidad Nacional de Ingeniería"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.378951+00:00",
+  "fecha_reintento": null
+}

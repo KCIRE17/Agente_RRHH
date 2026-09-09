@@ -498,6 +498,7 @@ uv run python main.py evaluar [--vacante "ANALISTA DE DATOS"]  # F2: evaluación
 uv run python main.py evaluar --dry-run            # F2: simula sin llamar a Groq
 uv run python main.py evaluar --verbose            # F2: logs DEBUG
 uv run python main.py dashboard [--port 8501]      # F3: panel Streamlit
+uv run python main.py chat [--port 8510]           # F4: chatbot web (localhost)
 ```
 
 - **`--dry-run`**: extrae y sanitiza, pero **no llama a Gemini, no guarda en
@@ -512,6 +513,13 @@ uv run python main.py dashboard [--port 8501]      # F3: panel Streamlit
 - **`dashboard`** abre el panel Streamlit en
   `http://localhost:8501` (puerto con `--port`). Se recomienda **solo red
   local**: muestra datos personales de candidatos.
+- **`chat`** abre el asistente F4 en `http://127.0.0.1:8510` (puerto con
+  `--port`), **solo localhost**. El motor responde 100 % en código (costo $0);
+  la narrativa opcional se activa con `PROVEEDOR_CHAT`/`MODELO_CHAT` en `.env`.
+  Para probar con datos sintéticos: `set DATA_DIR=data_pruebas && uv run python
+  tools/generar_datos_prueba.py && uv run python main.py chat`.
+  Para probar el **modo demo** (30+ candidatos ficticios + límite de consultas
+  IA): `set DATA_DIR=data_demo && uv run python main.py chat --port 8510`.
 
 ### 7.5 Salidas
 
@@ -529,7 +537,64 @@ uv run python main.py dashboard [--port 8501]      # F3: panel Streamlit
 
 ---
 
-## 8. Seguridad
+## 8. Deploy MVP en Vercel (modo demo)
+
+El **chatbot F4** (FastAPI + SPA) puede desplegarse en Vercel como MVP público.
+No requiere Streamlit ni base de datos: lee los datos ficticios de
+`data_demo/` (30+ candidatos inventados, versionados en git).
+
+### 8.1 Modo demo: consultas IA limitadas
+
+- `PROVEEDOR_CHAT` activo (p. ej. `groq`) habilita la narrativa IA.
+- `DEMO_CONSULTAS_IA` (default `3`) limita las consultas con IA **por
+  conversación**. Al agotarse, el motor code-first sigue respondiendo con los
+  datos verificados (0 tokens, costo $0). El contador se reinicia con
+  "Nuevo chat" y se muestra en la interfaz.
+- Con `PROVEEDOR_CHAT` vacío todo el chatbot queda offline ($0).
+
+### 8.2 Archivos del deploy
+
+| Archivo | Rol |
+| --- | --- |
+| `api/index.py` | Entry point ASGI: expone `app = crear_app()` y usa `DATA_DIR=data_demo` |
+| `vercel.json` | Build `@vercel/python` + rutas `/(.*)` → `api/index.py` |
+| `runtime.txt` | Python `3.12` |
+| `requirements.txt` | Subset mínimo para el chatbot (fastapi, uvicorn, python-dotenv, openai) |
+| `.vercelignore` | Excluye `data/`, `logs/`, `.env*`, `data_pruebas/`, `tools/` |
+| `data_demo/` | Datos demo generados con `tools/generar_datos_demo.py` |
+| `.env.example` | Plantilla de variables (con placeholders, sin secretos) |
+
+> `pyproject.toml` (uv) sigue siendo la fuente completa de dependencias para
+> desarrollo local; `requirements.txt` es solo para el build de Vercel.
+
+### 8.3 Pasos
+
+1. Sube el repo a **GitHub** (`.env`, `data/` y `logs/` quedan fuera por
+   `.gitignore`; `data_demo/` sí se versiona).
+2. En [vercel.com](https://vercel.com) (plan **Hobby gratis**, uso
+   personal/no comercial): **Add New… → Project → Import** el repo.
+3. En **Settings → Environment Variables** del proyecto agrega:
+   `PROVEEDOR_CHAT=groq`, `GROQ_API_KEY=<tu clave>` y opcionalmente
+   `DEMO_CONSULTAS_IA=3`. No hace falta `DATA_DIR` (ya default a `data_demo`).
+4. Vercel usa `vercel.json` + `runtime.txt` + `requirements.txt`
+   automáticamente. Deploy y obtén la URL `*.vercel.app`.
+
+### 8.4 Límites y seguridad
+
+- Las claves viven **solo** como Env Vars de Vercel (cifradas, nunca llegan al
+  navegador). El frontend únicamente habla con `/api/*`, que jamás las devuelve.
+- Vercel es serverless: la sesión (y su contador de IA) vive en memoria y se
+  reinicia en cold start — comportamiento esperado para el modo demo.
+- El ledger de costos (`data/gold/costo/uso_chat.jsonl`) es de solo lectura en
+  Vercel; `costo.py` captura el `OSError` y degrada con aviso sin romper la app.
+- **F3 (Streamlit) no es deployable en Vercel** (requiere WebSocket persistente).
+  El chatbot F4 ya cubre ranking, ficha de postulante, brechas, costos,
+  simulador de pesos y fase técnica. Si necesitas el dashboard, súbelo aparte a
+  Streamlit Community Cloud.
+
+---
+
+## 9. Seguridad
 
 - Las credenciales viven **solo** en `.env` (ignorado por git); nunca se
   hardcodean ni se loguean secretos.

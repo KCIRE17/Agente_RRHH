@@ -1,0 +1,84 @@
+{
+  "id_candidato": "ba147726c240515b9e1e6804f3bb8d15",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<ba147726c240515b9e1e6804f3bb8d15.demo@correo.local>",
+  "nombre_completo": "NATALY FABIOLA HUAMAN GONZALES",
+  "telefono": "51991234518",
+  "email_remitente": "NATALY FABIOLA HUAMAN GONZALES <nataly.huaman@outlook.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 48,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 50,
+      "puntos": 25
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 40,
+      "puntos": 12
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 55,
+      "puntos": 11
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de REST APIs.",
+    "No se evidencia dominio de Git.",
+    "No se evidencia dominio de Diseño de sistemas.",
+    "Experiencia laboral todavía limitada para el nivel solicitado."
+  ],
+  "requisito_esencial_ausente": [
+    "REST APIs",
+    "Git",
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 48/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1348,
+    "completado": 1124,
+    "total": 2472
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.589180+00:00"
+}

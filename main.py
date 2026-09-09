@@ -11,6 +11,7 @@ Uso:
     uv run python main.py evaluar [--vacante X] [--dry-run]
     uv run python main.py evaluar --dry-run  --vacante "ANALISTA DE DATOS"  # simula
     uv run python main.py dashboard [--port 8501]  # panel Streamlit (F3)
+    uv run python main.py chat [--port 8510]       # chatbot F4 (app web local)
 """
 
 from __future__ import annotations
@@ -108,17 +109,27 @@ def ejecutar_dashboard(puerto: int) -> int:
     return subprocess.run(cmd, cwd=Path(__file__).parent).returncode
 
 
+def ejecutar_chat(puerto: int) -> int:
+    import uvicorn
+
+    from src.agente_rrhh.chatbot.api import crear_app
+
+    app = crear_app(Config.desde_env())
+    LOG.info("Arrancando chatbot F4 en http://127.0.0.1:%d (Ctrl+C para salir).", puerto)
+    return uvicorn.run(app, host="127.0.0.1", port=puerto, log_level="warning")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Ingesta (IMAP -> silver), evaluacion (silver -> gold) y "
-        "dashboard (Streamlit)."
+        description="Ingesta (IMAP -> silver), evaluacion (silver -> gold), "
+        "dashboard (Streamlit) y chatbot (FastAPI)."
     )
     parser.add_argument(
         "comando",
         nargs="?",
-        choices=["limpiar", "evaluar", "dashboard"],
+        choices=["limpiar", "evaluar", "dashboard", "chat"],
         help="'limpiar' purga bronze; 'evaluar' corre el Match Score (F2); "
-        "'dashboard' abre el panel F3.",
+        "'dashboard' abre el panel F3; 'chat' abre el asistente web F4.",
     )
     parser.add_argument(
         "--dry-run",
@@ -147,7 +158,7 @@ def main() -> int:
         "--port",
         type=int,
         default=8501,
-        help="Con 'dashboard': puerto del panel Streamlit (default 8501).",
+        help="Con 'dashboard' o 'chat': puerto del panel (default 8501/8510).",
     )
     parser.add_argument(
         "--programar",
@@ -170,6 +181,9 @@ def main() -> int:
 
     if args.comando == "dashboard":
         return ejecutar_dashboard(args.port)
+
+    if args.comando == "chat":
+        return ejecutar_chat(args.port)
 
     if args.programar:
         import schedule

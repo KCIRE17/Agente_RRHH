@@ -1,0 +1,64 @@
+{
+  "mensaje_id": "<169882468e6d83033ca80f16a74dda53.demo@correo.local>",
+  "id_candidato": "169882468e6d83033ca80f16a74dda53",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "MARIA FERNANDA ALVAREZ DIAZ <maria.alvarez@yahoo.com>",
+  "remitente_metadatos": {
+    "nombre": "MARIA FERNANDA ALVAREZ DIAZ",
+    "email": "maria.alvarez@yahoo.com",
+    "dominio": "yahoo.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "MARIA FERNANDA ALVAREZ DIAZ",
+      "telefono": "51995678905",
+      "email": "maria.alvarez@yahoo.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 1.5,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Estudiante (9no ciclo)",
+          "carrera": "Ingeniería de Sistemas",
+          "institucion": "UNFV"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.404036+00:00",
+  "fecha_reintento": null
+}

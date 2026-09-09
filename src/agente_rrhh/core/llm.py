@@ -68,8 +68,14 @@ def generar_texto(
     prompt: str,
     *,
     temperature: float = 0.2,
+    formato_json: bool = True,
 ) -> tuple[str, dict[str, int]]:
-    """Hace una sola llamada al proveedor y devuelve (texto, uso_tokens)."""
+    """Hace una sola llamada al proveedor y devuelve (texto, uso_tokens).
+
+    ``formato_json`` (default True) fuerza ``response_format=json_object`` en
+    proveedores OpenAI-compatibles; ponlo en False para respuestas de chat en
+    texto libre.
+    """
     if proveedor not in PROVEEDORES:
         raise ErrorModelo(f"Proveedor de IA no soportado: {proveedor}")
     if not api_key:
@@ -79,7 +85,7 @@ def generar_texto(
     LOG.debug("Llamada IA -> proveedor=%s modelo=%s", proveedor, modelo)
     if proveedor == PROVEEDOR_GEMINI:
         return _llamar_gemini(modelo, api_key, prompt, temperature)
-    return _llamar_groq(modelo, api_key, prompt, temperature)
+    return _llamar_groq(modelo, api_key, prompt, temperature, formato_json)
 
 
 def _llamar_gemini(
@@ -103,18 +109,24 @@ def _llamar_gemini(
 
 
 def _llamar_groq(
-    modelo: str, api_key: str, prompt: str, temperature: float
+    modelo: str,
+    api_key: str,
+    prompt: str,
+    temperature: float,
+    formato_json: bool = True,
 ) -> tuple[str, dict[str, int]]:
     cliente = _cliente_groq(api_key)
     if cliente is None:
         raise ErrorModelo("No se pudo construir el cliente Groq.")
     try:
-        respuesta = cliente.chat.completions.create(
-            model=modelo,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            response_format={"type": "json_object"},
-        )
+        opciones: dict[str, Any] = {
+            "model": modelo,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temperature,
+        }
+        if formato_json:
+            opciones["response_format"] = {"type": "json_object"}
+        respuesta = cliente.chat.completions.create(**opciones)
     except Exception as exc:
         raise ErrorModelo(f"Fallo la llamada a Groq ({modelo}): {exc}") from exc
     texto = (

@@ -1,0 +1,78 @@
+{
+  "id_candidato": "913006e4ffde2090b243189b35f5adfa",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<913006e4ffde2090b243189b35f5adfa.demo@correo.local>",
+  "nombre_completo": "MERCEDES ALEXANDRA TAPIA RODAS",
+  "telefono": "51993456732",
+  "email_remitente": "MERCEDES ALEXANDRA TAPIA RODAS <mercedes.tapia@hotmail.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 93,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 85,
+      "puntos": 26
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 85,
+      "puntos": 17
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (4.5 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 93/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1393,
+    "completado": 1146,
+    "total": 2539
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.475332+00:00"
+}

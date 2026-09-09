@@ -1,0 +1,78 @@
+{
+  "id_candidato": "7e7bd61991cc6e9cabdea8df58f88fa8",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<7e7bd61991cc6e9cabdea8df58f88fa8.demo@correo.local>",
+  "nombre_completo": "PEDRO MANUEL CASTRO VILLANUEVA",
+  "telefono": "51992345621",
+  "email_remitente": "PEDRO MANUEL CASTRO VILLANUEVA <pedro.castro@gmail.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 95,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 95,
+      "puntos": 28
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 85,
+      "puntos": 17
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (6 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 95/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1395,
+    "completado": 1147,
+    "total": 2542
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.454704+00:00"
+}

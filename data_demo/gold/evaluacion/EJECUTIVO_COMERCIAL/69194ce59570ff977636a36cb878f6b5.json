@@ -1,0 +1,78 @@
+{
+  "id_candidato": "69194ce59570ff977636a36cb878f6b5",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<69194ce59570ff977636a36cb878f6b5.demo@correo.local>",
+  "nombre_completo": "FERNANDO RAUL MONTERO ABANTO",
+  "telefono": "51994567843",
+  "email_remitente": "FERNANDO RAUL MONTERO ABANTO <fernando.montero@outlook.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 88,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 75,
+      "puntos": 22
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 80,
+      "puntos": 16
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (3 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 88/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1388,
+    "completado": 1144,
+    "total": 2532
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.488866+00:00"
+}

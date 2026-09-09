@@ -1,0 +1,87 @@
+{
+  "id_candidato": "8390f7aaffa2c5235bc0593e111afb8f",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<8390f7aaffa2c5235bc0593e111afb8f.demo@correo.local>",
+  "nombre_completo": "MIKE ANDERSON BUSTAMANTE SANCHEZ",
+  "telefono": "51991234510",
+  "email_remitente": "MIKE ANDERSON BUSTAMANTE SANCHEZ <mike.bustamante@yahoo.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 32,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 33,
+      "puntos": 16
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 30,
+      "puntos": 9
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 35,
+      "puntos": 7
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Power BI.",
+    "No se evidencia dominio de Excel.",
+    "No se evidencia dominio de Pensamiento analítico.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "Power BI",
+    "Excel",
+    "Pensamiento analítico",
+    "Resolución de problemas"
+  ],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 32/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1332,
+    "completado": 1116,
+    "total": 2448
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.436620+00:00"
+}

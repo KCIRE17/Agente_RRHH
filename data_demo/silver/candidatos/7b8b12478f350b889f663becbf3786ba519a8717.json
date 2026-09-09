@@ -1,0 +1,65 @@
+{
+  "mensaje_id": "<7143dee6a7eab3956bd985e8dd0aba62.demo@correo.local>",
+  "id_candidato": "7143dee6a7eab3956bd985e8dd0aba62",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "JORGE ENRIQUE MEZA QUISPE <jorge.meza@yahoo.com>",
+  "remitente_metadatos": {
+    "nombre": "JORGE ENRIQUE MEZA QUISPE",
+    "email": "jorge.meza@yahoo.com",
+    "dominio": "yahoo.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "JORGE ENRIQUE MEZA QUISPE",
+      "telefono": "51996789065",
+      "email": "jorge.meza@yahoo.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Ventas B2B"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 2.5,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Estudiante (10mo ciclo)",
+          "carrera": "Administración",
+          "institucion": "USIL"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.501947+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,64 @@
+{
+  "mensaje_id": "<77bbd955c322b63865071a2aa9d53cdf.demo@correo.local>",
+  "id_candidato": "77bbd955c322b63865071a2aa9d53cdf",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "KELLY MARGARITA SANDOVAL CHUMPITAZ <kelly.sandoval@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "KELLY MARGARITA SANDOVAL CHUMPITAZ",
+    "email": "kelly.sandoval@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "KELLY MARGARITA SANDOVAL CHUMPITAZ",
+      "telefono": "51990123498",
+      "email": "kelly.sandoval@outlook.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Ventas B2B",
+        "Inglés"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 1.5,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Estudiante (8vo ciclo)",
+          "carrera": "Administración",
+          "institucion": "UTP"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.531035+00:00",
+  "fecha_reintento": null
+}

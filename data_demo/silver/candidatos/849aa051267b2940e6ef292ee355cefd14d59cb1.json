@@ -1,0 +1,21 @@
+{
+  "mensaje_id": "<31ad25ca761d0e08c87b415b38329a9e.demo@correo.local>",
+  "id_candidato": "31ad25ca761d0e08c87b415b38329a9e",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "HUGO RICARDO BRAVO SALAZAR <hugo.bravo@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "HUGO RICARDO BRAVO SALAZAR",
+    "email": "hugo.bravo@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-06T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": null,
+  "texto_crudo": null,
+  "estado_procesamiento": "Error: Archivo Ilegible",
+  "motivo": "El PDF adjunto no pudo procesarse: archivo corrupto.",
+  "fecha_ingesta": "2026-09-09T04:15:45.609218+00:00",
+  "fecha_reintento": null
+}

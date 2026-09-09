@@ -1,0 +1,82 @@
+{
+  "id_candidato": "de3ae3878ff1cb300eb2cf70a07780b5",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<de3ae3878ff1cb300eb2cf70a07780b5.demo@correo.local>",
+  "nombre_completo": "RENATO JORGE PALACIOS RIVERA",
+  "telefono": "51994567894",
+  "email_remitente": "RENATO JORGE PALACIOS RIVERA <renato.palacios@gmail.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 83,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 83,
+      "puntos": 42
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 85,
+      "puntos": 26
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 75,
+      "puntos": 15
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Aporta experiencia laboral alineada (5 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Resolución de problemas."
+  ],
+  "requisito_esencial_ausente": [
+    "Resolución de problemas"
+  ],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 83/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1383,
+    "completado": 1141,
+    "total": 2524
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.399521+00:00"
+}

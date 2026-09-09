@@ -1,0 +1,49 @@
+{
+  "mensaje_id": "<ba64a96f49af0bc31b7899c8cc5aff8a.demo@correo.local>",
+  "id_candidato": "ba64a96f49af0bc31b7899c8cc5aff8a",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "email_remitente": "INES RAQUEL CHAVEZ MENDOZA <ines.chavez@gmail.com>",
+  "remitente_metadatos": {
+    "nombre": "INES RAQUEL CHAVEZ MENDOZA",
+    "email": "ines.chavez@gmail.com",
+    "dominio": "gmail.com"
+  },
+  "fecha_envio": "2026-09-06T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "INES RAQUEL CHAVEZ MENDOZA",
+      "telefono": "51957778899",
+      "email": "ines.chavez@gmail.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Git"
+      ],
+      "experiencia_laboral": [],
+      "formacion_academica": [],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.610220+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,106 @@
+{
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "total": 10,
+  "candidatos": [
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "0b56dfadc01302f1329f403e6fc2535c",
+      "nombre": "ALVARO RICARDO PACHECO GUILLEN",
+      "email_remitente": "ALVARO RICARDO PACHECO GUILLEN <alvaro.pacheco@gmail.com>",
+      "telefono": "51993456731",
+      "match_score": 95.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.551417+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "5266ecf4a33df8561cf7e1dd1376f6a5",
+      "nombre": "NADIA SOFIA ZAVALA RICALDI",
+      "email_remitente": "NADIA SOFIA ZAVALA RICALDI <nadia.zavala@hotmail.com>",
+      "telefono": "51994567842",
+      "match_score": 91.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.556423+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "9d8bfe1c984f2b2b06c777deac58ad94",
+      "nombre": "CRISTHIAN PAUL JIMENEZ LAZO",
+      "email_remitente": "CRISTHIAN PAUL JIMENEZ LAZO <cristhian.jimenez@outlook.com>",
+      "telefono": "51995678953",
+      "match_score": 83.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.560425+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "f6216d25b1735c503f3d0a3fa5add255",
+      "nombre": "SANDRA ISABEL CUEVA RAMOS",
+      "email_remitente": "SANDRA ISABEL CUEVA RAMOS <sandra.cueva@gmail.com>",
+      "telefono": "51996789064",
+      "match_score": 79.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.566452+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "2b2c008079c1dce0bb58b330bc6fb45c",
+      "nombre": "EMILIO JAVIER MOLINA ARCE",
+      "email_remitente": "EMILIO JAVIER MOLINA ARCE <emilio.molina@yahoo.com>",
+      "telefono": "51997890175",
+      "match_score": 76.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.572641+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "e708f185bdcf2caeb592349a7ef6eb45",
+      "nombre": "WALTER EFRAIN QUISPE MANRIQUE",
+      "email_remitente": "WALTER EFRAIN QUISPE MANRIQUE <walter.quispe@hotmail.com>",
+      "telefono": "51990123497",
+      "match_score": 67.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.584181+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "b437197c065ab3400a67e1e180b6f117",
+      "nombre": "PAOLA CRISTINA MELENDEZ PALOMINO",
+      "email_remitente": "PAOLA CRISTINA MELENDEZ PALOMINO <paola.melendez@gmail.com>",
+      "telefono": "51998901286",
+      "match_score": 63.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.578648+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "ba147726c240515b9e1e6804f3bb8d15",
+      "nombre": "NATALY FABIOLA HUAMAN GONZALES",
+      "email_remitente": "NATALY FABIOLA HUAMAN GONZALES <nataly.huaman@outlook.com>",
+      "telefono": "51991234518",
+      "match_score": 48.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.589180+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "31d1f935362f3d114befd9d091cef380",
+      "nombre": "EDUARDO ANTONY SAAVEDRA VILCA",
+      "email_remitente": "EDUARDO ANTONY SAAVEDRA VILCA <eduardo.saavedra@gmail.com>",
+      "telefono": "51992345629",
+      "match_score": 44.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.594695+00:00"
+    },
+    {
+      "vacante_id": "DESARROLLADOR BACKEND",
+      "id_candidato": "2f316ba305fa94ca36be039a168f8493",
+      "nombre": "CINTHYA LIZETT BERNUY MALDONADO",
+      "email_remitente": "CINTHYA LIZETT BERNUY MALDONADO <cinthya.beruy@yahoo.com>",
+      "telefono": "51993456730",
+      "match_score": 32.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.599696+00:00"
+    }
+  ]
+}

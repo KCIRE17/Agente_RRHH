@@ -1,0 +1,84 @@
+{
+  "id_candidato": "a7bc38f5e2f009a242fb8fddc9742463",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "mensaje_id": "<a7bc38f5e2f009a242fb8fddc9742463.demo@correo.local>",
+  "nombre_completo": "ANDRES MARTIN PELAEZ MONTENEGRO",
+  "telefono": "51991234519",
+  "email_remitente": "ANDRES MARTIN PELAEZ MONTENEGRO <andres.pelaez@gmail.com>",
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "match_score": 43,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 50,
+      "puntos": 25
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 35,
+      "puntos": 10
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 40,
+      "puntos": 8
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Excel.",
+    "No se evidencia dominio de Prospección de clientes.",
+    "No se evidencia dominio de Comunicación efectiva.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "Excel",
+    "Prospección de clientes",
+    "Comunicación efectiva"
+  ],
+  "justificacion": "Candidato evaluado para EJECUTIVO COMERCIAL con match score 43/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva"
+      ],
+      "opcionales": [
+        "Ventas B2B",
+        "Inglés",
+        "Marketing digital",
+        "LinkedIn Sales Navigator",
+        "Trabajo en equipo",
+        "Orientación a resultados",
+        "Resiliencia",
+        "Empatía"
+      ]
+    },
+    "experiencia_minima_anos": 2,
+    "formacion": {
+      "carreras": [
+        "Administración",
+        "Marketing",
+        "Economía",
+        "Ingeniería Comercial"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1343,
+    "completado": 1121,
+    "total": 2464
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.537394+00:00"
+}

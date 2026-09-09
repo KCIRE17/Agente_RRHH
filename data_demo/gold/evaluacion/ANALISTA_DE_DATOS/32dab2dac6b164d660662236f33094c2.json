@@ -1,0 +1,80 @@
+{
+  "id_candidato": "32dab2dac6b164d660662236f33094c2",
+  "vacante_id": "ANALISTA DE DATOS",
+  "mensaje_id": "<32dab2dac6b164d660662236f33094c2.demo@correo.local>",
+  "nombre_completo": "ANA MARIA GOMEZ QUISPE",
+  "telefono": "51991234561",
+  "email_remitente": "ANA MARIA GOMEZ QUISPE <ana.gomez@gmail.com>",
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "match_score": 95,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 90,
+      "puntos": 27
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 90,
+      "puntos": 18
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (4 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para ANALISTA DE DATOS con match score 95/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas"
+      ],
+      "opcionales": [
+        "Oracle",
+        "C++",
+        "Java",
+        "Office",
+        "Inglés",
+        "Trabajo en equipo",
+        "Organizado",
+        "Orientación a resultados",
+        "Adaptabilidad",
+        "Mejora Continua"
+      ]
+    },
+    "experiencia_minima_anos": 0,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ingeniería de Datos",
+        "Estadística",
+        "Ciencias de la Computación"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1395,
+    "completado": 1147,
+    "total": 2542
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.379952+00:00"
+}

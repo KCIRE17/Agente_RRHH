@@ -1,0 +1,106 @@
+{
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "total": 10,
+  "candidatos": [
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "7e7bd61991cc6e9cabdea8df58f88fa8",
+      "nombre": "PEDRO MANUEL CASTRO VILLANUEVA",
+      "email_remitente": "PEDRO MANUEL CASTRO VILLANUEVA <pedro.castro@gmail.com>",
+      "telefono": "51992345621",
+      "match_score": 95.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.454704+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "913006e4ffde2090b243189b35f5adfa",
+      "nombre": "MERCEDES ALEXANDRA TAPIA RODAS",
+      "email_remitente": "MERCEDES ALEXANDRA TAPIA RODAS <mercedes.tapia@hotmail.com>",
+      "telefono": "51993456732",
+      "match_score": 93.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.475332+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "69194ce59570ff977636a36cb878f6b5",
+      "nombre": "FERNANDO RAUL MONTERO ABANTO",
+      "email_remitente": "FERNANDO RAUL MONTERO ABANTO <fernando.montero@outlook.com>",
+      "telefono": "51994567843",
+      "match_score": 88.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.488866+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "c22eb1b64a8488f5198d22e7a95e10c2",
+      "nombre": "EVELYN NICOLE ORTIZ BARRANTES",
+      "email_remitente": "EVELYN NICOLE ORTIZ BARRANTES <evelyn.ortiz@gmail.com>",
+      "telefono": "51995678954",
+      "match_score": 81.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.496436+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "7143dee6a7eab3956bd985e8dd0aba62",
+      "nombre": "JORGE ENRIQUE MEZA QUISPE",
+      "email_remitente": "JORGE ENRIQUE MEZA QUISPE <jorge.meza@yahoo.com>",
+      "telefono": "51996789065",
+      "match_score": 74.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.502959+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "0d1fb59af9ea2fabdd7266e53d3e8d1f",
+      "nombre": "VANESSA ANDREA VARGAS SAAVEDRA",
+      "email_remitente": "VANESSA ANDREA VARGAS SAAVEDRA <vanessa.vargas@gmail.com>",
+      "telefono": "51997890176",
+      "match_score": 68.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.521028+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "9453f1cb9c6c20032ea429942aba5930",
+      "nombre": "OSCAR FIDEL CAMACHO HUAYTA",
+      "email_remitente": "OSCAR FIDEL CAMACHO HUAYTA <oscar.camacho@hotmail.com>",
+      "telefono": "51998901287",
+      "match_score": 61.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.527049+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "77bbd955c322b63865071a2aa9d53cdf",
+      "nombre": "KELLY MARGARITA SANDOVAL CHUMPITAZ",
+      "email_remitente": "KELLY MARGARITA SANDOVAL CHUMPITAZ <kelly.sandoval@outlook.com>",
+      "telefono": "51990123498",
+      "match_score": 49.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.532388+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "a7bc38f5e2f009a242fb8fddc9742463",
+      "nombre": "ANDRES MARTIN PELAEZ MONTENEGRO",
+      "email_remitente": "ANDRES MARTIN PELAEZ MONTENEGRO <andres.pelaez@gmail.com>",
+      "telefono": "51991234519",
+      "match_score": 43.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.537394+00:00"
+    },
+    {
+      "vacante_id": "EJECUTIVO COMERCIAL",
+      "id_candidato": "1929af03c300ed51c029fde6af0be0f8",
+      "nombre": "SILVIA ELIANA CABRERA AGUIRRE",
+      "email_remitente": "SILVIA ELIANA CABRERA AGUIRRE <silvia.cabrera@yahoo.com>",
+      "telefono": "51992345620",
+      "match_score": 31.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.544913+00:00"
+    }
+  ]
+}

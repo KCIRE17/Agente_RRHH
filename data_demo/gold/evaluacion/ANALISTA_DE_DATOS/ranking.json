@@ -1,0 +1,106 @@
+{
+  "vacante_id": "ANALISTA DE DATOS",
+  "total": 10,
+  "candidatos": [
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "32dab2dac6b164d660662236f33094c2",
+      "nombre": "ANA MARIA GOMEZ QUISPE",
+      "email_remitente": "ANA MARIA GOMEZ QUISPE <ana.gomez@gmail.com>",
+      "telefono": "51991234561",
+      "match_score": 95.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.379952+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "6feb75e0259926da1ed7c1fad7673f4c",
+      "nombre": "DIEGO ANTONIO SALAZAR LUNA",
+      "email_remitente": "DIEGO ANTONIO SALAZAR LUNA <diego.salazar@hotmail.com>",
+      "telefono": "51992345672",
+      "match_score": 90.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.389986+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "44170546481956a04725a36d9efe6c7e",
+      "nombre": "CARLA PAOLA VEGA SOTO",
+      "email_remitente": "CARLA PAOLA VEGA SOTO <carla.vega@outlook.com>",
+      "telefono": "51993456783",
+      "match_score": 84.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.394517+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "de3ae3878ff1cb300eb2cf70a07780b5",
+      "nombre": "RENATO JORGE PALACIOS RIVERA",
+      "email_remitente": "RENATO JORGE PALACIOS RIVERA <renato.palacios@gmail.com>",
+      "telefono": "51994567894",
+      "match_score": 83.0,
+      "clasificacion": "Alta",
+      "fecha_evaluacion": "2026-09-09T04:15:45.399521+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "169882468e6d83033ca80f16a74dda53",
+      "nombre": "MARIA FERNANDA ALVAREZ DIAZ",
+      "email_remitente": "MARIA FERNANDA ALVAREZ DIAZ <maria.alvarez@yahoo.com>",
+      "telefono": "51995678905",
+      "match_score": 71.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.406036+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "6d35c67aaf677cf10702621d5ad46012",
+      "nombre": "GUSTAVO ADOLFO ROMERO CARRASCO",
+      "email_remitente": "GUSTAVO ADOLFO ROMERO CARRASCO <gustavo.romero@gmail.com>",
+      "telefono": "51996789016",
+      "match_score": 69.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.411034+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "6d84e214fbbe0acb7a7805de06dbf482",
+      "nombre": "PATRICIA SOLEDAD MARCELO CORDOVA",
+      "email_remitente": "PATRICIA SOLEDAD MARCELO CORDOVA <patricia.marcelo@hotmail.com>",
+      "telefono": "51997890127",
+      "match_score": 64.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.417549+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "cd52f191841d2b466af670f8ec5317c2",
+      "nombre": "JOSE LUIS INFANTES CORONADO",
+      "email_remitente": "JOSE LUIS INFANTES CORONADO <jose.infantes@outlook.com>",
+      "telefono": "51998901238",
+      "match_score": 50.0,
+      "clasificacion": "Media",
+      "fecha_evaluacion": "2026-09-09T04:15:45.423063+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "b3c1739d3d2d7d171deb0652ea27ac8f",
+      "nombre": "ROSA ELENA FLORES PAZ",
+      "email_remitente": "ROSA ELENA FLORES PAZ <rosa.flores@gmail.com>",
+      "telefono": "51990123409",
+      "match_score": 43.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.428071+00:00"
+    },
+    {
+      "vacante_id": "ANALISTA DE DATOS",
+      "id_candidato": "8390f7aaffa2c5235bc0593e111afb8f",
+      "nombre": "MIKE ANDERSON BUSTAMANTE SANCHEZ",
+      "email_remitente": "MIKE ANDERSON BUSTAMANTE SANCHEZ <mike.bustamante@yahoo.com>",
+      "telefono": "51991234510",
+      "match_score": 32.0,
+      "clasificacion": "Baja",
+      "fecha_evaluacion": "2026-09-09T04:15:45.436620+00:00"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "id_candidato": "b437197c065ab3400a67e1e180b6f117",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<b437197c065ab3400a67e1e180b6f117.demo@correo.local>",
+  "nombre_completo": "PAOLA CRISTINA MELENDEZ PALOMINO",
+  "telefono": "51998901286",
+  "email_remitente": "PAOLA CRISTINA MELENDEZ PALOMINO <paola.melendez@gmail.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 63,
+  "clasificacion": "Media",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 67,
+      "puntos": 34
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 55,
+      "puntos": 16
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 65,
+      "puntos": 13
+    }
+  },
+  "fortalezas": [
+    "Maneja la mayoría de las habilidades esenciales requeridas.",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "No se evidencia dominio de Git.",
+    "No se evidencia dominio de Diseño de sistemas."
+  ],
+  "requisito_esencial_ausente": [
+    "Git",
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 63/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1363,
+    "completado": 1131,
+    "total": 2494
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.578648+00:00"
+}

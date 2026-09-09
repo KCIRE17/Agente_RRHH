@@ -1,0 +1,6 @@
+# Dependencias de deploy Vercel (solo chatbot F4).
+# pyproject.toml sigue siendo la fuente completa del proyecto (uv).
+fastapi>=0.141.1
+uvicorn>=0.52.4
+python-dotenv>=1.2.3
+openai>=1.40

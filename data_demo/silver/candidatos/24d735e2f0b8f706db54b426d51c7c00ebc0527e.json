@@ -1,0 +1,72 @@
+{
+  "mensaje_id": "<69194ce59570ff977636a36cb878f6b5.demo@correo.local>",
+  "id_candidato": "69194ce59570ff977636a36cb878f6b5",
+  "vacante_id": "EJECUTIVO COMERCIAL",
+  "email_remitente": "FERNANDO RAUL MONTERO ABANTO <fernando.montero@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "FERNANDO RAUL MONTERO ABANTO",
+    "email": "fernando.montero@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-04T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "FERNANDO RAUL MONTERO ABANTO",
+      "telefono": "51994567843",
+      "email": "fernando.montero@outlook.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Ventas",
+        "Negociación",
+        "CRM",
+        "Excel",
+        "Prospección de clientes",
+        "Comunicación efectiva",
+        "Ventas B2B",
+        "Inglés"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Ejecutivo de Ventas",
+          "duracion_anos": 3.0,
+          "descripcion": "Funciones propias de ejecutivo de ventas en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Economía",
+          "institucion": "Universidad Nacional de Ingeniería"
+        },
+        {
+          "grado": "Diplomado",
+          "carrera": "Gestión Comercial",
+          "institucion": "ESAN"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.486861+00:00",
+  "fecha_reintento": null
+}

@@ -1,0 +1,71 @@
+{
+  "mensaje_id": "<44170546481956a04725a36d9efe6c7e.demo@correo.local>",
+  "id_candidato": "44170546481956a04725a36d9efe6c7e",
+  "vacante_id": "ANALISTA DE DATOS",
+  "email_remitente": "CARLA PAOLA VEGA SOTO <carla.vega@outlook.com>",
+  "remitente_metadatos": {
+    "nombre": "CARLA PAOLA VEGA SOTO",
+    "email": "carla.vega@outlook.com",
+    "dominio": "outlook.com"
+  },
+  "fecha_envio": "2026-09-05T09:00:00-05:00",
+  "x_mailer": null,
+  "ruta_archivo_raw": null,
+  "formato_origen": "PDF",
+  "datos_json": {
+    "candidato": {
+      "email_remitente": null,
+      "formato_origen": "texto"
+    },
+    "datos_contacto": {
+      "nombre_completo": "CARLA PAOLA VEGA SOTO",
+      "telefono": "51993456783",
+      "email": "carla.vega@outlook.com"
+    },
+    "datos_estructurados": {
+      "habilidades": [
+        "Python",
+        "Microsoft SQL Server",
+        "Power BI",
+        "Excel",
+        "Pensamiento analítico",
+        "Resolución de problemas",
+        "Oracle"
+      ],
+      "experiencia_laboral": [
+        {
+          "puesto": "Analista de Datos",
+          "duracion_anos": 2.0,
+          "descripcion": "Funciones propias de analista de datos en un equipo multidisciplinario, reportes y coordinación con stakeholders."
+        }
+      ],
+      "formacion_academica": [
+        {
+          "grado": "Bachiller",
+          "carrera": "Estadística",
+          "institucion": "Universidad Nacional Mayor de San Marcos"
+        },
+        {
+          "grado": "Curso",
+          "carrera": "Business Intelligence",
+          "institucion": "Coursera"
+        }
+      ],
+      "certificaciones": []
+    },
+    "control_sesgo": {
+      "atributos_excluidos": [
+        "foto",
+        "edad",
+        "genero",
+        "direccion",
+        "estado_civil"
+      ]
+    }
+  },
+  "texto_crudo": null,
+  "estado_procesamiento": "Listo para Evaluación",
+  "motivo": null,
+  "fecha_ingesta": "2026-09-09T04:15:45.393515+00:00",
+  "fecha_reintento": null
+}

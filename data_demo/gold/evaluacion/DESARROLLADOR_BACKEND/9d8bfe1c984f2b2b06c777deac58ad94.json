@@ -1,0 +1,79 @@
+{
+  "id_candidato": "9d8bfe1c984f2b2b06c777deac58ad94",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<9d8bfe1c984f2b2b06c777deac58ad94.demo@correo.local>",
+  "nombre_completo": "CRISTHIAN PAUL JIMENEZ LAZO",
+  "telefono": "51995678953",
+  "email_remitente": "CRISTHIAN PAUL JIMENEZ LAZO <cristhian.jimenez@outlook.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 83,
+  "clasificacion": "Alta",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 100,
+      "puntos": 50
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 60,
+      "puntos": 18
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 75,
+      "puntos": 15
+    }
+  },
+  "fortalezas": [
+    "Domina las habilidades esenciales para la vacante.",
+    "Aporta experiencia laboral alineada (1.5 años).",
+    "Formación académica acorde al perfil solicitado."
+  ],
+  "brechas": [
+    "Sin brechas significativas detectadas en la evaluación."
+  ],
+  "requisito_esencial_ausente": [],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 83/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1383,
+    "completado": 1141,
+    "total": 2524
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.560425+00:00"
+}

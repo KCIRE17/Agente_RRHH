@@ -1,0 +1,86 @@
+{
+  "id_candidato": "2f316ba305fa94ca36be039a168f8493",
+  "vacante_id": "DESARROLLADOR BACKEND",
+  "mensaje_id": "<2f316ba305fa94ca36be039a168f8493.demo@correo.local>",
+  "nombre_completo": "CINTHYA LIZETT BERNUY MALDONADO",
+  "telefono": "51993456730",
+  "email_remitente": "CINTHYA LIZETT BERNUY MALDONADO <cinthya.beruy@yahoo.com>",
+  "fecha_envio": "2026-09-03T09:00:00-05:00",
+  "match_score": 32,
+  "clasificacion": "Baja",
+  "desglose": {
+    "habilidades": {
+      "peso": 0.5,
+      "parcial": 33,
+      "puntos": 16
+    },
+    "experiencia": {
+      "peso": 0.3,
+      "parcial": 30,
+      "puntos": 9
+    },
+    "formacion": {
+      "peso": 0.2,
+      "parcial": 35,
+      "puntos": 7
+    }
+  },
+  "fortalezas": [
+    "Cuenta con una base de habilidades aprovechable para la vacante."
+  ],
+  "brechas": [
+    "No se evidencia dominio de SQL.",
+    "No se evidencia dominio de REST APIs.",
+    "No se evidencia dominio de Git.",
+    "Experiencia laboral todavía limitada para el nivel solicitado.",
+    "La formación académica no se alinea del todo con la vacante."
+  ],
+  "requisito_esencial_ausente": [
+    "SQL",
+    "REST APIs",
+    "Git",
+    "Diseño de sistemas"
+  ],
+  "justificacion": "Candidato evaluado para DESARROLLADOR BACKEND con match score 32/100 usando los pesos 50/30/20 (habilidades, experiencia, formación).",
+  "requisitos_evaluados": {
+    "habilidades": {
+      "esenciales": [
+        "Python",
+        "Java",
+        "SQL",
+        "REST APIs",
+        "Git",
+        "Diseño de sistemas"
+      ],
+      "opcionales": [
+        "Docker",
+        "PostgreSQL",
+        "MongoDB",
+        "AWS",
+        "Node.js",
+        "TypeScript",
+        "Testing",
+        "CI/CD",
+        "Inglés"
+      ]
+    },
+    "experiencia_minima_anos": 1,
+    "formacion": {
+      "carreras": [
+        "Ingeniería de Sistemas",
+        "Ciencias de la Computación",
+        "Ingeniería de Software",
+        "Ingeniería Informática"
+      ]
+    }
+  },
+  "proveedor": "groq",
+  "modelo": "openai/gpt-oss-120b",
+  "uso_tokens": {
+    "prompt": 1332,
+    "completado": 1116,
+    "total": 2448
+  },
+  "estado_procesamiento": "Evaluado",
+  "fecha_evaluacion": "2026-09-09T04:15:45.599696+00:00"
+}
