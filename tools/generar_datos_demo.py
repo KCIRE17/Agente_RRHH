@@ -2,16 +2,20 @@
 """Generador de datos demo (30+ candidatos ficticios) para el deploy MVP Vercel.
 
 STANDALONE: no forma parte del proceso del proyecto (ni de main.py). Escribe
-``data_demo/`` (versionable en git) con el mismo esquema medallion de ``data/``
-pero con candidatos 100 % ficticios y libres de datos personales reales.
+candidatos 100 % ficticios y libres de datos personales reales con el mismo
+esquema medallion de ``data/``.
 
 Uso:
-    uv run python tools/generar_datos_demo.py
-    DATA_DIR=data_demo uv run python main.py chat --port 8510   # probar local
+    uv run python tools/generar_datos_demo.py                 # → data_demo/ (deploy)
+    uv run python tools/generar_datos_demo.py --destino data  # → data/ (flujo local)
+
+Solo borra el destino previo cuando es ``data_demo`` (dataset versionado y
+ficticio); sobre ``data/`` escribe/fusiona sin tocar datos reales.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from datetime import datetime, timezone
@@ -23,8 +27,9 @@ from src.agente_rrhh.core.gold_store import GoldStore
 from src.agente_rrhh.core.json_store import JsonStore
 from src.agente_rrhh.core.vacantes import slug_vacante
 
-DIR_DEMO = Path(__file__).resolve().parents[1] / "data_demo"
-DIR_VACANTES = Path(__file__).resolve().parents[1] / "config" / "vacantes"
+DIR_RAIZ = Path(__file__).resolve().parents[1]
+DIR_DEMO = DIR_RAIZ / "data_demo"
+DIR_VACANTES = DIR_RAIZ / "config" / "vacantes"
 
 SILVER = JsonStore(DIR_DEMO / "silver", subcarpeta="candidatos")
 GOLD = GoldStore(DIR_DEMO / "gold", subcarpeta="evaluacion")
@@ -390,12 +395,16 @@ def _recalcular_ranking_con_telefono() -> None:
 
 
 # ------------------------------------------------------------------- roster
-def generar() -> int:
+def generar(destino: Path | None = None) -> int:
     import shutil
 
-    if DIR_DEMO.exists():
+    global DIR_DEMO, SILVER, GOLD
+    DIR_DEMO = (destino or DIR_RAIZ / "data_demo").resolve()
+    if DIR_DEMO.name == "data_demo" and DIR_DEMO.exists():
         shutil.rmtree(DIR_DEMO)
     DIR_DEMO.mkdir(parents=True, exist_ok=True)
+    SILVER = JsonStore(DIR_DEMO / "silver", subcarpeta="candidatos")
+    GOLD = GoldStore(DIR_DEMO / "gold", subcarpeta="evaluacion")
 
     conteo: dict[str, dict[str, int]] = {}
 
@@ -423,8 +432,12 @@ def generar() -> int:
           f"{sum(c['evaluados'] for c in conteo.values())} evaluados).")
     for vacante_id, c in conteo.items():
         print(f"  {vacante_id:<24} Alta={c['Alta']} Media={c['Media']} Baja={c['Baja']}")
-    print("Para probar localmente:")
-    print("  DATA_DIR=data_demo uv run python main.py chat --port 8510")
+    if DIR_DEMO.name == "data_demo":
+        print("Para probar localmente:")
+        print("  DATA_DIR=data_demo uv run python main.py chat --port 8510")
+    else:
+        print("Ahora data/ es el flujo local por defecto; probar con:")
+        print("  uv run python main.py chat --port 8510")
     return 0
 
 
@@ -567,4 +580,14 @@ ROSTER: dict[str, list[dict]] = {
 
 
 if __name__ == "__main__":
-    raise SystemExit(generar())
+    parser = argparse.ArgumentParser(
+        prog="generar_datos_demo.py",
+        description="Genera candidatos ficticios (esquema medallion) en data_demo/ (deploy) u otro destino.",
+    )
+    parser.add_argument(
+        "--destino",
+        default="data_demo",
+        help="Carpeta destino (default: data_demo). Usar 'data' para re-sembrar el flujo local.",
+    )
+    args = parser.parse_args()
+    raise SystemExit(generar(destino=DIR_RAIZ / args.destino))

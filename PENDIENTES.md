@@ -211,12 +211,12 @@ offline, cero tokens).
 - [x] 🟡 **Frontend responsivo**: SPA vanilla (HTML/CSS/JS, sin dependencias en
   el navegador) con vistas Chat, Simulador, Brechas, Costos y Fase técnica.
 - [x] 🔵 **Prompt editable** `prompt/chatbot.md` (solo se usa si IA activada).
-- [x] 🔵 **Datos sintéticos de prueba**: `tools/generar_datos_prueba.py`
-  (**standalone**, no lo ejecuta el proyecto) → `data_pruebas/` (gitignored),
-  2 vacantes, 4 evaluados + errores/reintentos; se prueba con
-  `DATA_DIR=data_pruebas`.
+- [x] 🔵 **Datos de prueba y demo**: `tools/generar_datos_demo.py` genera
+  `data_demo/` (30+ candidatos ficticios, versionable para el deploy Vercel);
+  con `--destino data` re-siembra el flujo local por defecto sin borrar lo
+  real.
 - [x] 🔵 **Verificación**: `compileall` ok; TestClient sobre `/api/*` con
-  `data_pruebas` (ranking, candidato, seguimiento, comparador, brechas, origen,
+  `data_demo` (ranking, candidato, seguimiento, comparador, brechas, origen,
   borrador, costos, simulador, fallback/FAQ); arranque real `main.py chat`
   → `/api/health` ok; 0 tokens en modo offline.
 - [x] 🟡 **Modo demo MVP (Vercel)**: `DEMO_CONSULTAS_IA` (default 3) limita las
@@ -226,6 +226,14 @@ offline, cero tokens).
   `runtime.txt` (3.12), `requirements.txt` (subset chatbot), `.vercelignore`,
   `data_demo/` con **30+ candidatos ficticios** generados por
   `tools/generar_datos_demo.py`, `.env.example` y docs en `README.md` §8.
+- [x] 🔒 **Login en el chatbot F4 (MVP)**: `ADMIN_USUARIO`/`ADMIN_CLAVE` en
+  `.env` → `POST /api/login` (token Bearer aleatorio, vigencia 12 h),
+  `POST /api/logout` y `GET /api/me`; todos los `/api/*` exigen sesión (401 sin
+  token) excepto health/login/logout/me. SPA con vista de login a pantalla
+  completa, token en `localStorage` y botón "Salir". Credenciales vacías =
+  login desactivado con aviso en la UI (no bloquea pruebas). F3 no pide login
+  (decisión MVP). Doc: README §7.3/§7.4/§8/§9, `.env.example`,
+  `PROMPT_GENERADOR_SISTEMA.md` §1/§6/§7/§8/§13/§14.
 
 ### Definición de listo F4
 
@@ -238,8 +246,9 @@ offline, cero tokens).
 - [ ] 🔵 **Persistencia de sesiones**: pasar el contexto ligero a archivo para
   no perder la entidad en foco al reiniciar el proceso.
 - [ ] 🔵 **Historial del chat** opcional (hoy se priva al recargar la página).
-- [ ] 🟡 **Modelo de chat fuera de Groq**: al sumar un proveedor (OpenRouter/
-  Cerebras/Ollama), añadir su cliente en `core/llm.py` respetando la fachada.
+- [ ] 🟡 **Más proveedores de chat**: además de `gemini`/`groq`, sumar
+  OpenRouter/Cerebras/Ollama añadiendo su cliente en `core/llm.py` respetando
+  la fachada (el selector del motor ya es genérico por proveedor).
 
 ---
 
@@ -255,3 +264,9 @@ offline, cero tokens).
 | 2026-09-06 | F3 Dashboard Streamlit end-to-end: `main.py dashboard`, vistas Ranking de postulantes / Postulante / Postulaciones / Metodología en lenguaje de RRHH, tema visual, `consultas.py` (gold+silver), verificado con AppTest + health check | ✅ |
 | 2026-09-07 | F4 Chatbot end-to-end: app web responsiva FastAPI + SPA, motor code-first costo $0, 8 utilidades, simulador de pesos, costos/tokens en la app, IA opcional (Groq), fallback + FAQ, datos sintéticos en `data_pruebas/`, verificado con TestClient + health check | ✅ |
 | 2026-09-08 | Deploy MVP Vercel listo: modo demo `DEMO_CONSULTAS_IA` (3 IA por conversación → motor offline $0), contador en SPA, `api/index.py` + `vercel.json` + `runtime.txt` + `requirements.txt` + `.vercelignore`, `data_demo/` con 30+ candidatos ficticios (`tools/generar_datos_demo.py`), 2 vacantes nuevas en `config/`, `.env.example`, README §8 | ✅ |
+| 2026-09-20 | Login del chatbot F4 (MVP funcional): `ADMIN_USUARIO`/`ADMIN_CLAVE` en `.env`, endpoints `/api/login|/api/logout|/api/me`, protección de `/api/*` (401 sin token), SPA con vista de login + "Salir"; `PROMPT_GENERADOR_SISTEMA.md` actualizado con acceso F4 y sección de puesta en marcha en otro dispositivo | ✅ |
+| 2026-09-20 | Unificación de datos: `data/` como flujo local único por defecto (silver 40, gold 35 en 4 vacantes, rankings recalculados); `data_pruebas/` eliminada; `tools/generar_datos_demo.py` con `--destino` (default `data_demo` para deploy; `--destino data` re-siembra sin borrar lo real); referencias actualizadas en README/AGENTS/PROMPT/PENDIENTES/`.env.example`/`.gitignore`/`.vercelignore`; verificado con `compileall`, chat F4 (login + `/api/vacantes` + `/api/ranking`) y dashboard F3 sobre `data/` | ✅ |
+| 2026-09-20 | Chat F4 con Gemini local: `motor.py` elige `GEMINI_API_KEY` cuando `PROVEEDOR_CHAT=gemini` (antes solo Groq); docs (.env.example/README/AGENTS/PROMPT) actualizadas; Vercel queda **offline por defecto** ($0, sin Env Vars de IA) | ✅ |
+| 2026-09-20 | Guard anti-secretos: `tools/verificar_secretos.py` (patrones `gsk_`, `AIza...`, `AQ.Ab...` (claves Google 2025+), `sk-`, `ghp_`, bloques de clave privada, con enmascarado) + hook `.githooks/pre-commit` (`git config core.hooksPath .githooks`); fix CSS del login (`.login-screen[hidden]`) que impedía ocultar el overlay tras autenticarse | ✅ |
+| 2026-09-20 | Chat local F4 con IA verificado con **Groq** (`PROVEEDOR_CHAT=groq`/`MODELO_CHAT=openai/gpt-oss-120b`): login + `/api/health` (proveedor groq) + consulta IA registrada en `data/gold/costo/uso_chat.jsonl`. **Gemini queda habilitado en código** (`PROVEEDOR_CHAT=gemini` usa `GEMINI_API_KEY`) pero el proyecto nuevo da `403 PERMISSION_DENIED` (no es error de key: se creó nueva key `AQ.Ab...` y sigue bloqueado a nivel de proyecto; requiere key de un proyecto Google Cloud diferente, habilitando Generative Language API) — pendiente en `.env` | ✅ |
+| 2026-09-20 | Coherencia PROMPT ↔ proyecto: `PROMPT_GENERADOR_SISTEMA.md` corregido (campo `justificacion` en el gold, `sugerencia_clasificacion(clasificacion)`, `uv.lock` en el árbol); AGENTS y README sincronizados (chatbot F4 completo, `costo.py`, `tarifas.json`/`data_demo`/deploy/`tools`, patrón `AQ.Ab`, `prompt/chatbot.md`, defaults `PROVEEDOR_CHAT` vacío y `MODELO_CHAT=openai/gpt-oss-120b`); verificado con `compileall` + `verificar_secretos.py` | ✅ |

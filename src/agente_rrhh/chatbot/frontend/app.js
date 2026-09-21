@@ -6,6 +6,70 @@ const API = "";
 
 const CLASE_PILL = { alta: "alta", media: "media", baja: "baja" };
 
+/* --------------------------------------------- autenticación */
+let authToken = localStorage.getItem("rrhh_token") || "";
+let loginHabilitado = false;
+const loginScreen = $("#login-screen");
+const loginForm = $("#login-form");
+const loginError = $("#login-error");
+
+function mostrarLogin(mensaje = "") {
+  authToken = "";
+  localStorage.removeItem("rrhh_token");
+  loginError.textContent = mensaje;
+  loginError.hidden = !mensaje;
+  loginForm.reset();
+  loginScreen.hidden = false;
+  $("#btn-salir").hidden = true;
+}
+
+function ocultarLogin() {
+  loginScreen.hidden = true;
+  $("#btn-salir").hidden = !loginHabilitado;
+}
+
+loginForm.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const btn = $("#btn-login");
+  btn.disabled = true;
+  loginError.hidden = true;
+  try {
+    const res = await fetch(API + "/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuario: $("#login-usuario").value.trim(),
+        clave: $("#login-clave").value,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      loginError.textContent = body.detalle || "No se pudo iniciar sesión.";
+      loginError.hidden = false;
+      return;
+    }
+    authToken = body.token;
+    localStorage.setItem("rrhh_token", authToken);
+    ocultarLogin();
+    arrancarAplicacion();
+  } catch {
+    loginError.textContent = "Error de conexión. Inténtalo de nuevo.";
+    loginError.hidden = false;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$("#btn-salir").addEventListener("click", async () => {
+  try {
+    await fetch(API + "/api/logout", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch { /* sin conexión */ }
+  mostrarLogin("Sesión cerrada.");
+});
+
 function esc(v) {
   return String(v ?? "").replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -14,9 +78,16 @@ function esc(v) {
 
 async function api(path, opts = {}) {
   const res = await fetch(API + path, {
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    },
     ...opts,
   });
+  if (res.status === 401) {
+    mostrarLogin("Sesión expirada. Vuelve a iniciar sesión.");
+    throw new Error("No autorizado");
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.detalle || `HTTP ${res.status}`);
@@ -293,13 +364,14 @@ async function cargarTecnica() {
 }
 
 /* ------------------------------------------------ arranque */
-(async function init() {
+async function arrancarAplicacion() {
   try {
     const h = await api("/api/health");
     offlineFlag = h.modo === "offline";
     demoLimite = (typeof h.limite_ia_demo === "number" && h.limite_ia_demo > 0)
       ? h.limite_ia_demo : null;
     $("#brand-mode").textContent = h.modo === "offline" ? "modo offline · $0" : `IA: ${h.modo}`;
+    if (!loginHabilitado) $("#brand-mode").textContent += " · login desactivado";
     $("#sidebar-health").innerHTML =
       `<span class="badge ${h.modo === "offline" ? "offline" : "online"}">${h.modo}</span> · ${esc(h.modelo_chat)}`;
     actualizarBadgeDemo(demoLimite);
@@ -314,4 +386,21 @@ async function cargarTecnica() {
       ["¿Quienes pasan a fase tecnica?", "Ranking de ANALISTA DE DATOS", "¿Cuales son las brechas mas comunes?", "Ayuda"]);
   }
   $("#chat-input").focus();
+}
+
+(async function init() {
+  try {
+    const h = await api("/api/health");
+    loginHabilitado = h.login === "habilitado";
+  } catch { /* sin servidor de salud */ }
+  if (loginHabilitado) {
+    try {
+      const me = await api("/api/me");
+      if (!me.autenticado) { mostrarLogin(); return; }
+    } catch { mostrarLogin(); return; }
+    ocultarLogin();
+  } else {
+    ocultarLogin();
+  }
+  arrancarAplicacion();
 })();

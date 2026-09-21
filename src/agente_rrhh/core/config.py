@@ -66,6 +66,23 @@ class Config:
     modelo_chat: str = MODELO_CHAT_DEFAULT
     tarifas_costo: str = "config/tarifas.json"
     consultas_ia_demo: int = CONSULTAS_IA_DEMO_DEFAULT
+    admin_usuario: str = ""
+    admin_clave: str = ""
+
+    @property
+    def login_habilitado(self) -> bool:
+        """El login del chatbot F4 está activo solo con credenciales en .env."""
+        return bool(self.admin_usuario and self.admin_clave)
+
+    def verificar(self, usuario: str, clave: str) -> bool:
+        """Comparación segura (sin cortocircuito de timing) de credenciales."""
+        if not self.login_habilitado:
+            return False
+        import hmac
+
+        return hmac.compare_digest(usuario, self.admin_usuario) and hmac.compare_digest(
+            clave, self.admin_clave
+        )
 
     # ------------------------------------------------------------------ rutas
     @property
@@ -144,4 +161,6 @@ class Config:
             consultas_ia_demo=_parsear_int(
                 os.getenv("DEMO_CONSULTAS_IA"), CONSULTAS_IA_DEMO_DEFAULT
             ),
+            admin_usuario=os.getenv("ADMIN_USUARIO", "").strip(),
+            admin_clave=os.getenv("ADMIN_CLAVE", "").strip(),
         )

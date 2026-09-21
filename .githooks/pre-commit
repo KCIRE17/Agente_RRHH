@@ -1,0 +1,28 @@
+#!/bin/sh
+# Hook pre-commit: escaneo anti-secretos sobre los archivos en stage.
+# Actívalo una vez con:  git config core.hooksPath .githooks
+# Omítelo puntualmente (SÓLO si es intencional) con:  git commit --no-verify
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+# Buscar un Python real: .venv del proyecto, python3 o python.
+# (En Windows, "python" puede ser el alias del Microsoft Store y no arranca.)
+if [ -f ".venv/Scripts/python.exe" ]; then
+  PY=".venv/Scripts/python.exe"
+elif [ -f ".venv/bin/python" ]; then
+  PY=".venv/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+  PY=python3
+elif command -v python >/dev/null 2>&1; then
+  PY=python
+else
+  echo "pre-commit: no se encontro Python; se omite el escaneo anti-secretos."
+  exit 0
+fi
+
+echo "pre-commit: escaneando secretos en archivos en stage..."
+# Los nombres vienen como rutas relativas a la raiz del repo.
+echo "$staged" | "$PY" tools/verificar_secretos.py -

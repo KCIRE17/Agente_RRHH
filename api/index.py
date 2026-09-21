@@ -4,7 +4,9 @@ Vercel espera un objeto `app` importable a nivel de módulo en ``api/``.
 Este archivo:
   - agrega la raíz del repo a ``sys.path`` (el paquete vive en ``src/``);
   - usa ``DATA_DIR=data_demo`` por defecto (datos ficticios versionados);
-  - deja que ``PROVEEDOR_CHAT`` y ``GROQ_API_KEY`` lleguen vía Env Vars.
+  - MVP offline por defecto: NO se define ``PROVEEDOR_CHAT`` (0 llamadas, $0).
+    Si algún día se quiere IA en Vercel, se agrega vía Env Vars (
+    ``PROVEEDOR_CHAT`` + la clave del proveedor) sin tocar código.
 
 Local (con `main.py chat`) este archivo NO se usa; sigue valiendo uvicorn.
 """

@@ -83,24 +83,39 @@ tiers* de las APIs de IA).
 Agente_RRHH/
 ├── main.py                    # CLI raíz (punto de entrada único)
 ├── pyproject.toml             # dependencias (uv)
+├── uv.lock                    # lockfile de dependencias (uv)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # este documento (documentación completa)
 ├── PENDIENTES.md              # bitácora Scrum de pendientes
 ├── AGENTS.md                  # convenciones para agentes de IA
+├── PROMPT_GENERADOR_SISTEMA.md # plantilla maestra regenerable del sistema
+├── DOCUMENTACION.md           # documentación histórica/de detalle
+├── .githooks/pre-commit       # hook anti-secretos (core.hooksPath .githooks)
 ├── .streamlit/config.toml     # tema del dashboard (Streamlit)
 ├── logs/                      # logs de ejecución (ingesta.log)
 ├── prompt/                    # prompts de IA editables (.md)
 │   ├── extractor.md           #   prompt del Agente Extractor (F1)
-│   └── evaluador.md           #   prompt del Agente Evaluador (F2)
+│   ├── evaluador.md           #   prompt del Agente Evaluador (F2)
+│   └── chatbot.md             #   narrativa opcional del chat (F4)
 ├── config/
-│   └── vacantes/              # requisitos por vacante (regla de negocio)
-│       └── ANALISTA_DE_DATOS.json
+│   ├── tarifas.json           #   tarifas $/1M tokens (costos del chatbot)
+│   └── vacantes/              #   requisitos por vacante (regla de negocio)
+│       ├── ANALISTA_DE_DATOS.json
+│       ├── DESARROLLADOR_BACKEND.json
+│       └── EJECUTIVO_COMERCIAL.json
 ├── data/                      # datos de candidatos (dato personal, NO a git)
 │   ├── bronze/                # originales brutos por <fecha>/<vacante>/
-│   ├── silver/                # candidatos JSON estandarizados (idempotentes)
-│   │   └── candidatos/        #   <sha1(mensaje_id)>.json
-│   └── gold/                  # evaluaciones/rankings (F2+)
-│       └── evaluacion/        #   <vacante_id>/<id_candidato>.json + ranking.json
+│   ├── silver/candidatos/     #   <sha1(mensaje_id)>.json (idempotente)
+│   └── gold/evaluacion/       #   <vacante_id>/<id_candidato>.json + ranking.json
+├── data_demo/                 # datos ficticios versionados (deploy Vercel)
+├── api/index.py               # entry point ASGI para Vercel
+├── vercel.json                # build @vercel/python + rutas
+├── runtime.txt                # 3.12
+├── requirements.txt           # subset mínimo para el build de Vercel
+├── .vercelignore              # excluye .env*, data/, logs/, tools/
+├── tools/
+│   ├── generar_datos_demo.py  # 30+ candidatos ficticios → data_demo/ (o --destino data)
+│   └── verificar_secretos.py  # escáner anti-secretos (hook pre-commit)
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases
     │   ├── config.py          # .env, estados, parámetros (DATA_DIR, ASUNTO, ...)
@@ -111,7 +126,8 @@ Agente_RRHH/
     │   ├── llm.py             # fachada IA: Gemini o Groq (+ uso de tokens)
     │   ├── prompts.py         # carga de prompts .md y parseo JSON de la IA
     │   ├── vacantes.py        # requisitos por vacante (config/vacantes/)
-    │   └── gold_store.py      # capa gold: evaluaciones + ranking, escritura atómica
+    │   ├── gold_store.py      # capa gold: evaluaciones + ranking, escritura atómica
+    │   └── costo.py           # bitácora jsonl + cálculo de costos estimados
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     │   ├── imap_client.py     # IMAP SSL, filtro asunto/fecha, BODY.PEEK[]
     │   ├── extractor.py       # texto de PDF/DOCX/TXT/MD + errores (Ilegible/Formato)
@@ -125,7 +141,14 @@ Agente_RRHH/
     │   ├── consultas.py       #   lectura gold/silver (sin UI)
     │   └── app.py             #   UI (Ranking de postulantes / Postulante /
     │                          #   Postulaciones / Metodología)
-    └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
+    └── chatbot/               # FASE 4 — Chatbot de consultas (FastAPI + SPA)
+        ├── api.py             #   FastAPI + endpoints + SPA
+        ├── motor.py           #   motor code-first (clasificador + utilidades)
+        ├── sesion.py          #   contexto ligero por sesión + límite IA demo
+        ├── datos.py           #   acceso a silver/gold (reutiliza consultas)
+        ├── simulador.py       #   re-pesaje del score sin IA
+        ├── preguntas_generales.py # FAQ de respaldo (fallback)
+        └── frontend/          #   SPA vanilla (index.html, app.js, style.css)
 ```
 
 **Reglas de estructura**
@@ -261,7 +284,8 @@ código). El Agente Extractor usa `prompt/extractor.md` (configurable con
 `PROMPT_EXTRACTOR`). El placeholder `{{texto_candidato}}` se sustituye con el
 texto del candidato en cada llamada y `{{requisitos_vacante}}` con los
 requisitos en F2. Si el archivo falta, el lote lo reporta con un error
-claro. F4 podrá añadir `prompt/chatbot.md`.
+claro. El chat F4 usa `prompt/chatbot.md` (narrativa opcional cuando la IA
+está activada).
 
 ---
 
@@ -444,10 +468,20 @@ PROVEEDOR_EVALUADOR=groq              # proveedor del Agente Evaluador
 MODELO_EVALUADOR=openai/gpt-oss-120b  # modelo (ver modelos disponibles)
 PROMPT_EVALUADOR=prompt/evaluador.md  # prompt del evaluador (opcional)
 
-# 4) Persistencia (arquitectura medallion)
+# 4) Chatbot (F4 — IA opcional)
+PROVEEDOR_CHAT=                  # gemini | groq | (vacío = offline, $0)
+MODELO_CHAT=openai/gpt-oss-120b  # openai/gpt-oss-120b (groq) o gemini-3.5-flash (gemini)
+DEMO_CONSULTAS_IA=3              # consultas IA por conversación (modo demo)
+
+# 4b) Acceso al chatbot F4 (login)
+ADMIN_USUARIO=                   # usuario del login (solo tú lo sabes)
+ADMIN_CLAVE=                     # contraseña del login (solo tú la sabes)
+
+# 5) Persistencia (arquitectura medallion)
 DATA_DIR=data                    # raíz de datos (bronze/silver/gold)
 RAWDATA_RETENCION_DIAS=90        # retención de originales en bronze
 RUTA_VACANTES=config/vacantes    # requisitos por vacante (regla de negocio)
+RUTA_TARIFAS=config/tarifas.json # tarifas $/1M tokens (costos del chatbot)
 ```
 
 - **`EMAIL`** — usuario de la conexión IMAP (tu cuenta Gmail).
@@ -484,6 +518,12 @@ RUTA_VACANTES=config/vacantes    # requisitos por vacante (regla de negocio)
   durante `limpiar` (default `90`).
 - **`RUTA_VACANTES`** — directorio con los requisitos por vacante (default
   `config/vacantes`).
+- **`ADMIN_USUARIO` / `ADMIN_CLAVE`** — credenciales del **login del chatbot
+  F4**. Viven únicamente en el `.env` (nunca en git). Con ambas vacías el login
+  queda **desactivado con aviso** en la UI; con valores cargados, todos los
+  `/api/*` del chatbot exigen iniciar sesión (token `Bearer`, expira a las
+  12 h; comparación segura con `hmac.compare_digest`). El dashboard F3 no pide
+  login en este MVP.
 
 ### 7.4 Ejecución
 
@@ -515,11 +555,13 @@ uv run python main.py chat [--port 8510]           # F4: chatbot web (localhost)
   local**: muestra datos personales de candidatos.
 - **`chat`** abre el asistente F4 en `http://127.0.0.1:8510` (puerto con
   `--port`), **solo localhost**. El motor responde 100 % en código (costo $0);
-  la narrativa opcional se activa con `PROVEEDOR_CHAT`/`MODELO_CHAT` en `.env`.
-  Para probar con datos sintéticos: `set DATA_DIR=data_pruebas && uv run python
-  tools/generar_datos_prueba.py && uv run python main.py chat`.
-  Para probar el **modo demo** (30+ candidatos ficticios + límite de consultas
-  IA): `set DATA_DIR=data_demo && uv run python main.py chat --port 8510`.
+  la narrativa opcional se activa con `PROVEEDOR_CHAT`/`MODELO_CHAT` en `.env`
+   (`gemini` usa `GEMINI_API_KEY`; `groq` usa `GROQ_API_KEY`).
+  Si `ADMIN_USUARIO`/`ADMIN_CLAVE` están cargados, pide **iniciar sesión**
+  antes de usar la app (los `/api/*` devuelven 401 sin token).
+  El flujo local usa `data/` por defecto. Para probar el **modo demo** (30+
+  candidatos ficticios + límite de consultas IA):
+  `set DATA_DIR=data_demo && uv run python main.py chat --port 8510`.
 
 ### 7.5 Salidas
 
@@ -545,12 +587,13 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
 
 ### 8.1 Modo demo: consultas IA limitadas
 
-- `PROVEEDOR_CHAT` activo (p. ej. `groq`) habilita la narrativa IA.
+- `PROVEEDOR_CHAT` activo (`groq` o `gemini`) habilita la narrativa IA.
 - `DEMO_CONSULTAS_IA` (default `3`) limita las consultas con IA **por
   conversación**. Al agotarse, el motor code-first sigue respondiendo con los
   datos verificados (0 tokens, costo $0). El contador se reinicia con
   "Nuevo chat" y se muestra en la interfaz.
-- Con `PROVEEDOR_CHAT` vacío todo el chatbot queda offline ($0).
+- Con `PROVEEDOR_CHAT` vacío todo el chatbot queda offline ($0). Por defecto el
+  MVP Vercel corre así (se mantiene `gemini`/`groq` libre en el `.env` local).
 
 ### 8.2 Archivos del deploy
 
@@ -560,7 +603,7 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
 | `vercel.json` | Build `@vercel/python` + rutas `/(.*)` → `api/index.py` |
 | `runtime.txt` | Python `3.12` |
 | `requirements.txt` | Subset mínimo para el chatbot (fastapi, uvicorn, python-dotenv, openai) |
-| `.vercelignore` | Excluye `data/`, `logs/`, `.env*`, `data_pruebas/`, `tools/` |
+| `.vercelignore` | Excluye `data/`, `logs/`, `.env*`, `tools/` |
 | `data_demo/` | Datos demo generados con `tools/generar_datos_demo.py` |
 | `.env.example` | Plantilla de variables (con placeholders, sin secretos) |
 
@@ -574,8 +617,10 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
 2. En [vercel.com](https://vercel.com) (plan **Hobby gratis**, uso
    personal/no comercial): **Add New… → Project → Import** el repo.
 3. En **Settings → Environment Variables** del proyecto agrega:
-   `PROVEEDOR_CHAT=groq`, `GROQ_API_KEY=<tu clave>` y opcionalmente
-   `DEMO_CONSULTAS_IA=3`. No hace falta `DATA_DIR` (ya default a `data_demo`).
+   `ADMIN_USUARIO=<usuario>`, `ADMIN_CLAVE=<contraseña>` (login del MVP) y
+   opcionalmente `DEMO_CONSULTAS_IA=3`. **Deja `PROVEEDOR_CHAT` sin definir**:
+   el MVP corre offline ($0). No hace falta `DATA_DIR` (ya default a
+   `data_demo`).
 4. Vercel usa `vercel.json` + `runtime.txt` + `requirements.txt`
    automáticamente. Deploy y obtén la URL `*.vercel.app`.
 
@@ -607,3 +652,7 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
   regla de negocio y **sí** se versionan.
 - El dashboard F3 muestra datos personales en pantalla: ejecutarlo **solo en
   red local** (no exponer el puerto a Internet).
+- El chatbot F4 puede protegerse con un **login** (`ADMIN_USUARIO`/
+  `ADMIN_CLAVE` en `.env`): credenciales conocidas solo por el responsable de
+  RRHH, comparadas con `hmac.compare_digest` y nunca logueadas; los tokens de
+  sesión expiran a las 12 h.

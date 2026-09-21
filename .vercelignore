@@ -3,7 +3,6 @@
 .env.*
 data/
 logs/
-data_pruebas/
 
 # Entornos y temporales
 .venv/

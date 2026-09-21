@@ -25,6 +25,34 @@ html, body {
 
 .app { display: flex; height: 100vh; overflow: hidden; }
 
+/* ------------------------------------------------ login */
+.login-screen {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); padding: 20px;
+}
+/* La regla de autor `display:flex` gana al `[hidden]` del navegador; sin esto
+   la pantalla de login no se oculta tras iniciar sesión. */
+.login-screen[hidden] { display: none; }
+.login-card {
+  width: 360px; max-width: 100%;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 26px 26px 30px;
+}
+.login-brand { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; }
+.login-card h1 { margin: 0 0 6px; font-size: 20px; }
+.login-card input {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line);
+  border-radius: 10px; font-size: 14px; background: var(--surface);
+  margin-top: 4px;
+}
+.login-card input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.login-error {
+  background: #fee2e2; color: #991b1b; border-radius: 8px;
+  font-size: 13px; padding: 8px 10px; margin: 12px 0 0;
+}
+
 /* ------------------------------------------------ sidebar */
 .sidebar {
   width: 250px;

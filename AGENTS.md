@@ -13,28 +13,47 @@ repositorio. Leer antes de modificar código.
 Agente_RRHH/
 ├── main.py                    # CLI raíz (punto de entrada único)
 ├── pyproject.toml             # dependencias (uv)
+├── uv.lock                    # lockfile de dependencias (uv)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # documentación completa del proyecto
 ├── PENDIENTES.md              # bitácora Scrum (pendientes / checkpoints)
 ├── AGENTS.md                  # este archivo
+├── PROMPT_GENERADOR_SISTEMA.md # plantilla maestra regenerable del sistema
+├── DOCUMENTACION.md           # documentación histórica/de detalle
+├── .githooks/pre-commit       # hook anti-secretos (core.hooksPath .githooks)
+├── .streamlit/config.toml     # tema del dashboard (Streamlit)
 ├── logs/                      # logs de ejecución (ingesta.log)
 ├── prompt/                    # prompts de IA editables (.md)
 │   ├── extractor.md           #   F1: texto → JSON estandarizado
-│   └── evaluador.md           #   F2: perfil + requisitos → evaluación
-├── config/vacantes/           # requisitos por vacante (regla de negocio)
+│   ├── evaluador.md           #   F2: perfil + requisitos → evaluación
+│   └── chatbot.md             #   F4: narrativa opcional del chat
+├── config/
+│   ├── tarifas.json           #   tarifas $/1M tokens (costos del chatbot)
+│   └── vacantes/              #   requisitos por vacante (regla de negocio)
 ├── data/                      # datos candidatos (arquitectura medallion) — NO a git
 │   ├── bronze/                # originales brutos por <fecha>/<vacante>/
 │   ├── silver/candidatos/     # <sha1(mensaje_id)>.json (idempotente)
 │   └── gold/evaluacion/       # <vacante>/<id>.json + ranking.json (F2+)
+├── data_demo/                 # datos ficticios versionados (deploy Vercel)
+├── api/index.py               # entry point ASGI para Vercel
+├── vercel.json                # build @vercel/python + rutas
+├── runtime.txt                # 3.12
+├── requirements.txt           # subset mínimo para el build de Vercel
+├── .vercelignore              # excluye .env*, data/, logs/, tools/
+├── tools/
+│   ├── generar_datos_demo.py  # 30+ candidatos ficticios → data_demo/ (o --destino data)
+│   └── verificar_secretos.py  # escáner anti-secretos (hook pre-commit)
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases (config,
-    │                          # json_store, sanitizer, raw_store, logging_setup,
-    │                          # llm, prompts, vacantes, gold_store)
+    │                          # logging_setup, sanitizer, raw_store, json_store,
+    │                          # gold_store, vacantes, llm, prompts, costo)
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     ├── evaluation/            # FASE 2 — Match Score (Agente 2)
     ├── dashboard/             # FASE 3 — Dashboard Streamlit (consultas.py,
     │                          #          app.py, .streamlit/config.toml)
-    └── chatbot/               # FASE 4 — Chatbot de consultas [ESQUELETO]
+    └── chatbot/               # FASE 4 — Chatbot de consultas (motor.py, api.py,
+                               #          sesion.py, datos.py, simulador.py,
+                               #          preguntas_generales.py, frontend/)
 ```
 
 ## Convenciones
@@ -46,7 +65,12 @@ Agente_RRHH/
 - **Imports relativos** dentro del paquete: `from ..core.config import ...`.
 - **Punto de entrada único**: `main.py` en la raíz. Los comandos de uso se
   documentan en `README.md`.
-- **Credenciales**: únicamente en `.env`; nunca hardcodear ni loguear secretos.
+- **Credenciales**: únicamente en `.env`; nunca hardcodear, loguear ni
+  versionar secretos. `tools/verificar_secretos.py` detecta claves/tokens en el
+  repo (patrones `gsk_`, `AIza...`, `AQ.Ab...` (claves Google 2025+), `sk-`,
+  `ghp_`, bloques de clave privada) y
+  está activado como hook pre-commit (`.githooks/pre-commit`); correrlo a mano
+  con `uv run python tools/verificar_secretos.py`.
 - **Estados de procesamiento** (definidos en `core/config.py`):
   `Listo para Evaluación`, `Error: Archivo Ilegible`,
   `Error: Formato No Permitido`, `Pendiente: Reintento IA`,
@@ -55,7 +79,8 @@ Agente_RRHH/
   Groq (`MODELO_EVALUADOR`/`PROVEEDOR_EVALUADOR`, default `openai/gpt-oss-120b`)
   a través de la fachada `core/llm.py` (único punto que toca APIs). La cuenta
   Groq no tiene habilitados los `llama-3.3-*`; consultar modelos con
-  `GET /openai/v1/models` antes de asumir disponibilidad.
+  `GET /openai/v1/models` antes de asumir disponibilidad. El chat F4 usa la
+  misma fachada con `PROVEEDOR_CHAT` (`gemini` o `groq`; vacío = offline, $0).
 - **1 llamada de IA por candidato** en F2; `uso_tokens` se guarda en el
   documento gold (sin agregador central; el control queda en el panel del
   proveedor).
@@ -77,7 +102,10 @@ Agente_RRHH/
 
 ```bash
 uv run python -m compileall -q src main.py
+uv run python tools/verificar_secretos.py   # anti-secretos (hook en commit)
 uv run python main.py --dry-run        # simula la ingesta sin gastar cuota
+uv run python main.py evaluar --dry-run # simula F2 sin gastar cuota
 uv run python main.py limpiar          # purga bronze (retención de .env)
 uv run python main.py dashboard --port 8510 &   # F3: boot + GET /_stcore/health
+uv run python main.py chat --port 8510 &        # F4: chatbot web (localhost)
 ```

@@ -7,6 +7,27 @@
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
+  <div class="login-screen" id="login-screen" hidden>
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-name">Área de Talento</div>
+          <div class="brand-sub">Acceso restringido</div>
+        </div>
+      </div>
+      <h1>Iniciar sesión</h1>
+      <p class="subtle">Este asistente solo está disponible para el área de RRHH.</p>
+      <form id="login-form">
+        <label for="login-usuario">Usuario</label>
+        <input id="login-usuario" type="text" autocomplete="username" required />
+        <label for="login-clave">Contraseña</label>
+        <input id="login-clave" type="password" autocomplete="current-password" required />
+        <p class="login-error" id="login-error" hidden></p>
+        <button class="primary full" id="btn-login" type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -35,6 +56,7 @@
         </button>
       </nav>
       <div class="sidebar-foot" id="sidebar-health"></div>
+      <button class="ghost" id="btn-salir" hidden>Salir</button>
     </aside>
 
     <main class="content">

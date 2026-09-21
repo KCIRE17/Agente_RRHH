@@ -733,7 +733,11 @@ class MotorChat:
             respuesta["uso"] = None
             respuesta["modo"] = "offline"
             return
-        api_key = self._cfg.groq_api_key if proveedor == "groq" else ""
+        api_key = (
+            self._cfg.gemini_api_key
+            if proveedor == "gemini"
+            else (self._cfg.groq_api_key if proveedor == "groq" else "")
+        )
         if not api_key:
             respuesta["uso"] = None
             respuesta["modo"] = "offline"

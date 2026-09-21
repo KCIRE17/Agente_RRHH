@@ -48,4 +48,4 @@ Reglas obligatorias:
 
 ## Texto del candidato
 
-{{texto_candidato}}
+{{texto_candidato}} 

@@ -7,10 +7,12 @@ Solo escucha en ``127.0.0.1`` (datos personales en local). El motor responde
 
 from __future__ import annotations
 
+import secrets
+import time
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -22,11 +24,19 @@ from .motor import MotorChat
 
 _FRONTEND = Path(__file__).resolve().parent / "frontend"
 
+# Vida útil de los tokens de sesión del login F4.
+_TOKEN_TTL_SEG = 12 * 3600
+
 
 # -------------------------------------------------------------- modelos pyd
 class MensajeChat(BaseModel):
     mensaje: str = Field(min_length=1, max_length=500)
     sesion_id: str = ""
+
+
+class Credenciales(BaseModel):
+    usuario: str = Field(min_length=1, max_length=64)
+    clave: str = Field(min_length=1, max_length=128)
 
 
 class PesosSimulacion(BaseModel):
@@ -47,11 +57,46 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
         "cfg": conf,
         "motor": None,
         "sesiones": sesion_mod.AlmacenSesiones(limite_ia=limite_ia),
+        "tokens": {},
     }
     estado["motor"] = MotorChat(estado["cfg"])
 
     def _motor() -> MotorChat:
         return estado["motor"]
+
+    # -------------------------------------------------------------- login
+    def _emitir_token() -> str:
+        token = secrets.token_urlsafe(32)
+        estado["tokens"][token] = time.time()
+        return token
+
+    def _token_valido(token: str | None) -> bool:
+        if not token:
+            return False
+        emitido = estado["tokens"].get(token)
+        if emitido is None:
+            return False
+        if time.time() - emitido > _TOKEN_TTL_SEG:
+            estado["tokens"].pop(token, None)
+            return False
+        return True
+
+    def _extraer_token(authorization: str | None) -> str:
+        if authorization and authorization.startswith("Bearer "):
+            return authorization[7:]
+        return ""
+
+    # Dependencia de auth para los endpoints de datos. Con login desactivado
+    # (sin credenciales en .env) el acceso queda abierto, con aviso visible.
+    def _requiere_login(
+        authorization: str | None = Header(default=None),
+    ) -> None:
+        if not estado["cfg"].login_habilitado:
+            return
+        if not _token_valido(_extraer_token(authorization)):
+            raise HTTPException(
+                status_code=401, detail="No autorizado: inicia sesión para continuar."
+            )
 
     @app.get("/api/health")
     def health() -> dict[str, Any]:
@@ -65,9 +110,43 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             "proveedor_chat": cfg.proveedor_chat or PROVEEDOR_CHAT_OFFLINE,
             "modelo_chat": cfg.modelo_chat,
             "limite_ia_demo": limite_ia,
+            "login": "habilitado" if cfg.login_habilitado else "desactivado",
         }
 
-    @app.get("/api/config")
+    @app.post("/api/login")
+    def login(body: Credenciales) -> dict[str, Any]:
+        cfg = estado["cfg"]
+        if not cfg.login_habilitado:
+            raise HTTPException(
+                status_code=503,
+                detail="Login desactivado: configura ADMIN_USUARIO y ADMIN_CLAVE en .env.",
+            )
+        if not cfg.verificar(body.usuario, body.clave):
+            raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+        return {
+            "token": _emitir_token(),
+            "usuario": cfg.admin_usuario,
+            "expira_horas": int(_TOKEN_TTL_SEG // 3600),
+        }
+
+    @app.post("/api/logout")
+    def logout(authorization: str | None = Header(default=None)) -> dict[str, Any]:
+        estado["tokens"].pop(_extraer_token(authorization), None)
+        return {"ok": True}
+
+    @app.get("/api/me")
+    def me(authorization: str | None = Header(default=None)) -> dict[str, Any]:
+        cfg = estado["cfg"]
+        if not cfg.login_habilitado:
+            return {"autenticado": False, "login_habilitado": False}
+        return {
+            "autenticado": _token_valido(_extraer_token(authorization)),
+            "login_habilitado": True,
+            "usuario": cfg.admin_usuario,
+            "expira_horas": int(_TOKEN_TTL_SEG // 3600),
+        }
+
+    @app.get("/api/config", dependencies=[Depends(_requiere_login)])
     def config_publica() -> dict[str, Any]:
         cfg = estado["cfg"]
         return {
@@ -78,7 +157,7 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             "limite_ia_demo": limite_ia,
         }
 
-    @app.post("/api/chat")
+    @app.post("/api/chat", dependencies=[Depends(_requiere_login)])
     def chat(body: MensajeChat) -> dict[str, Any]:
         cfg = estado["cfg"]
         sesion_id = body.sesion_id or estado["sesiones"].nueva()
@@ -95,11 +174,11 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
         respuesta["sesion_id"] = sesion_id
         return respuesta
 
-    @app.get("/api/vacantes")
+    @app.get("/api/vacantes", dependencies=[Depends(_requiere_login)])
     def vacantes() -> dict[str, Any]:
         return {"vacantes": datos.vacantes(estado["cfg"])}
 
-    @app.get("/api/ranking")
+    @app.get("/api/ranking", dependencies=[Depends(_requiere_login)])
     def ranking(carpeta: str = "") -> dict[str, Any]:
         cfg = estado["cfg"]
         vacs = datos.vacantes(cfg)
@@ -112,7 +191,7 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
         vacante_id, filas = datos.ranking(cfg, carpeta)
         return {"carpeta": carpeta, "vacante_id": vacante_id, "candidatos": filas}
 
-    @app.get("/api/brechas")
+    @app.get("/api/brechas", dependencies=[Depends(_requiere_login)])
     def brechas() -> dict[str, Any]:
         cfg = estado["cfg"]
         docs = datos.docs_evaluados(cfg)
@@ -131,7 +210,7 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             "brechas": [{"descripcion": b, "candidatos": c} for b, c in top],
         }
 
-    @app.post("/api/simular")
+    @app.post("/api/simular", dependencies=[Depends(_requiere_login)])
     def simular(body: PesosSimulacion) -> dict[str, Any]:
         pesos = {
             "habilidades": body.habilidades,
@@ -143,7 +222,7 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
         )
         return resultado
 
-    @app.get("/api/costos")
+    @app.get("/api/costos", dependencies=[Depends(_requiere_login)])
     def costos() -> dict[str, Any]:
         cfg = estado["cfg"]
         f2 = datos.tokens_f2(cfg)
@@ -161,11 +240,11 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             "offline": not (cfg.proveedor_chat or "").strip(),
         }
 
-    @app.get("/api/faq")
+    @app.get("/api/faq", dependencies=[Depends(_requiere_login)])
     def faq() -> dict[str, Any]:
         return {"preguntas": preguntas_generales.todas()}
 
-    @app.post("/api/sesiones/nueva")
+    @app.post("/api/sesiones/nueva", dependencies=[Depends(_requiere_login)])
     def nueva_sesion() -> dict[str, str]:
         return {"sesion_id": estado["sesiones"].nueva()}
 
