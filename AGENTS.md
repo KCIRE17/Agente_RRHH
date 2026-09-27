@@ -12,8 +12,13 @@ repositorio. Leer antes de modificar código.
 ```
 Agente_RRHH/
 ├── main.py                    # CLI raíz (punto de entrada único)
+├── INICIAR.bat                # arranque de un clic en Windows (entrega)
+├── iniciar.sh                 # arranque de un clic en macOS/Linux (entrega)
+├── ENTREGA.md                 # guía de un paso para quien recibe el proyecto
 ├── pyproject.toml             # dependencias (uv)
 ├── uv.lock                    # lockfile de dependencias (uv)
+├── requirements-full.txt      # dependencias completas (arranque local sin uv)
+├── requirements.txt           # subset mínimo del build de Vercel (solo F4)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # documentación completa del proyecto
 ├── PENDIENTES.md              # bitácora Scrum (pendientes / checkpoints)
@@ -46,7 +51,8 @@ Agente_RRHH/
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases (config,
     │                          # logging_setup, sanitizer, raw_store, json_store,
-    │                          # gold_store, vacantes, llm, prompts, costo)
+    │                          # gold_store, vacantes, llm, prompts, costo,
+    │                          # arranque)
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     ├── evaluation/            # FASE 2 — Match Score (Agente 2)
     ├── dashboard/             # FASE 3 — Dashboard Streamlit (consultas.py,
@@ -92,6 +98,11 @@ Agente_RRHH/
   (pesos 50/30/20, umbrales 80/50, clamps 0–100).
 - **Ejecución**: usar `uv run python main.py` (uv gestiona el entorno). El
   dashboard F3 se abre con `uv run python main.py dashboard [--port N]`.
+- **Entrega en otra laptop**: `INICIAR.bat` / `iniciar.sh` son lanzadores de
+  bootstrap (Python → `.venv` → `pip install -r requirements-full.txt` →
+  `main.py demo`); no replican lógica de negocio, la comparten en
+  `core/arranque.py`. `main.py demo` **nunca** sobrescribe un `.env` real ni
+  siembra `data_demo/` sobre datos existentes.
 - **Archivos personales**: `data/` y `logs/` no se suben a git
   (datos personales de candidatos). El dashboard F3 solo se ejecuta en red
   local.
@@ -106,6 +117,7 @@ uv run python tools/verificar_secretos.py   # anti-secretos (hook en commit)
 uv run python main.py --dry-run        # simula la ingesta sin gastar cuota
 uv run python main.py evaluar --dry-run # simula F2 sin gastar cuota
 uv run python main.py limpiar          # purga bronze (retención de .env)
-uv run python main.py dashboard --port 8510 &   # F3: boot + GET /_stcore/health
+uv run python main.py dashboard --port 8501 &   # F3: boot + GET /_stcore/health
 uv run python main.py chat --port 8510 &        # F4: chatbot web (localhost)
+uv run python main.py demo --sin-navegador      # F3+F4 a la vez (arranque de un clic)
 ```

@@ -83,7 +83,9 @@ documentación que no se pida.
 - **Idempotencia**:
   - F1: un JSON por candidato llamado `sha1(mensaje_id).json` en
     `data/silver/candidatos/`; si ya existe se omite y se marca el correo leído.
-  - F2: un candidato ya evaluado (gold) se omite en lotes siguientes.
+  - F2: un candidato ya evaluado (gold) se omite en lotes siguientes; el flag
+    `--re-evaluar` fuerza la re-evaluación (sobrescribe gold y recalcula el
+    ranking), útil para demostrar la F2 en vivo.
 - **Requisitos por vacante**: regla de negocio versionable en
   `config/vacantes/<SLUG>.json`. Slug = `vacante_id` en mayúsculas, sin tildes
   y con espacios → `_` (ej. `ANALISTA DE DATOS` → `ANALISTA_DE_DATOS.json`).
@@ -103,8 +105,12 @@ Crear **exactamente** este árbol (vacíos los directorios de datos y logs):
 ```
 agente_rrhh/
 ├── main.py                    # CLI raíz (punto de entrada único)
+├── INICIAR.bat                # arranque de un clic en Windows (entrega)
+├── iniciar.sh                 # arranque de un clic en macOS/Linux (entrega)
+├── ENTREGA.md                 # guía de un paso para quien recibe el proyecto
 ├── pyproject.toml             # dependencias (uv)
 ├── uv.lock                    # lockfile de dependencias (uv)
+├── requirements-full.txt      # dependencias completas (arranque local sin uv)
 ├── .python-version            # 3.12
 ├── .env.example               # plantilla de variables (sin secretos)
 ├── .gitignore                 # protege .env, data/, logs/ (NO data_demo/, que sí se versiona)
@@ -153,7 +159,8 @@ agente_rrhh/
     │   ├── vacantes.py        #   requisitos por vacante + slug
     │   ├── llm.py             #   fachada única de IA (Gemini/Groq + tokens)
     │   ├── prompts.py         #   carga de prompts .md + parseo JSON tolerante
-    │   └── costo.py           #   bitácora jsonl + cálculo de costos estimados
+    │   ├── costo.py           #   bitácora jsonl + cálculo de costos estimados
+    │   └── arranque.py        #   entrega de un clic: .env, siembra, puertos, estado
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     │   ├── __init__.py
     │   ├── imap_client.py     #   IMAP SSL, filtro asunto/fecha, BODY.PEEK[]
@@ -413,8 +420,8 @@ válido". Termina con `## Texto del candidato\n\n{{texto_candidato}}`.
 
 ### 4.4 `evaluation/pipeline_evaluacion.py`
 - Filtra silver por estado `Listo para Evaluación` (opcional `--vacante`),
-  omite ya evaluados (gold) y sin requisitos (aviso en log), evalúa **1 llamada
-  por candidato** y guarda el documento gold + ranking.
+  omite ya evaluados (gold, salvo `--re-evaluar`) y sin requisitos (aviso en
+  log), evalúa **1 llamada por candidato** y guarda el documento gold + ranking.
 - Errores de IA/JSON inválido → quedan en silver sin tocar y se marcan en el
   resumen como `Pendiente: Reintento Evaluación`.
 - El perfil que se envía a la IA es `{vacante_id, datos_contacto,
@@ -442,7 +449,7 @@ válido". Termina con `## Texto del candidato\n\n{{texto_candidato}}`.
 | Escenario | Acción del sistema | Estado |
 | :--- | :--- | :--- |
 | Sin requisitos para la vacante | Se omite y se avisa en el log | N/A |
-| Candidato ya evaluado | Se omite (idempotencia) | `Evaluado` (previo) |
+| Candidato ya evaluado | Se omite (idempotencia), salvo `--re-evaluar` | `Evaluado` (previo o el nuevo) |
 | Fallo de la API o JSON inválido | No se escribe gold; reintenta en el siguiente lote | `Pendiente: Reintento Evaluación` |
 | Éxito | Evaluación + ranking | `Evaluado` |
 
@@ -653,7 +660,7 @@ uv run python main.py --dry-run                # F1: sin gastar cuota ni guardar
 uv run python main.py --max 5                  # F1: máximo 5 correos
 uv run python main.py --programar              # F1: lote diario a HORA_INGESTA (loop)
 uv run python main.py limpiar [--dias 7]       # F1: purga bronze (retención .env)
-uv run python main.py evaluar [--vacante X] [--dry-run]   # F2
+uv run python main.py evaluar [--vacante X] [--dry-run] [--re-evaluar]  # F2
 uv run python main.py dashboard [--port 8501]  # F3: panel Streamlit (solo red local)
 uv run python main.py chat [--port 8510]       # F4: app web (solo localhost)
 ```
@@ -759,6 +766,11 @@ dependencies = [
       `[OK]` con 0 hallazgos; el hook `.githooks/pre-commit` bloquea (exit 1) un
       archivo en stage con una key falsa (`gsk_`/`AIza`/`AQ.Ab`) y aprueba uno
       limpio.
+- [ ] Entrega de un clic: `INICIAR.bat` / `iniciar.sh` completan el arranque en
+      una laptop sin `uv`; `main.py demo` levanta F3 y F4 a la vez, siembra
+      `data_demo/` en `data/` solo si está vacío, no sobrescribe un `.env`
+      existente, elige puertos libres e imprime el estado de las 4 fases. La
+      segunda ejecución arranca sin reinstalar dependencias.
 
 ---
 
@@ -769,6 +781,11 @@ además de regenerar el código, hay que ponerlo operativo. Ejecutar en orden:
 
 1. **Preparar el entorno**: asegurar Python 3.12 + `uv`; instalar con
    `uv sync` y validar con `uv run python -m compileall -q src main.py`.
+   **Atajo sin `uv`**: doble clic en `INICIAR.bat` (Windows) o `iniciar.sh`
+   (macOS/Linux) — localizan Python, crean `.venv`, instalan
+   `requirements-full.txt` y lanzan `main.py demo` (F3 + F4 con datos ficticios
+   y estado de las 4 fases). Para F1/F2 con IA real hay que dejar el `.env` del
+   responsable en la carpeta antes de entregarla, y borrarlo al terminar.
 2. **Credenciales**: copiar `.env.example` → `.env` y completar `EMAIL`/
    `API_EMAIL` (App Password), `GEMINI_API_KEY`, `GROQ_API_KEY` y, si se quiere
    proteger el chatbot, `ADMIN_USUARIO`/`ADMIN_CLAVE`. Nunca generar ni
@@ -788,6 +805,8 @@ además de regenerar el código, hay que ponerlo operativo. Ejecutar en orden:
      IA (`PROVEEDOR_CHAT`) y el proveedor responde `403 PERMISSION_DENIED`,
      cambiar de proveedor (p. ej. `groq`) — ver resguardo del §8.
    - `uv run python main.py limpiar` (purga de bronze).
+   - `uv run python main.py demo --sin-navegador` (F3 + F4 a la vez, verifica
+     que los dos puertos libres y que el estado de las 4 fases es el esperado).
 5. **Deploy Vercel (modo demo)**: el repo se construye solo con `vercel.json`/
    `runtime.txt`/`requirements.txt`; configurar como Env Vars unicamente
    `ADMIN_USUARIO`/`ADMIN_CLAVE` y opcionalmente `DEMO_CONSULTAS_IA`. **Dejar

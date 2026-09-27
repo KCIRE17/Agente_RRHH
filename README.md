@@ -82,8 +82,12 @@ tiers* de las APIs de IA).
 ```
 Agente_RRHH/
 ├── main.py                    # CLI raíz (punto de entrada único)
+├── INICIAR.bat                # arranque de un clic en Windows (entrega)
+├── iniciar.sh                 # arranque de un clic en macOS/Linux (entrega)
+├── ENTREGA.md                 # instrucción de un paso para quien recibe el proyecto
 ├── pyproject.toml             # dependencias (uv)
 ├── uv.lock                    # lockfile de dependencias (uv)
+├── requirements-full.txt      # dependencias completas (arranque local sin uv)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # este documento (documentación completa)
 ├── PENDIENTES.md              # bitácora Scrum de pendientes
@@ -127,7 +131,8 @@ Agente_RRHH/
     │   ├── prompts.py         # carga de prompts .md y parseo JSON de la IA
     │   ├── vacantes.py        # requisitos por vacante (config/vacantes/)
     │   ├── gold_store.py      # capa gold: evaluaciones + ranking, escritura atómica
-    │   └── costo.py           # bitácora jsonl + cálculo de costos estimados
+    │   ├── costo.py           # bitácora jsonl + cálculo de costos estimados
+    │   └── arranque.py        # entrega de un clic: .env, siembra demo, puertos, estado
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
     │   ├── imap_client.py     # IMAP SSL, filtro asunto/fecha, BODY.PEEK[]
     │   ├── extractor.py       # texto de PDF/DOCX/TXT/MD + errores (Ilegible/Formato)
@@ -425,6 +430,10 @@ Todo el panel usa **lenguaje del área de talento**: los términos internos
 - Una cuenta de Gmail dedicada al proceso de selección con **2FA activado**.
 - Sin dependencias externas de bases de datos (persistencia en archivos).
 
+> **¿Sin Python ni uv, o en otra laptop?** No hace falta nada de esto: doble
+> clic en **`INICIAR.bat`** (Windows) o **`iniciar.sh`** (macOS/Linux) y el
+> sistema se prepara solo. Ver §10.
+
 ### 7.2 Instalación de dependencias
 
 ```bash
@@ -442,6 +451,10 @@ uv add python-dotenv pdfplumber python-docx google-genai schedule
 | `streamlit` | Dashboard interactivo F3 (incluye pandas) |
 
 > `imaplib` (IMAP a Gmail) es parte de la librería estándar: no se instala.
+
+> Sin `uv`, el arranque de un clic instala el mismo conjunto con
+> `pip install -r requirements-full.txt` (de ahí el nombre: es el superset de
+> `requirements.txt`, que queda solo para el build de Vercel).
 
 ### 7.3 Variables del `.env`
 
@@ -536,9 +549,11 @@ uv run python main.py limpiar          # F1: purga bronze (retención del .env)
 uv run python main.py limpiar --dias 7 # F1: purga bronze de más de 7 días
 uv run python main.py evaluar [--vacante "ANALISTA DE DATOS"]  # F2: evaluación real
 uv run python main.py evaluar --dry-run            # F2: simula sin llamar a Groq
+uv run python main.py evaluar --re-evaluar         # F2: vuelve a evaluar (hay gold)
 uv run python main.py evaluar --verbose            # F2: logs DEBUG
 uv run python main.py dashboard [--port 8501]      # F3: panel Streamlit
 uv run python main.py chat [--port 8510]           # F4: chatbot web (localhost)
+uv run python main.py demo                         # F3 + F4 de una vez (ver §10)
 ```
 
 - **`--dry-run`**: extrae y sanitiza, pero **no llama a Gemini, no guarda en
@@ -550,6 +565,11 @@ uv run python main.py chat [--port 8510]           # F4: chatbot web (localhost)
 - **`evaluar`** lee silver (`Listo para Evaluación`), evalúa contra
   `config/vacantes/` y escribe `data/gold/`. Sin `--vacante` procesa todos los
   candidatos listos. `--dry-run` simula la evaluación sin llamar a Groq.
+  Por respeta la **idempotencia**: un candidato que ya tiene documento en
+  `gold/` se omite (no se vuelve a gastar cuota). Con **`--re-evaluar`** se
+  vuelve a evaluar aunque exista, sobrescribiendo el documento y recalculando
+  el `ranking.json` de la vacante (útil para demostrar la F2 en vivo sobre los
+  datos demo, que ya vienen evaluados).
 - **`dashboard`** abre el panel Streamlit en
   `http://localhost:8501` (puerto con `--port`). Se recomienda **solo red
   local**: muestra datos personales de candidatos.
@@ -562,6 +582,11 @@ uv run python main.py chat [--port 8510]           # F4: chatbot web (localhost)
   El flujo local usa `data/` por defecto. Para probar el **modo demo** (30+
   candidatos ficticios + límite de consultas IA):
   `set DATA_DIR=data_demo && uv run python main.py chat --port 8510`.
+- **`demo`** deja F3 y F4 levantados a la vez, siembra los datos ficticios de
+  `data_demo/` en `data/` (solo si no hay candidatos), imprime el estado de las
+  cuatro fases y abre el navegador en el chatbot. Es el comando que ejecutan
+  `INICIAR.bat` / `iniciar.sh` (§10): `--sin-navegador` no abre el navegador y
+  `--port` / `--port-dashboard` fijan los puertos.
 
 ### 7.5 Salidas
 
@@ -656,3 +681,56 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
   `ADMIN_CLAVE` en `.env`): credenciales conocidas solo por el responsable de
   RRHH, comparadas con `hmac.compare_digest` y nunca logueadas; los tokens de
   sesión expiran a las 12 h.
+
+---
+
+## 10. Entrega en otra laptop (arranque de un clic)
+
+Objetivo: **entregar la carpeta y que funcione con un doble clic**, sin pedirle
+a quien la recibe que instale Python, `uv` ni dependencias. Instructiones para
+el evaluador en **`ENTREGA.md`**; aquí el detalle técnico.
+
+### 10.1 Piezas
+
+| Archivo | Rol |
+| --- | --- |
+| `INICIAR.bat` | Windows: localiza Python 3.12 (o lo instala con `winget`), crea `.venv`, instala dependencias y lanza `main.py demo` |
+| `iniciar.sh` | Equivalente para macOS/Linux (`python3`, `.venv/bin`) |
+| `requirements-full.txt` | Dependencias completas para `pip` (superset de `requirements.txt`, que queda para Vercel) |
+| `src/agente_rrhh/core/arranque.py` | Lógica compartida: `.env`, siembra de datos, puertos libres, reporte de estado |
+| `ENTREGA.md` | Guía de una página para quien recibe el proyecto |
+
+### 10.2 Qué hace el arranque
+
+1. **Python**: busca `py -3.12`, `py -3` o `python` con versión ≥ 3.12; si no
+   existe, en Windows ofrece instalarlo con `winget` y reintenta.
+2. **Entorno**: valida que `.venv` funcione de verdad y, si no, lo rehace. Un
+   `.venv` copiado desde otra máquina tiene rutas absolutas obsoletas
+   (`pyvenv.cfg` apunta al Python de origen), así que la detección lo descarta y
+   lo reconstruye.
+3. **Dependencias**: `pip install -r requirements-full.txt`. Se omite en
+   ejecuciones posteriores mediante el sello `.venv/.deps_ok` (se regenera si el
+   archivo de requisitos es más nuevo).
+4. **`main.py demo`**: crea `.env` desde `.env.example` si falta (**nunca**
+   sobrescribe uno real), copia `data_demo/silver` y `data_demo/gold` a `data/`
+   **solo si no hay candidatos** (no toca datos reales), reserva el primer
+   puerto libre desde 8501 (F3) y 8510 (F4), imprime el estado de las cuatro
+   fases, abre el navegador en el chatbot y sirve ambas interfaces en
+   `127.0.0.1`.
+
+El sello y la siembra hacen que la **segunda** ejecución arranque en segundos.
+
+### 10.3 Fases con IA real en la laptop del evaluador
+
+F3 y F4 siempre levantan (con datos ficticios y costo $0). F1 y F2 en vivo
+requieren que el responsable deje su `.env` en la carpeta **antes** de
+entregarla; con las claves cargadas, `main.py evaluar --re-evaluar` corre la F2
+real sobre los candidatos de prueba y recalcula el ranking (sin ese flag la F2
+los omite, porque los datos demo ya traen evaluación). En `ENTREGA.md` §3 está el
+procedimiento y la advertencia de **borrar `.env` y rotar las claves** al
+terminar la entrega: el `.env` da acceso IMAP al buzón y consume cuota de las
+APIs. El *free tier* de Groq limita el ritmo (429 con reintento automático), así
+que 10 candidatos toman del orden de 2 minutos.
+
+> `.env` nunca se versiona: está en `.gitignore`, lo excluye `.vercelignore` y
+> `tools/verificar_secretos.py` bloquea cualquier commit que lo arrastre.

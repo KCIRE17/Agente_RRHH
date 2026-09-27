@@ -29,10 +29,12 @@ class PipelineEvaluacion:
         cfg: Config,
         dry_run: bool = False,
         vacante: str | None = None,
+        re_evaluar: bool = False,
     ) -> None:
         self._cfg = cfg
         self._dry_run = dry_run
         self._vacante = vacante
+        self._re_evaluar = re_evaluar
         self._store = JsonStore(cfg.silver_dir)
         self._gold = GoldStore(cfg.gold_dir) if not dry_run else None
         self._requisitos = RequisitosVacante(cfg.rutas_vacantes)
@@ -56,7 +58,13 @@ class PipelineEvaluacion:
             vacante_id = cand.get("vacante_id", "")
             id_cand = cand.get("id_candidato", "")
 
-            if self._gold is not None and self._gold.existe_evaluacion(vacante_id, id_cand):
+            # Sin `re_evaluar` se respeta la idempotencia de F2: un candidato con
+            # evaluación en gold no se vuelve a llamar a la IA (ahorra cuota).
+            if (
+                not self._re_evaluar
+                and self._gold is not None
+                and self._gold.existe_evaluacion(vacante_id, id_cand)
+            ):
                 LOG.info("Omitido (ya evaluado): %s", id_cand)
                 resumen["Omitido (ya evaluado)"] += 1
                 continue
