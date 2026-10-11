@@ -1,5 +1,6 @@
 {
   "vacante": "ANALISTA DE DATOS",
+  "max_candidatos": 0,
   "requisitos": {
     "habilidades": {
       "esenciales": [

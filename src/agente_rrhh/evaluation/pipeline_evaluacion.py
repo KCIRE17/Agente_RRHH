@@ -6,10 +6,13 @@ import json
 import logging
 from collections import Counter
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from .agente_evaluador import AgenteEvaluador, ErrorAgenteEvaluador
 from .reglas import clasificar, componer_puntaje
+from ..core import costo as costo_mod
+from ..core import habilidades as habilidades_mod
 from ..core.config import (
     ESTADO_EVALUADO,
     ESTADO_LISTO,
@@ -41,10 +44,15 @@ class PipelineEvaluacion:
         self._agente = AgenteEvaluador(
             cfg.groq_api_key, cfg.modelo_evaluador, cfg.prompt_evaluador
         )
+        self._diccionario = habilidades_mod.cargar_diccionario(
+            cfg.diccionario_habilidades
+        )
 
     def ejecutar(self) -> dict[str, Any]:
         resumen: Counter[str] = Counter()
         detalle: list[dict[str, Any]] = []
+        tokens_lote = {"prompt": 0, "completado": 0}
+        evaluados_por_vacante: Counter[str] = Counter()
 
         candidatos = self._store.candidatos(estado=ESTADO_LISTO)
         if self._vacante:
@@ -76,10 +84,23 @@ class PipelineEvaluacion:
                 resumen["Sin requisitos"] += 1
                 continue
 
+            limite = int(requisitos.get("max_candidatos") or 0)
+            if limite > 0 and evaluados_por_vacante[vacante_id] >= limite:
+                LOG.info(
+                    "Omitido (límite de %d por vacante alcanzado): %s %s",
+                    limite,
+                    vacante_id,
+                    id_cand,
+                )
+                resumen["Omitido (límite por vacante)"] += 1
+                continue
+
             perfil = self._construir_perfil(cand)
             try:
                 datos_ia, uso = self._agente.evaluar(
-                    perfil, requisitos, dry_run=self._dry_run
+                    perfil,
+                    self._requisitos_para_ia(requisitos),
+                    dry_run=self._dry_run,
                 )
             except ErrorAgenteEvaluador as exc:
                 LOG.warning("Fallo la evaluacion de %s: %s", vacante_id, exc)
@@ -95,6 +116,9 @@ class PipelineEvaluacion:
                 continue
 
             documento = self._construir_documento(cand, requisitos, datos_ia, uso)
+            evaluados_por_vacante[vacante_id] += 1
+            tokens_lote["prompt"] += int(uso.get("prompt", 0) or 0)
+            tokens_lote["completado"] += int(uso.get("completado", 0) or 0)
 
             if self._dry_run:
                 LOG.info("[DRY-RUN] %s -> %s", vacante_id, documento["estado_procesamiento"])
@@ -115,11 +139,48 @@ class PipelineEvaluacion:
             resumen[documento["estado_procesamiento"]] += 1
 
         LOG.info("Resumen de evaluacion: %s", dict(resumen))
+        self._registrar_resumen_lote(resumen, tokens_lote)
         return {
             "resumen": dict(resumen),
             "detalle": detalle,
             "total": len(candidatos),
+            "uso_tokens": dict(tokens_lote),
         }
+
+    def _requisitos_para_ia(self, requisitos: dict[str, Any]) -> dict[str, Any]:
+        """Copia los requisitos y añade el diccionario de niveles de habilidad.
+
+        La copia se pasa a la IA (dentro de ``requisitos_vacante``); el original
+        sigue guardándose en el gold sin este contexto adicional.
+        """
+        niveles = habilidades_mod.resumen_para_prompt(self._diccionario)
+        if not niveles:
+            return requisitos
+        enriquecido = dict(requisitos)
+        base = dict(enriquecido.get("requisitos") or {})
+        base["niveles_habilidad_valorados"] = niveles
+        enriquecido["requisitos"] = base
+        return enriquecido
+
+    def _registrar_resumen_lote(
+        self, resumen: Counter[str], tokens_lote: dict[str, int]
+    ) -> None:
+        """Acumula el uso de tokens del lote en data/gold/costo/uso_fase2.jsonl."""
+        if self._dry_run or self._gold is None:
+            return
+        candidatos = int(resumen.get(ESTADO_EVALUADO, 0))
+        if candidatos == 0 and not tokens_lote["prompt"] and not tokens_lote["completado"]:
+            return
+        costo_mod.registrar_resumen(
+            str(Path(self._cfg.gold_dir) / "costo" / "uso_fase2.jsonl"),
+            "evaluacion",
+            modelo=self._cfg.modelo_evaluador,
+            proveedor=PROVEEDOR_GROQ,
+            candidatos=candidatos,
+            prompt_tokens=tokens_lote["prompt"],
+            completado_tokens=tokens_lote["completado"],
+            ruta_tarifas=self._cfg.tarifas_costo,
+        )
 
     # -------------------------------------------------------------------- util
     def _construir_perfil(self, cand: dict[str, Any]) -> dict[str, Any]:

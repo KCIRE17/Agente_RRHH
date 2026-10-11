@@ -103,6 +103,7 @@ function activarVista(nombre) {
   if (nombre === "brechas") cargarBrechas();
   if (nombre === "costos") cargarCostos();
   if (nombre === "tecnica") cargarTecnica();
+  if (nombre === "traza") cargarTraza();
 }
 $$(".nav-item").forEach((b) => b.addEventListener("click", () => activarVista(b.dataset.view)));
 
@@ -166,6 +167,14 @@ function pushMsg(rol, texto, sugerencias = [], uso = null, aviso = null, faq = n
   el.querySelectorAll("[data-cmd]").forEach((c) =>
     c.addEventListener("click", () => enviar(c.dataset.cmd))
   );
+  logEl.appendChild(el);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function pushHistorial(rol, texto) {
+  const el = document.createElement("div");
+  el.className = `msg ${rol}`;
+  el.innerHTML = `<div class="bubble">${esc(texto)}</div>`;
   logEl.appendChild(el);
   logEl.scrollTop = logEl.scrollHeight;
 }
@@ -363,6 +372,79 @@ async function cargarTecnica() {
   } catch { cont.innerHTML = "<p class='subtle'>Sin datos disponibles.</p>"; }
 }
 
+/* ------------------------------------------------ traza del dato */
+async function cargarTraza() {
+  const selV = $("#traza-vacante");
+  const selC = $("#traza-candidato");
+  try {
+    if (!selV.options.length) {
+      const r = await api("/api/vacantes");
+      selV.innerHTML = (r.vacantes || [])
+        .map((v) => `<option value="${esc(v.carpeta)}">${esc(v.vacante_id)}</option>`)
+        .join("");
+      selV.onchange = () => cargarCandidatosTraza();
+      selC.onchange = () => mostrarTraza();
+    }
+    await cargarCandidatosTraza();
+  } catch {
+    $("#traza-pasos").innerHTML = "<p class='subtle'>Sin datos disponibles.</p>";
+  }
+}
+
+async function cargarCandidatosTraza() {
+  const selC = $("#traza-candidato");
+  try {
+    const r = await api(`/api/ranking?carpeta=${encodeURIComponent($("#traza-vacante").value)}`);
+    selC.innerHTML = (r.candidatos || [])
+      .map((c) => `<option value="${esc(c.id_candidato)}">${esc(c.nombre)} (${c.match_score})</option>`)
+      .join("");
+    if (selC.options.length) mostrarTraza();
+    else $("#traza-pasos").innerHTML = "<p class='subtle'>Sin candidatos en esta vacante.</p>";
+  } catch {
+    $("#traza-pasos").innerHTML = "<p class='subtle'>No se pudo cargar el ranking.</p>";
+  }
+}
+
+function _formatoValor(v) {
+  if (v === null || v === undefined || v === "") return "—";
+  if (typeof v === "object") return JSON.stringify(v);
+  return v;
+}
+
+async function mostrarTraza() {
+  const cont = $("#traza-pasos");
+  const vacante = $("#traza-vacante").value;
+  const candidato = $("#traza-candidato").value;
+  if (!vacante || !candidato) return;
+  cont.innerHTML = "<p class='subtle'>Cargando…</p>";
+  try {
+    const r = await api(
+      `/api/traza?carpeta=${encodeURIComponent(vacante)}&id_candidato=${encodeURIComponent(candidato)}`
+    );
+    const items = (r.pasos || []).map((p, i) => {
+      const detalle = Object.entries(p)
+        .filter(([k]) => !["fase", "nombre"].includes(k))
+        .map(([k, v]) => `<div><b>${esc(k)}</b>: ${esc(_formatoValor(v))}</div>`)
+        .join("");
+      return `<div class="tcard traza-paso">
+        <h4>${i + 1}. ${esc(p.fase)} · ${esc(p.nombre)}</h4>
+        <div class="meta">${detalle}</div>
+      </div>`;
+    }).join("");
+    const reg = r.reglas || {};
+    const pesos = reg.pesos || {};
+    cont.innerHTML = `<div class="card">
+      <h3>${esc(r.nombre || "")} — ${esc(r.vacante_id || "")}</h3>
+      <div class="tarjetas">${items}</div>
+      <p class="subtle">Pesos 50/30/20: Habilidades ${(pesos.habilidades * 100) || 0}% ·
+        Experiencia ${(pesos.experiencia * 100) || 0}% · Formación ${(pesos.formacion * 100) || 0}%.
+        Alta ≥ ${reg.umbral_alta ?? 80}, Media ≥ ${reg.umbral_media ?? 50}.</p>
+    </div>`;
+  } catch {
+    cont.innerHTML = "<p class='subtle'>No se pudo cargar la traza.</p>";
+  }
+}
+
 /* ------------------------------------------------ arranque */
 async function arrancarAplicacion() {
   try {
@@ -378,12 +460,24 @@ async function arrancarAplicacion() {
   } catch { /* sin servidor de salud */ }
   activarVista("chat");
   if (!logEl.children.length) {
-    if (!sesionId) {
-      try { const r = await api("/api/sesiones/nueva", { method: "POST" }); sesionId = r.sesion_id; localStorage.setItem("rrhh_sesion", sesionId); } catch {}
+    let restaurado = false;
+    if (sesionId) {
+      try {
+        const h = await api(`/api/sesiones/${encodeURIComponent(sesionId)}/historial`);
+        for (const m of h.historial || []) {
+          pushHistorial(m.rol === "usuario" ? "user" : "ai", m.texto);
+        }
+        restaurado = (h.historial || []).length > 0;
+      } catch { /* sesión no recuperable */ }
     }
-    pushMsg("ai",
-      "Hola. Soy el asistente del área de talento. Pregúntame por el ranking, un postulante, la fase técnica, brechas comunes, el origen de las postulaciones o los costos.",
-      ["¿Quienes pasan a fase tecnica?", "Ranking de ANALISTA DE DATOS", "¿Cuales son las brechas mas comunes?", "Ayuda"]);
+    if (!restaurado) {
+      if (!sesionId) {
+        try { const r = await api("/api/sesiones/nueva", { method: "POST" }); sesionId = r.sesion_id; localStorage.setItem("rrhh_sesion", sesionId); } catch {}
+      }
+      pushMsg("ai",
+        "Hola. Soy el asistente del área de talento. Pregúntame por el ranking, un postulante, la fase técnica, brechas comunes, el origen de las postulaciones o los costos.",
+        ["¿Quienes pasan a fase tecnica?", "Ranking de ANALISTA DE DATOS", "¿Cuales son las brechas mas comunes?", "Ayuda"]);
+    }
   }
   $("#chat-input").focus();
 }

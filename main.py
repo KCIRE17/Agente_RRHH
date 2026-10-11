@@ -5,6 +5,8 @@ Uso:
     uv run python main.py                 # lote real (IMAP + Gemini + JSON silver)
     uv run python main.py --dry-run       # prueba sin gastar cuota ni guardar datos
     uv run python main.py --max 5         # limita a 5 correos
+    uv run python main.py --desde-ultima  # busca correos desde la ultima fecha en silver
+    uv run python main.py resumen         # reporte de candidatos por vacante
     uv run python main.py --programar     # programa el lote diario a las 18:00
     uv run python main.py limpiar         # purga bronze (retención de .env)
     uv run python main.py limpiar --dias 7  # purga bronze de más de 7 días
@@ -18,7 +20,9 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import importlib.util
+import json
 import logging
 import subprocess
 import sys
@@ -31,6 +35,7 @@ from src.agente_rrhh.core.config import Config
 from src.agente_rrhh.core.logging_setup import configurar_logging
 from src.agente_rrhh.core.raw_store import RawStore
 from src.agente_rrhh.evaluation.pipeline_evaluacion import PipelineEvaluacion
+from src.agente_rrhh.ingestion import reporte
 from src.agente_rrhh.ingestion.imap_client import ImapClient
 from src.agente_rrhh.ingestion.pipeline import PipelineIngesta
 
@@ -41,11 +46,30 @@ RAIZ = Path(__file__).resolve().parent
 _ESPERA_NAVEGADOR_SEG = 3.0
 
 
-def ejecutar_lote(cfg: Config, dry_run: bool, max_mensajes: int | None) -> int:
+def ejecutar_lote(
+    cfg: Config,
+    dry_run: bool,
+    max_mensajes: int | None,
+    desde_ultima: bool = False,
+) -> int:
     faltantes = cfg.validar()
     if faltantes:
         LOG.error("Faltan variables requeridas en .env: %s", ", ".join(faltantes))
         return 1
+
+    if desde_ultima:
+        dias = reporte.dias_desde_ultima(cfg.silver_dir)
+        if dias is None:
+            LOG.info(
+                "Lote 'desde la ultima ejecucion': silver vacio, se usa "
+                "DIAS_ATRAS=%d.", cfg.dias_atras
+            )
+        else:
+            cfg = dataclasses.replace(cfg, dias_atras=dias)
+            LOG.info(
+                "Lote 'desde la ultima ejecucion': buscando correos de los "
+                "ultimos %d dias (ultima fecha en silver + margen).", dias
+            )
 
     if not cfg.gemini_api_key and not dry_run:
         LOG.warning(
@@ -87,6 +111,19 @@ def ejecutar_limpieza(cfg: Config, dias: int | None) -> int:
         len(deduplicadas),
         len(borrados),
     )
+    return 0
+
+
+def ejecutar_resumen(cfg: Config, como_json: bool = False) -> int:
+    datos = reporte.resumen_por_vacante(cfg.silver_dir)
+    if como_json:
+        print(json.dumps(datos, ensure_ascii=False, indent=2))
+    else:
+        print(f"Total de candidatos en silver: {datos['total']}")
+        for vacante, fila in datos["por_vacante"].items():
+            print(f"\n- {vacante}: {fila['total']} candidato(s)")
+            for estado, cantidad in sorted(fila["por_estado"].items()):
+                print(f"    {estado}: {cantidad}")
     return 0
 
 
@@ -226,15 +263,22 @@ def main() -> int:
     parser.add_argument(
         "comando",
         nargs="?",
-        choices=["limpiar", "evaluar", "dashboard", "chat", "demo"],
+        choices=["limpiar", "evaluar", "resumen", "dashboard", "chat", "demo"],
         help="'limpiar' purga bronze; 'evaluar' corre el Match Score (F2); "
-        "'dashboard' abre el panel F3; 'chat' abre el asistente web F4; "
+        "'resumen' reporta candidatos por vacante; 'dashboard' abre el panel F3; "
+        "'chat' abre el asistente web F4; "
         "'demo' deja F3 + F4 listos en el navegador (entrega de un clic).",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Simula el flujo sin llamar a la IA ni guardar en silver/gold.",
+    )
+    parser.add_argument(
+        "--desde-ultima",
+        action="store_true",
+        help="Con el lote de ingesta: busca correos desde la ultima fecha "
+        "procesada en silver (en vez de DIAS_ATRAS), para no perder correos.",
     )
     parser.add_argument(
         "--max",
@@ -284,6 +328,11 @@ def main() -> int:
         help="Programa la ejecución diaria a la hora HORA_INGESTA.",
     )
     parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Con 'resumen': imprime el reporte en JSON.",
+    )
+    parser.add_argument(
         "--verbose", action="store_true", help="Logs en nivel DEBUG."
     )
     args = parser.parse_args()
@@ -293,6 +342,9 @@ def main() -> int:
 
     if args.comando == "limpiar":
         return ejecutar_limpieza(cfg, args.dias)
+
+    if args.comando == "resumen":
+        return ejecutar_resumen(cfg, como_json=args.json)
 
     if args.comando == "evaluar":
         return ejecutar_evaluacion(
@@ -322,7 +374,7 @@ def main() -> int:
             schedule.run_pending()
             time.sleep(60)
 
-    return ejecutar_lote(cfg, args.dry_run, args.max)
+    return ejecutar_lote(cfg, args.dry_run, args.max, args.desde_ultima)
 
 
 if __name__ == "__main__":

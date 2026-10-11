@@ -1,0 +1,27 @@
+services:
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agente-rrhh-chatbot:latest
+    container_name: agente-rrhh-chatbot
+    ports:
+      - "8000:8000"
+    environment:
+      # Datos ficticios versionados; IA del chat offline por defecto ($0).
+      DATA_DIR: data_demo
+      PROVEEDOR_CHAT: ""
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    image: agente-rrhh-dashboard:latest
+    container_name: agente-rrhh-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      # Panel F3 con los datos ficticios (data_demo) para la demo.
+      DATA_DIR: data_demo
+    restart: unless-stopped

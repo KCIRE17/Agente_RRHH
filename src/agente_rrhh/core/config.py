@@ -44,6 +44,17 @@ def _parsear_int(valor: str | None, por_defecto: int) -> int:
         return por_defecto
 
 
+def _parsear_float(valor: str | None, por_defecto: float) -> float:
+    try:
+        return float(valor) if valor else por_defecto
+    except ValueError:
+        return por_defecto
+
+
+def _parsear_bool(valor: str | None) -> bool:
+    return (valor or "").strip().lower() in ("1", "true", "si", "sí", "yes", "on")
+
+
 @dataclass(frozen=True)
 class Config:
     email: str = ""
@@ -64,10 +75,31 @@ class Config:
     rutas_vacantes: str = "config/vacantes"
     proveedor_chat: str = PROVEEDOR_CHAT_OFFLINE
     modelo_chat: str = MODELO_CHAT_DEFAULT
+    openrouter_api_key: str = ""
+    cerebras_api_key: str = ""
+    ollama_base_url: str = "http://localhost:11434/v1"
     tarifas_costo: str = "config/tarifas.json"
+    diccionario_habilidades: str = "config/habilidades.json"
     consultas_ia_demo: int = CONSULTAS_IA_DEMO_DEFAULT
+    reintentos_ia: int = 2
+    espera_reintento_seg: float = 1.5
+    chat_persistencia: bool = False
     admin_usuario: str = ""
     admin_clave: str = ""
+
+    def clave_ia(self, proveedor: str) -> str:
+        """Devuelve la API key configurada para un proveedor de IA.
+
+        Ollama corre local y no requiere key real (se usa el marcador "ollama").
+        """
+        p = (proveedor or "").strip().lower()
+        return {
+            "gemini": self.gemini_api_key,
+            "groq": self.groq_api_key,
+            "openrouter": self.openrouter_api_key,
+            "cerebras": self.cerebras_api_key,
+            "ollama": "ollama",
+        }.get(p, "")
 
     @property
     def login_habilitado(self) -> bool:
@@ -154,13 +186,28 @@ class Config:
                 os.getenv("MODELO_CHAT") or MODELO_CHAT_DEFAULT
             ).strip()
             or MODELO_CHAT_DEFAULT,
+            openrouter_api_key=os.getenv("OPENROUTER_API_KEY", "").strip(),
+            cerebras_api_key=os.getenv("CEREBRAS_API_KEY", "").strip(),
+            ollama_base_url=(
+                os.getenv("OLLAMA_BASE_URL") or "http://localhost:11434/v1"
+            ).strip()
+            or "http://localhost:11434/v1",
             tarifas_costo=(
                 os.getenv("RUTA_TARIFAS") or "config/tarifas.json"
             ).strip()
             or "config/tarifas.json",
+            diccionario_habilidades=(
+                os.getenv("RUTA_HABILIDADES") or "config/habilidades.json"
+            ).strip()
+            or "config/habilidades.json",
             consultas_ia_demo=_parsear_int(
                 os.getenv("DEMO_CONSULTAS_IA"), CONSULTAS_IA_DEMO_DEFAULT
             ),
+            reintentos_ia=_parsear_int(os.getenv("IA_REINTENTOS"), 2),
+            espera_reintento_seg=_parsear_float(
+                os.getenv("IA_ESPERA_REINTENTO"), 1.5
+            ),
+            chat_persistencia=_parsear_bool(os.getenv("CHAT_PERSISTENCIA")),
             admin_usuario=os.getenv("ADMIN_USUARIO", "").strip(),
             admin_clave=os.getenv("ADMIN_CLAVE", "").strip(),
         )

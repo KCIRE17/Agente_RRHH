@@ -1,13 +1,21 @@
-"""Fachada unica de modelos de IA (Gemini F1, Groq F2) con medicion de tokens.
+"""Fachada unica de modelos de IA (Gemini, Groq y otros OpenAI-compatibles).
 
 Un solo punto de entrada ``generar_texto`` para hablar con cualquiera de los
 proveedores configurados. Cada llamada devuelve ademas los tokens consumidos,
 para auditar el uso por fase.
+
+Proveedores soportados:
+- ``gemini``     (Google GenAI SDK).
+- ``groq``       (OpenAI-compatible).
+- ``openrouter`` (OpenAI-compatible).
+- ``cerebras``   (OpenAI-compatible).
+- ``ollama``     (OpenAI-compatible, local; no requiere API key real).
 """
 
 from __future__ import annotations
 
 import logging
+import os
 from functools import lru_cache
 from typing import Any
 
@@ -15,10 +23,26 @@ LOG = logging.getLogger("agente_rrhh")
 
 PROVEEDOR_GEMINI = "gemini"
 PROVEEDOR_GROQ = "groq"
+PROVEEDOR_OPENROUTER = "openrouter"
+PROVEEDOR_CEREBRAS = "cerebras"
+PROVEEDOR_OLLAMA = "ollama"
 
-_URL_GROQ = "https://api.groq.com/openai/v1"
+# Base URL por proveedor OpenAI-compatible. Ollama se resuelve en runtime
+# (OLLAMA_BASE_URL) para permitir instancias locales/remotas.
+_URLS_OPENAI_COMPAT = {
+    PROVEEDOR_GROQ: "https://api.groq.com/openai/v1",
+    PROVEEDOR_OPENROUTER: "https://openrouter.ai/api/v1",
+    PROVEEDOR_CEREBRAS: "https://api.cerebras.ai/v1",
+}
+_OLLAMA_BASE_DEFAULT = "http://localhost:11434/v1"
 
-PROVEEDORES = {PROVEEDOR_GEMINI, PROVEEDOR_GROQ}
+PROVEEDORES_OPENAI_COMPAT = {
+    PROVEEDOR_GROQ,
+    PROVEEDOR_OPENROUTER,
+    PROVEEDOR_CEREBRAS,
+    PROVEEDOR_OLLAMA,
+}
+PROVEEDORES = {PROVEEDOR_GEMINI, *PROVEEDORES_OPENAI_COMPAT}
 
 
 class ErrorModelo(Exception):
@@ -32,11 +56,28 @@ def _cliente_gemini(api_key: str) -> Any | None:
     return Client(api_key=api_key) if api_key else None
 
 
-@lru_cache(maxsize=4)
-def _cliente_groq(api_key: str) -> Any | None:
+@lru_cache(maxsize=8)
+def _cliente_openai_compat(proveedor: str, api_key: str, base_url: str) -> Any | None:
     from openai import OpenAI
 
-    return OpenAI(api_key=api_key, base_url=_URL_GROQ) if api_key else None
+    if not api_key:
+        return None
+    kwargs: dict[str, Any] = {"api_key": api_key, "base_url": base_url}
+    if proveedor == PROVEEDOR_OPENROUTER:
+        # Identificacion recomendada por OpenRouter (opcional, sin secreto).
+        kwargs["default_headers"] = {
+            "HTTP-Referer": "https://github.com/KCIRE17/Agente_RRHH",
+            "X-Title": "Agente RRHH",
+        }
+    return OpenAI(**kwargs)
+
+
+def _base_url(proveedor: str) -> str:
+    if proveedor == PROVEEDOR_OLLAMA:
+        return (os.getenv("OLLAMA_BASE_URL") or _OLLAMA_BASE_DEFAULT).strip() or (
+            _OLLAMA_BASE_DEFAULT
+        )
+    return _URLS_OPENAI_COMPAT[proveedor]
 
 
 def _uso_gemini(respuesta: Any) -> dict[str, int]:
@@ -50,7 +91,7 @@ def _uso_gemini(respuesta: Any) -> dict[str, int]:
     }
 
 
-def _uso_groq(respuesta: Any) -> dict[str, int]:
+def _uso_openai_compat(respuesta: Any) -> dict[str, int]:
     uso = getattr(respuesta, "usage", None)
     if uso is None:
         return {"prompt": 0, "completado": 0, "total": 0}
@@ -76,8 +117,11 @@ def generar_texto(
     proveedores OpenAI-compatibles; ponlo en False para respuestas de chat en
     texto libre.
     """
+    proveedor = (proveedor or "").strip().lower()
     if proveedor not in PROVEEDORES:
         raise ErrorModelo(f"Proveedor de IA no soportado: {proveedor}")
+    if proveedor == PROVEEDOR_OLLAMA and not api_key:
+        api_key = PROVEEDOR_OLLAMA
     if not api_key:
         raise ErrorModelo(
             f"Falta la API key del proveedor '{proveedor}' en el archivo .env."
@@ -85,7 +129,9 @@ def generar_texto(
     LOG.debug("Llamada IA -> proveedor=%s modelo=%s", proveedor, modelo)
     if proveedor == PROVEEDOR_GEMINI:
         return _llamar_gemini(modelo, api_key, prompt, temperature)
-    return _llamar_groq(modelo, api_key, prompt, temperature, formato_json)
+    return _llamar_openai_compat(
+        proveedor, modelo, api_key, prompt, temperature, formato_json
+    )
 
 
 def _llamar_gemini(
@@ -108,16 +154,17 @@ def _llamar_gemini(
     return texto, _uso_gemini(respuesta)
 
 
-def _llamar_groq(
+def _llamar_openai_compat(
+    proveedor: str,
     modelo: str,
     api_key: str,
     prompt: str,
     temperature: float,
     formato_json: bool = True,
 ) -> tuple[str, dict[str, int]]:
-    cliente = _cliente_groq(api_key)
+    cliente = _cliente_openai_compat(proveedor, api_key, _base_url(proveedor))
     if cliente is None:
-        raise ErrorModelo("No se pudo construir el cliente Groq.")
+        raise ErrorModelo(f"No se pudo construir el cliente {proveedor}.")
     try:
         opciones: dict[str, Any] = {
             "model": modelo,
@@ -128,10 +175,10 @@ def _llamar_groq(
             opciones["response_format"] = {"type": "json_object"}
         respuesta = cliente.chat.completions.create(**opciones)
     except Exception as exc:
-        raise ErrorModelo(f"Fallo la llamada a Groq ({modelo}): {exc}") from exc
+        raise ErrorModelo(f"Fallo la llamada a {proveedor} ({modelo}): {exc}") from exc
     texto = (
         respuesta.choices[0].message.content if respuesta.choices else ""
     ) or ""
     if not texto.strip():
-        raise ErrorModelo("Groq devolvio una respuesta vacia.")
-    return texto, _uso_groq(respuesta)
+        raise ErrorModelo(f"{proveedor} devolvio una respuesta vacia.")
+    return texto, _uso_openai_compat(respuesta)

@@ -109,7 +109,11 @@ def main(argv: list[str] | None = None) -> int:
         if not ruta.is_file():
             continue
         for numero, etiqueta, patron, recorte in _revisar(ruta):
-            rel = ruta.relative_to(DIR_RAIZ) if ruta.is_absolute() else ruta
+            try:
+                rel = ruta.relative_to(DIR_RAIZ)
+            except ValueError:
+                # Archivo fuera del repo (p. ej. en /tmp): mostrar ruta absoluta.
+                rel = ruta
             print(f"{rel}:{numero}: {etiqueta} detectada -> {recorte} (patron {patron[:12]}...)")
             total += 1
 

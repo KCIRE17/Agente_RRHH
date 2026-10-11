@@ -1,0 +1,28 @@
+# Secretos y datos personales: NUNCA deben entrar en la imagen.
+.env
+.env.*
+!.env.example
+data/
+logs/
+
+# Entorno virtual y artefactos locales.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+tests/
+.pytest_cache/
+.deps_ok
+
+# Control de versiones, editor y SO.
+.git/
+.gitignore
+.githooks/
+.vscode/
+.idea/
+*.log
+
+# Documentos y entregables que no son runtime.
+*.docx
+*.pptx
+diagrama_arquitectura*

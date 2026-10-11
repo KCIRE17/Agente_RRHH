@@ -19,6 +19,7 @@ Agente_RRHH/
 ├── uv.lock                    # lockfile de dependencias (uv)
 ├── requirements-full.txt      # dependencias completas (arranque local sin uv)
 ├── requirements.txt           # subset mínimo del build de Vercel (solo F4)
+├── requirements-dev.txt       # dependencias de desarrollo (pytest)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # documentación completa del proyecto
 ├── PENDIENTES.md              # bitácora Scrum (pendientes / checkpoints)
@@ -44,16 +45,19 @@ Agente_RRHH/
 ├── vercel.json                # build @vercel/python + rutas
 ├── runtime.txt                # 3.12
 ├── requirements.txt           # subset mínimo para el build de Vercel
+├── requirements-dev.txt       # dependencias de desarrollo (pytest)
 ├── .vercelignore              # excluye .env*, data/, logs/, tools/
 ├── tools/
 │   ├── generar_datos_demo.py  # 30+ candidatos ficticios → data_demo/ (o --destino data)
 │   └── verificar_secretos.py  # escáner anti-secretos (hook pre-commit)
+├── tests/                     # suite pytest (F1-F4, core, tools)
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases (config,
     │                          # logging_setup, sanitizer, raw_store, json_store,
-    │                          # gold_store, vacantes, llm, prompts, costo,
-    │                          # arranque)
+    │                          # gold_store, vacantes, habilidades, reintentos,
+    │                          # llm, prompts, costo, arranque)
     ├── ingestion/             # FASE 1 — Ingesta y Extracción (Agente 1)
+    │                          #          (reporte.py: resumen/última fecha)
     ├── evaluation/            # FASE 2 — Match Score (Agente 2)
     ├── dashboard/             # FASE 3 — Dashboard Streamlit (consultas.py,
     │                          #          app.py, .streamlit/config.toml)
@@ -86,13 +90,18 @@ Agente_RRHH/
   a través de la fachada `core/llm.py` (único punto que toca APIs). La cuenta
   Groq no tiene habilitados los `llama-3.3-*`; consultar modelos con
   `GET /openai/v1/models` antes de asumir disponibilidad. El chat F4 usa la
-  misma fachada con `PROVEEDOR_CHAT` (`gemini` o `groq`; vacío = offline, $0).
+  misma fachada con `PROVEEDOR_CHAT` (`gemini`/`groq`/`openrouter`/`cerebras`/
+  `ollama`; vacío = offline, $0); la clave se resuelve con `Config.clave_ia`.
 - **1 llamada de IA por candidato** en F2; `uso_tokens` se guarda en el
-  documento gold (sin agregador central; el control queda en el panel del
-  proveedor).
+  documento gold. Además, `core/costo.registrar_resumen` acumula un resumen por
+  lote en `data/gold/costo/uso_fase2.jsonl` (expuesto en `GET /api/costos` como
+  `fase2_lotes`); el control fino sigue en el panel del proveedor.
 - **Requisitos por vacante**: solo en `config/vacantes/<SLUG>.json`
   (regla de negocio versionable). Slug = `vacante_id` en mayúsculas sin
   tildes y con espacios → `_`. Candidatos sin requisitos se omiten con aviso.
+  `max_candidatos` (0 = sin tope) limita cuántos se evalúan por lote; el
+  diccionario `config/habilidades.json` (niveles valorados) enriquece el
+  contexto que F2 manda a la IA.
 - **Puntaje y clasificación se calculan en código** (`core`/`evaluation/
   reglas.py`), nunca se cree ciegamente el `match_score` que devuelve la IA
   (pesos 50/30/20, umbrales 80/50, clamps 0–100).
@@ -114,6 +123,7 @@ Agente_RRHH/
 ```bash
 uv run python -m compileall -q src main.py
 uv run python tools/verificar_secretos.py   # anti-secretos (hook en commit)
+uv run pytest -q                       # suite de tests (contra data_demo)
 uv run python main.py --dry-run        # simula la ingesta sin gastar cuota
 uv run python main.py evaluar --dry-run # simula F2 sin gastar cuota
 uv run python main.py limpiar          # purga bronze (retención de .env)

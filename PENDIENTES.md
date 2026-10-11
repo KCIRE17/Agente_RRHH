@@ -62,15 +62,17 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 ### Backlog / mejoras futuras F1
 
-- [ ] 🟡 **Lote "desde la última ejecución"**: rastrear la última fecha
-  procesada en silver en lugar de depender de `DIAS_ATRAS` (evita perder
-  correos si no corre un día).
-- [ ] 🔵 **Reintento automático de `Pendiente: Reintento IA`** dentro del
-  mismo lote (backoff) en lugar de esperar al siguiente.
-- [ ] 🔵 **Resumen de vacantes**: reporte por `vacante_id` del total y
-  desglose de estados por lote.
-- [ ] 🔵 **Alertas en logs** cuando un archivo ilegible o formato no permitido
-  requiera revisión manual.
+- [x] 🟡 **Lote "desde la última ejecución"**: `main.py --desde-ultima` calcula
+  los días a buscar con `ingestion/reporte.dias_desde_ultima` (última fecha en
+  silver + margen) en lugar de depender de `DIAS_ATRAS`.
+- [x] 🔵 **Reintento automático de `Pendiente: Reintento IA`** dentro del
+  mismo lote con backoff (`core/reintentos.con_reintentos`, configurable con
+  `IA_REINTENTOS`/`IA_ESPERA_REINTENTO`).
+- [x] 🔵 **Resumen de vacantes**: `main.py resumen [--json]` y desglose
+  `por_vacante` en el retorno de `PipelineIngesta.ejecutar`
+  (`ingestion/reporte.resumen_por_vacante`).
+- [x] 🔵 **Alertas en logs** cuando un archivo ilegible o formato no permitido
+  requiera revisión manual (`PipelineIngesta._alertar_revision_manual`).
 
 ---
 
@@ -122,14 +124,19 @@ Actualizar este archivo al cerrar o abrir una tarea.
 
 ### Backlog / mejoras futuras F2
 
-- [ ] 🟡 **Diccionario de habilidades por nivel negocio** (`config/`): definir
-  qué nivel de cada herramienta representa valor real para la empresa (hoy la
-  coincidencia de habilidades se delega a la IA con `requisitos_evaluados`).
-- [ ] 🟡 **Límite de candidatos filtrados** por vacante (regla de negocio).
-- [ ] 🔵 **Lote "desde la última ejecución"** compartido con F1 (F1 puede
-  perder correos si no corre un día y F2 depende del estado silver).
-- [ ] 🔵 **Agregador de tokens**: si el consumo crece, acumular `uso_tokens`
-  por fase/lote en un resumen (hoy se controla en el panel del proveedor).
+- [x] 🟡 **Diccionario de habilidades por nivel negocio** (`config/habilidades.json`):
+  `core/habilidades.py` lo carga y F2 lo inyecta a la IA como
+  `niveles_habilidad_valorados` dentro de `requisitos_vacante` (el gold sigue
+  guardando los requisitos originales).
+- [x] 🟡 **Límite de candidatos filtrados** por vacante: campo
+  `max_candidatos` en `config/vacantes/<SLUG>.json` (0 = sin límite), aplicado
+  en `PipelineEvaluacion` con el estado `Omitido (límite por vacante)`.
+- [x] 🔵 **Lote "desde la última ejecución"** compartido con F1
+  (`main.py --desde-ultima`).
+- [x] 🔵 **Agregador de tokens**: resumen de tokens/costo por lote en
+  `data/gold/costo/uso_fase2.jsonl` (`core/costo.registrar_resumen`), expuesto
+  en `GET /api/costos` como `fase2_lotes`; el detalle por candidato sigue en el
+  gold (`uso_tokens`).
 
 ### Definición de listo F2
 
@@ -234,6 +241,21 @@ offline, cero tokens).
   login desactivado con aviso en la UI (no bloquea pruebas). F3 no pide login
   (decisión MVP). Doc: README §7.3/§7.4/§8/§9, `.env.example`,
   `PROMPT_GENERADOR_SISTEMA.md` §1/§6/§7/§8/§13/§14.
+- [x] 🟡 **Docker del MVP (F4)**: `Dockerfile` (`python:3.12-slim` +
+  `requirements.txt` del chatbot, `DATA_DIR=data_demo`, offline $0),
+  `.dockerignore` (excluye `.env*`/`data/`/`logs/`/`.venv/`/`.git/` y entregables)
+  y `docker-compose.yml` (servicios `chatbot` en `:8000` + `dashboard` F3 en
+  `:8501` con `Dockerfile.dashboard`/`requirements-full.txt`). Verificado: build
+  OK (chatbot 238 MB), `/api/health` = offline, `/api/vacantes` y SPA = 200,
+  `/_stcore/health` = ok en F3 y lectura de gold (`data_demo`, 3 vacantes × 10)
+  desde el contenedor; `.env`/`data` ausentes de ambas imágenes. Cierra la
+  observación G3 (Dockerfile/compose) del cuestionario.
+- [x] 🔵 **Suite de pruebas (pytest)**: `tests/` con **100 casos** contra
+  `data_demo` (F1 extracción/persistencia, F2 reglas/vacantes, F3 consultas,
+  F4 API/motor, `core.costo`, `tools.verificar_secretos`); config en
+  `pyproject.toml` (`[tool.pytest.ini_options]`) + `requirements-dev.txt`;
+  `pytest` → 100 passed. Incluye fix de robustez en `verificar_secretos.py`
+  al escanear rutas fuera del repo.
 
 ### Definición de listo F4
 
@@ -243,12 +265,37 @@ offline, cero tokens).
 
 ### Backlog / mejoras futuras F4
 
-- [ ] 🔵 **Persistencia de sesiones**: pasar el contexto ligero a archivo para
-  no perder la entidad en foco al reiniciar el proceso.
-- [ ] 🔵 **Historial del chat** opcional (hoy se priva al recargar la página).
-- [ ] 🟡 **Más proveedores de chat**: además de `gemini`/`groq`, sumar
-  OpenRouter/Cerebras/Ollama añadiendo su cliente en `core/llm.py` respetando
-  la fachada (el selector del motor ya es genérico por proveedor).
+- [x] 🔵 **Persistencia de sesiones**: `AlmacenSesiones(dir_persistencia=...)`
+  serializa cada sesión a `data/gold/chat_sesiones/<sesion_id>.json` y la
+  recupera al reabrir. Desactivada por defecto; se activa con
+  `CHAT_PERSISTENCIA=1`.
+- [x] 🔵 **Historial del chat** opcional: cada sesión guarda sus turnos y la SPA
+  los restaura al recargar (`GET /api/sesiones/{id}/historial`).
+- [x] 🟡 **Más proveedores de chat**: además de `gemini`/`groq`, F4 usa
+  `openrouter`, `cerebras` y `ollama` vía `core/llm.py` (`Config.clave_ia`;
+  `OPENROUTER_API_KEY`, `CEREBRAS_API_KEY`, `OLLAMA_BASE_URL`).
+- [x] 🔴 **Endpoint de trazabilidad** `GET /api/traza` (E9): recorrido
+  auditable correo → silver (F1) → gold/ranking (F2) → chatbot (F4) por
+  candidato, visible en la vista **Traza del dato** de la SPA.
+
+---
+
+## Deploy público en Vercel — EN LÍNEA (requisito del Word de entrega)
+
+🔗 **URL pública: https://agente-rrhh-five.vercel.app/**
+
+- [x] 🔴 **MVP subido a Vercel con URL `*.vercel.app`** (A5 del cuestionario,
+  requisito eliminatorio "demostrable en línea"). Config: `api/index.py` +
+  `vercel.json` + `runtime.txt` + `requirements.txt` + `.vercelignore` +
+  `data_demo/`. URL anotada en `README.md` §8 (`URL_DEPLOY`).
+- [ ] 🔴 **Video demostrativo 3–5 min** (A7): flujo F1→F2→F3→F4 + la URL en
+  línea, subido a YouTube/Drive.
+- [x] 🔴 **Datos del equipo** (A1, A2, A3, J2 del cuestionario). `D5` ya
+  tiene diagrama: `diagrama_arquitectura_agente_rrhh.png` (imagen en la raíz del repo).
+- [ ] 🔵 **Sincronizar `PROVEEDOR_CHAT` en Vercel**: la URL pública responde
+  `"modo":"groq"` (hay Env Var de IA cargada). Para el MVP $0 hay que dejar
+  `PROVEEDOR_CHAT` **vacío** en Settings → Environment Variables. La decisión y
+  la acción viven en el panel de Vercel (fuera del alcance del repo).
 
 ---
 
@@ -272,3 +319,8 @@ offline, cero tokens).
 | 2026-09-20 | Coherencia PROMPT ↔ proyecto: `PROMPT_GENERADOR_SISTEMA.md` corregido (campo `justificacion` en el gold, `sugerencia_clasificacion(clasificacion)`, `uv.lock` en el árbol); AGENTS y README sincronizados (chatbot F4 completo, `costo.py`, `tarifas.json`/`data_demo`/deploy/`tools`, patrón `AQ.Ab`, `prompt/chatbot.md`, defaults `PROVEEDOR_CHAT` vacío y `MODELO_CHAT=openai/gpt-oss-120b`); verificado con `compileall` + `verificar_secretos.py` | ✅ |
 | 2026-09-26 | **Entrega en una laptop con un clic**: `INICIAR.bat` / `iniciar.sh` (detección de Python 3.12 o `winget`, `.venv`, `pip install -r requirements-full.txt` con sello `.deps_ok`), `main.py demo` (siembra `data_demo/`→`data/` solo si no hay candidatos, `.env` desde `.env.example` sin sobrescribir el real, puertos libres desde 8501/8510, estado de las 4 fases, navegador abierto), `core/arranque.py` como lógica compartida, `ENTREGA.md` para el evaluador, README §10; verificado con `compileall` + arranque real (F4 `/api/health` y `/api/ranking` 200, F3 `/_stcore/health` ok) | ✅ |
 | 2026-09-26 | F2 demostrable en vivo: flag `--re-evaluar` (`PipelineEvaluacion` + CLI) para reevaluar candidatos que ya tienen gold — sin él la F2 omite los datos demo y no había forma de mostrar la fase con IA real. Verificado con Groq real: 10 candidatos de ANALISTA DE DATOS, scores 55-90, `uso_tokens` 2463 y `ranking.json` recalculado (el free tier devuelve 429 y el SDK reintenta solo) | ✅ |
+| 2026-10-10 | Diagrama de arquitectura construida como imagen (`diagrama_arquitectura_agente_rrhh.png`, Pillow, sin desbordes de texto) + D5 del cuestionario completado + referencia en README §3; deploy Vercel documentado como **pendiente** (config y build verificados localmente con `data_demo`: health/vacantes/ranking = 200) | ✅ |
+| 2026-10-10 | **Deploy en línea**: MVP desplegado en Vercel → `https://agente-rrhh-five.vercel.app/`; `URL_DEPLOY` actualizada en README §8, ítems de Vercel y datos del equipo cerrados en PENDIENTES; F4 corregida a ✅ en la tabla de fases del README. Pendiente único: video demostrativo (A7) | ✅ |
+| 2026-10-10 | **Docker F3 + F4**: `Dockerfile` (chatbot offline $0) + `Dockerfile.dashboard` (Streamlit con `requirements-full`) + `docker-compose.yml` con ambos servicios; verificado con build real (F4 238 MB), `/api/health`=offline, `/api/vacantes` y SPA 200, `/_stcore/health`=ok, lectura de gold desde el contenedor (3 vacantes × 10) y ausencia de `.env`/`data` en las imágenes; README §8.5 actualizado. Cierra G3 del cuestionario | ✅ |
+| 2026-10-10 | **Suite de pruebas (pytest)**: `tests/` con 100 tests contra `data_demo` (F1 extracción/persistencia, F2 reglas/vacantes, F3 consultas, F4 API/motor, `core.costo`, `tools.verificar_secretos`); `[tool.pytest.ini_options]` en `pyproject.toml` + extra `dev` + `requirements-dev.txt`; fix de robustez en `verificar_secretos.py` (rutas fuera del repo). `pytest` → 100 passed; README §8.6. Cierra I1 del cuestionario | ✅ |
+| 2026-10-11 | **Backlog F1/F2/F4 cerrado**: F1 (`--desde-ultima`, backoff `core/reintentos.py`, `resumen` por vacante, alertas de revisión manual); F2 (`max_candidatos` por vacante, `config/habilidades.json` + `core/habilidades.py`, agregador de tokens `uso_fase2.jsonl`); F4 multi-proveedor (`openrouter`/`cerebras`/`ollama` en `core/llm.py` + `Config.clave_ia`), historial y persistencia opcional de sesiones, `GET /api/traza` + vista "Traza del dato" en la SPA. `tests/test_nuevas_capacidades.py` (24 tests nuevos) → `pytest` **124 passed**. Docs: README §4/§5/§8, AGENTS, `.env.example`, PENDIENTES | ✅ |

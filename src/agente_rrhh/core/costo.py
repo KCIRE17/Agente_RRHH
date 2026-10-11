@@ -118,3 +118,47 @@ def resumir(usos: list[dict[str, Any]]) -> dict[str, Any]:
         "total_tokens": total,
         "costo_usd": round(costo, 8),
     }
+
+
+def registrar_resumen(
+    ruta_jsonl: str | Path,
+    fase: str,
+    *,
+    modelo: str = "",
+    proveedor: str = "",
+    candidatos: int = 0,
+    prompt_tokens: int = 0,
+    completado_tokens: int = 0,
+    ruta_tarifas: str | Path = "config/tarifas.json",
+    **extra: Any,
+) -> dict[str, Any]:
+    """Registra el resumen agregado de tokens de un lote (una linea por lote).
+
+    Complementa a ``registrar_uso`` (una linea por llamada): permite auditar el
+    uso acumulado de F2 por fase/lote sin perder el detalle por candidato, que
+    sigue guardado en cada documento gold (``uso_tokens``).
+    """
+    total = int(prompt_tokens) + int(completado_tokens)
+    registro: dict[str, Any] = {
+        "fecha": _ahora_iso(),
+        "fase": fase,
+        "tipo": "resumen_lote",
+        "proveedor": proveedor,
+        "modelo": modelo,
+        "candidatos": int(candidatos),
+        "prompt_tokens": int(prompt_tokens),
+        "completado_tokens": int(completado_tokens),
+        "total_tokens": total,
+        "costo_usd": calcular_costo(
+            int(prompt_tokens), int(completado_tokens), modelo, ruta_tarifas
+        ),
+    }
+    registro.update(extra)
+    ruta = Path(ruta_jsonl)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with ruta.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(registro, ensure_ascii=False) + "\n")
+    except OSError as exc:
+        LOG.warning("No se pudo registrar el resumen en %s: %s", ruta, exc)
+    return registro

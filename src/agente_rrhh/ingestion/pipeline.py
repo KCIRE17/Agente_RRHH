@@ -26,6 +26,7 @@ from ..core.config import (
     Config,
 )
 from ..core.raw_store import RawStore
+from ..core.reintentos import con_reintentos
 from ..core.sanitizer import sanitizar
 from ..core.json_store import JsonStore
 
@@ -48,10 +49,23 @@ class PipelineIngesta:
         self._raw = RawStore(cfg.bronze_dir)
         self._bd: JsonStore | None = JsonStore(cfg.silver_dir) if not dry_run else None
 
+    def _extraer_ia(self, texto: str) -> dict[str, Any]:
+        """Extrae con la IA reintentando (backoff) ante fallos transitorios."""
+        if self._dry_run:
+            return self._agente.extraer(texto, dry_run=True)
+        return con_reintentos(
+            lambda: self._agente.extraer(texto),
+            intentos=max(1, self._cfg.reintentos_ia),
+            espera_base=self._cfg.espera_reintento_seg,
+            excepciones=(ErrorAgenteExtractor,),
+            etiqueta="extraccion IA",
+        )
+
     # ------------------------------------------------------------------ flujo
     def ejecutar(self, imap: ImapClient) -> dict[str, Any]:
         """Reintentos pendientes primero y luego la ingesta de correos nuevos."""
         resumen: Counter[str] = Counter()
+        por_vacante: dict[str, Counter[str]] = {}
         detalle: list[dict[str, Any]] = []
 
         if not self._dry_run:
@@ -100,10 +114,33 @@ class PipelineIngesta:
                 )
 
             resumen[documento["estado_procesamiento"]] += 1
+            por_vacante.setdefault(post.vacante_id or "Sin vacante", Counter())[
+                documento["estado_procesamiento"]
+            ] += 1
 
         LOG.info("Total de correos procesados en este lote: %d", len(postulaciones))
         LOG.info("Resumen del lote: %s", dict(resumen))
-        return {"resumen": dict(resumen), "detalle": detalle, "total": len(postulaciones)}
+        self._alertar_revision_manual(resumen)
+        return {
+            "resumen": dict(resumen),
+            "por_vacante": {v: dict(c) for v, c in sorted(por_vacante.items())},
+            "detalle": detalle,
+            "total": len(postulaciones),
+        }
+
+    def _alertar_revision_manual(self, resumen: Counter[str]) -> None:
+        """Avisa en logs cuando hay archivos que requieren revisión humana."""
+        alertas = []
+        if resumen.get(ESTADO_ILEGIBLE):
+            alertas.append(f"{resumen[ESTADO_ILEGIBLE]} archivo(s) ilegible(s)")
+        if resumen.get(ESTADO_FORMATO):
+            alertas.append(f"{resumen[ESTADO_FORMATO]} con formato no permitido")
+        if alertas:
+            LOG.warning(
+                "ALERTA: revisión manual requerida -> %s. Revisa data/bronze y "
+                "los adjuntos originales; corrige o pide al candidato reenviar.",
+                "; ".join(alertas),
+            )
 
     # ------------------------------------------------------------- candidato
     def _procesar_postulacion(self, post: Postulacion) -> dict[str, Any] | None:
@@ -158,13 +195,13 @@ class PipelineIngesta:
         datos_json = None
         if estado == ESTADO_LISTO:
             try:
-                datos_json = self._agente.extraer(texto_limpio, dry_run=self._dry_run)
+                datos_json = self._extraer_ia(texto_limpio)
             except ErrorAgenteExtractor as exc:
                 if self._dry_run:
                     raise
                 estado = ESTADO_REINTENTO
                 motivo = str(exc)
-                LOG.warning("Fallo Gemini para %s; queda para reintento.", post.asunto)
+                LOG.warning("Fallo la extraccion IA para %s; queda para reintento.", post.asunto)
 
         return self._construir_documento(
             post, origen, texto_limpio, estado, datos_json, motivo, ruta_raw
@@ -236,7 +273,7 @@ class PipelineIngesta:
         for registro in pendientes:
             texto = registro.get("texto_crudo") or ""
             try:
-                datos = self._agente.extraer(texto)
+                datos = self._extraer_ia(texto)
             except ErrorAgenteExtractor as exc:
                 LOG.warning("Reintento fallido para %s: %s",
                             registro.get("mensaje_id"), exc)

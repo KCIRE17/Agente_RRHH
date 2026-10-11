@@ -21,7 +21,7 @@ tiers* de las APIs de IA).
 | **F1** | Ingesta y Extracción de Candidaturas | Agente 1 (Gemini, por `MODELO_GEMINI`) | ✅ Implementada |
 | **F2** | Evaluación y Match Score | Agente 2 (Groq, por `MODELO_EVALUADOR`/`PROVEEDOR_EVALUADOR`) | ✅ Implementada |
 | **F3** | Dashboard y Visualización (Streamlit) | — | ✅ Implementada |
-| **F4** | Chatbot de consultas de RRHH | — | 🟡 Esqueleto |
+| **F4** | Chatbot de consultas de RRHH | — | ✅ Implementada |
 
 > El estado y los pendientes de cada fase se controlan en **`PENDIENTES.md`**
 > (bitácora Scrum).
@@ -79,6 +79,13 @@ tiers* de las APIs de IA).
 
 ## 3. Arquitectura y estructura del proyecto
 
+> **Diagrama de arquitectura**: `diagrama_arquitectura_agente_rrhh.png`
+> (2560×1440) y `diagrama_arquitectura_agente_rrhh.svg` (vectorial), en la raíz del repo,
+> muestran el flujo y los componentes tal como están construidos — Candidato →
+> Gmail IMAP → Agente 1 (Gemini) → bronze/silver → Agente 2 (Groq + reglas.py)
+> → gold/ranking → F3 (Streamlit) y Agente 3 (F4 chatbot, Vercel), con `core/`,
+> `config/vacantes + prompt/`, y los dos despliegues (local y Vercel).
+
 ```
 Agente_RRHH/
 ├── main.py                    # CLI raíz (punto de entrada único)
@@ -88,6 +95,7 @@ Agente_RRHH/
 ├── pyproject.toml             # dependencias (uv)
 ├── uv.lock                    # lockfile de dependencias (uv)
 ├── requirements-full.txt      # dependencias completas (arranque local sin uv)
+├── requirements-dev.txt       # dependencias de desarrollo (pytest)
 ├── .env                       # credenciales (NO subir a git)
 ├── README.md                  # este documento (documentación completa)
 ├── PENDIENTES.md              # bitácora Scrum de pendientes
@@ -103,6 +111,7 @@ Agente_RRHH/
 │   └── chatbot.md             #   narrativa opcional del chat (F4)
 ├── config/
 │   ├── tarifas.json           #   tarifas $/1M tokens (costos del chatbot)
+│   ├── habilidades.json       #   nivel valorado por habilidad (regla de negocio F2)
 │   └── vacantes/              #   requisitos por vacante (regla de negocio)
 │       ├── ANALISTA_DE_DATOS.json
 │       ├── DESARROLLADOR_BACKEND.json
@@ -120,6 +129,7 @@ Agente_RRHH/
 ├── tools/
 │   ├── generar_datos_demo.py  # 30+ candidatos ficticios → data_demo/ (o --destino data)
 │   └── verificar_secretos.py  # escáner anti-secretos (hook pre-commit)
+├── tests/                     # suite pytest (F1-F4, core, tools)
 └── src/agente_rrhh/
     ├── core/                  # base común a TODAS las fases
     │   ├── config.py          # .env, estados, parámetros (DATA_DIR, ASUNTO, ...)
@@ -127,9 +137,11 @@ Agente_RRHH/
     │   ├── sanitizer.py       # normalización de texto (sin tildes, UTF-8)
     │   ├── raw_store.py       # capa bronze: originales + purga/dedupe
     │   ├── logging_setup.py   # logging consola + archivo
-    │   ├── llm.py             # fachada IA: Gemini o Groq (+ uso de tokens)
+    │   ├── llm.py             # fachada IA: Gemini/Groq/OpenRouter/Cerebras/Ollama
     │   ├── prompts.py         # carga de prompts .md y parseo JSON de la IA
     │   ├── vacantes.py        # requisitos por vacante (config/vacantes/)
+    │   ├── habilidades.py     # diccionario de niveles por habilidad (F2)
+    │   ├── reintentos.py      # backoff exponencial para la extracción IA (F1)
     │   ├── gold_store.py      # capa gold: evaluaciones + ranking, escritura atómica
     │   ├── costo.py           # bitácora jsonl + cálculo de costos estimados
     │   └── arranque.py        # entrega de un clic: .env, siembra demo, puertos, estado
@@ -137,11 +149,12 @@ Agente_RRHH/
     │   ├── imap_client.py     # IMAP SSL, filtro asunto/fecha, BODY.PEEK[]
     │   ├── extractor.py       # texto de PDF/DOCX/TXT/MD + errores (Ilegible/Formato)
     │   ├── agent_extractor.py # Gemini: texto → JSON (prompt desde prompt/)
+    │   ├── reporte.py         # resumen por vacante + "desde la última ejecución"
     │   └── pipeline.py        # orquestación del lote + reintentos IA
     ├── evaluation/            # FASE 2 — Match Score (Agente 2)
     │   ├── reglas.py          # pesos 50/30/20 y umbrales Alta/Media/Baja
     │   ├── agente_evaluador.py# Groq: perfil + requisitos → JSON (prompt/ing)
-    │   └── pipeline_evaluacion.py # silver "Listo" → gold (evaluación + ranking)
+    │   └── pipeline_evaluacion.py # silver "Listo" → gold (límite, tokens, ranking)
     ├── dashboard/             # FASE 3 — Dashboard Streamlit
     │   ├── consultas.py       #   lectura gold/silver (sin UI)
     │   └── app.py             #   UI (Ranking de postulantes / Postulante /
@@ -149,7 +162,7 @@ Agente_RRHH/
     └── chatbot/               # FASE 4 — Chatbot de consultas (FastAPI + SPA)
         ├── api.py             #   FastAPI + endpoints + SPA
         ├── motor.py           #   motor code-first (clasificador + utilidades)
-        ├── sesion.py          #   contexto ligero por sesión + límite IA demo
+        ├── sesion.py          #   contexto por sesión + historial + persistencia
         ├── datos.py           #   acceso a silver/gold (reutiliza consultas)
         ├── simulador.py       #   re-pesaje del score sin IA
         ├── preguntas_generales.py # FAQ de respaldo (fallback)
@@ -306,6 +319,7 @@ El directorio se configura con `RUTA_VACANTES`.
 ```json
 {
   "vacante_id": "ANALISTA DE DATOS",
+  "max_candidatos": 0,
   "requisitos": {
     "habilidades": {
       "esenciales": ["Python", "Microsoft SQL Server", "Power BI", "Excel",
@@ -323,6 +337,16 @@ El directorio se configura con `RUTA_VACANTES`.
   }
 }
 ```
+
+- **`max_candidatos`** (opcional, 0 = sin límite): tope de candidatos a evaluar
+  por vacante y lote (regla de negocio para controlar cuota). Los omitidos
+  quedan como `Omitido (límite por vacante)`.
+- **Diccionario de habilidades** (`config/habilidades.json`, `RUTA_HABILIDADES`):
+  define el **nivel que agrega valor** para cada herramienta
+  (básico/intermedio/avanzado/experto). F2 lo inyecta a la IA como
+  `niveles_habilidad_valorados` dentro de `requisitos_vacante`; el documento gold
+  conserva los requisitos originales (sin ese contexto). La coincidencia de
+  habilidades sigue delegada a la IA.
 
 Un candidato sin requisitos configurados para su vacante se omite con aviso en
 el log (el documento gold guarda los requisitos usados para trazabilidad).
@@ -482,9 +506,13 @@ MODELO_EVALUADOR=openai/gpt-oss-120b  # modelo (ver modelos disponibles)
 PROMPT_EVALUADOR=prompt/evaluador.md  # prompt del evaluador (opcional)
 
 # 4) Chatbot (F4 — IA opcional)
-PROVEEDOR_CHAT=                  # gemini | groq | (vacío = offline, $0)
-MODELO_CHAT=openai/gpt-oss-120b  # openai/gpt-oss-120b (groq) o gemini-3.5-flash (gemini)
+PROVEEDOR_CHAT=                  # gemini | groq | openrouter | cerebras | ollama | (vacío = offline, $0)
+MODELO_CHAT=openai/gpt-oss-120b  # según el proveedor elegido
 DEMO_CONSULTAS_IA=3              # consultas IA por conversación (modo demo)
+OPENROUTER_API_KEY=              # solo si PROVEEDOR_CHAT=openrouter
+CEREBRAS_API_KEY=                # solo si PROVEEDOR_CHAT=cerebras
+OLLAMA_BASE_URL=http://localhost:11434/v1  # solo si PROVEEDOR_CHAT=ollama
+CHAT_PERSISTENCIA=               # 1 = guarda el historial en data/gold/chat_sesiones/
 
 # 4b) Acceso al chatbot F4 (login)
 ADMIN_USUARIO=                   # usuario del login (solo tú lo sabes)
@@ -495,6 +523,11 @@ DATA_DIR=data                    # raíz de datos (bronze/silver/gold)
 RAWDATA_RETENCION_DIAS=90        # retención de originales en bronze
 RUTA_VACANTES=config/vacantes    # requisitos por vacante (regla de negocio)
 RUTA_TARIFAS=config/tarifas.json # tarifas $/1M tokens (costos del chatbot)
+RUTA_HABILIDADES=config/habilidades.json  # niveles de habilidad valorados (F2)
+
+# 6) Reintentos de IA (F1, backoff)
+IA_REINTENTOS=2                  # intentos por extracción antes de dejarla pendiente
+IA_ESPERA_REINTENTO=1.5          # espera base en segundos (se duplica por intento)
 ```
 
 - **`EMAIL`** — usuario de la conexión IMAP (tu cuenta Gmail).
@@ -541,12 +574,14 @@ RUTA_TARIFAS=config/tarifas.json # tarifas $/1M tokens (costos del chatbot)
 ### 7.4 Ejecución
 
 ```bash
-uv run python main.py                  # F1: lote real (IMAP + Gemini + silver)
-uv run python main.py --dry-run        # F1: sin gastar cuota ni guardar en silver
-uv run python main.py --max 5          # F1: procesa máximo 5 correos
-uv run python main.py --programar      # F1: lote diario a HORA_INGESTA (loop)
-uv run python main.py limpiar          # F1: purga bronze (retención del .env)
-uv run python main.py limpiar --dias 7 # F1: purga bronze de más de 7 días
+uv run python main.py                    # F1: lote real (IMAP + Gemini + silver)
+uv run python main.py --dry-run          # F1: sin gastar cuota ni guardar en silver
+uv run python main.py --max 5            # F1: procesa máximo 5 correos
+uv run python main.py --desde-ultima     # F1: busca desde la última fecha en silver
+uv run python main.py --programar        # F1: lote diario a HORA_INGESTA (loop)
+uv run python main.py limpiar            # F1: purga bronze (retención del .env)
+uv run python main.py limpiar --dias 7   # F1: purga bronze de más de 7 días
+uv run python main.py resumen [--json]   # F1: reporte de candidatos por vacante
 uv run python main.py evaluar [--vacante "ANALISTA DE DATOS"]  # F2: evaluación real
 uv run python main.py evaluar --dry-run            # F2: simula sin llamar a Groq
 uv run python main.py evaluar --re-evaluar         # F2: vuelve a evaluar (hay gold)
@@ -559,9 +594,15 @@ uv run python main.py demo                         # F3 + F4 de una vez (ver §1
 - **`--dry-run`**: extrae y sanitiza, pero **no llama a Gemini, no guarda en
   `silver/` y no marca correos como leídos**. Sí deja la copia idempotente en
   `data/bronze/` (no consume cuota de la API). Ideal para validar el flujo.
+- **`--desde-ultima`**: calcula la ventana de búsqueda desde la última fecha
+  vista en `silver/` (con margen de 1 día) en lugar de `DIAS_ATRAS`, para no
+  perder correos si el lote no corre un día. Si silver está vacío, usa
+  `DIAS_ATRAS`.
 - **`--programar`** agenda el lote diario a `HORA_INGESTA`.
 - **`limpiar`** deduplica copias `_<uuid>` repetidas y borra de `bronze/` los
   archivos con más de `--dias` días (default `RAWDATA_RETENCION_DIAS`).
+- **`resumen`** reporta, sin IA, el total de candidatos por vacante y el
+  desglose de estados (`--json` para salida máquina).
 - **`evaluar`** lee silver (`Listo para Evaluación`), evalúa contra
   `config/vacantes/` y escribe `data/gold/`. Sin `--vacante` procesa todos los
   candidatos listos. `--dry-run` simula la evaluación sin llamar a Groq.
@@ -576,7 +617,9 @@ uv run python main.py demo                         # F3 + F4 de una vez (ver §1
 - **`chat`** abre el asistente F4 en `http://127.0.0.1:8510` (puerto con
   `--port`), **solo localhost**. El motor responde 100 % en código (costo $0);
   la narrativa opcional se activa con `PROVEEDOR_CHAT`/`MODELO_CHAT` en `.env`
-   (`gemini` usa `GEMINI_API_KEY`; `groq` usa `GROQ_API_KEY`).
+  (`gemini`→`GEMINI_API_KEY`, `groq`→`GROQ_API_KEY`,
+  `openrouter`→`OPENROUTER_API_KEY`, `cerebras`→`CEREBRAS_API_KEY`,
+  `ollama`→local sin clave vía `OLLAMA_BASE_URL`).
   Si `ADMIN_USUARIO`/`ADMIN_CLAVE` están cargados, pide **iniciar sesión**
   antes de usar la app (los `/api/*` devuelven 401 sin token).
   El flujo local usa `data/` por defecto. Para probar el **modo demo** (30+
@@ -599,8 +642,14 @@ uv run python main.py demo                         # F3 + F4 de una vez (ver §1
   candidato (score, desglose, fortalezas/brechas, uso de tokens).
 - **`data/gold/evaluacion/<vacante>/ranking.json`** — ranking ordenado (score
   desc) que alimenta el dashboard F3.
+- **`data/gold/costo/uso_fase2.jsonl`** — resumen de tokens/costo por lote de
+  F2 (`tipo: resumen_lote`); el detalle por candidato sigue en su documento
+  gold (`uso_tokens`). `data/gold/costo/uso_chat.jsonl` guarda cada llamada IA
+  del chat F4.
+- **`data/gold/chat_sesiones/<sesion_id>.json`** — historial de una sesión de
+  chat (solo si `CHAT_PERSISTENCIA=1`).
 - **`logs/ingesta.log`** — trazabilidad del lote (asunto → remitente →
-  estado), más el resumen final.
+  estado), más el resumen final y las **alertas de revisión manual**.
 
 ---
 
@@ -610,15 +659,35 @@ El **chatbot F4** (FastAPI + SPA) puede desplegarse en Vercel como MVP público.
 No requiere Streamlit ni base de datos: lee los datos ficticios de
 `data_demo/` (30+ candidatos inventados, versionados en git).
 
+> **Estado del deploy: EN LÍNEA.** El app de `api/index.py` corre con
+> `data_demo/` y responde `/api/health`, `/api/vacantes`, `/api/ranking` y la
+> SPA. URL pública: **`URL_DEPLOY = https://agente-rrhh-five.vercel.app/`**.
+
 ### 8.1 Modo demo: consultas IA limitadas
 
-- `PROVEEDOR_CHAT` activo (`groq` o `gemini`) habilita la narrativa IA.
+- `PROVEEDOR_CHAT` activo habilita la narrativa IA. Proveedores soportados:
+  `gemini` (`GEMINI_API_KEY`), `groq` (`GROQ_API_KEY`), `openrouter`
+  (`OPENROUTER_API_KEY`), `cerebras` (`CEREBRAS_API_KEY`) y `ollama`
+  (local, sin clave; `OLLAMA_BASE_URL`).
 - `DEMO_CONSULTAS_IA` (default `3`) limita las consultas con IA **por
   conversación**. Al agotarse, el motor code-first sigue respondiendo con los
   datos verificados (0 tokens, costo $0). El contador se reinicia con
   "Nuevo chat" y se muestra en la interfaz.
 - Con `PROVEEDOR_CHAT` vacío todo el chatbot queda offline ($0). Por defecto el
   MVP Vercel corre así (se mantiene `gemini`/`groq` libre en el `.env` local).
+
+### 8.1.1 Endpoints del chatbot F4
+
+| Endpoint | Descripción |
+| --- | --- |
+| `GET /api/health` | Estado, modo (offline/proveedor), modelo y login |
+| `GET /api/vacantes` · `GET /api/ranking?carpeta=` | Vacantes y ranking por vacante |
+| `GET /api/brechas` · `GET /api/faq` · `GET /api/config` | Brechas, FAQ y config pública |
+| `POST /api/chat` · `POST /api/simular` | Consulta al motor y simulador de pesos |
+| `GET /api/costos` | Tokens/costo de F2 (con `fase2_lotes`) y del chat |
+| `GET /api/traza?carpeta=&id_candidato=` | Traza auditable silver→gold→ranking (E9) |
+| `POST /api/sesiones/nueva` · `GET /api/sesiones/{id}/historial` | Sesión e historial |
+| `POST /api/login` · `POST /api/logout` · `GET /api/me` | Login (si hay `ADMIN_*`) |
 
 ### 8.2 Archivos del deploy
 
@@ -648,6 +717,10 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
    `data_demo`).
 4. Vercel usa `vercel.json` + `runtime.txt` + `requirements.txt`
    automáticamente. Deploy y obtén la URL `*.vercel.app`.
+5. **Cierre de la entrega**: pega la URL en el campo **A5** del
+   `Cuestionario_de_Evaluación_RESPUESTAS.docx`, verifica en el navegador que
+   `/api/health` responde, guarda 2–3 capturas de pantalla para G7/I4/E9 y
+   marca la URL en `URL_DEPLOY` de `§8` y en `PENDIENTES.md`.
 
 ### 8.4 Límites y seguridad
 
@@ -661,6 +734,63 @@ No requiere Streamlit ni base de datos: lee los datos ficticios de
   El chatbot F4 ya cubre ranking, ficha de postulante, brechas, costos,
   simulador de pesos y fase técnica. Si necesitas el dashboard, súbelo aparte a
   Streamlit Community Cloud.
+
+### 8.5 Docker (ejecución del MVP en cualquier máquina)
+
+Además de Vercel, el sistema se empaqueta en Docker: **F4 (chatbot)** y
+**F3 (dashboard Streamlit)**, ambos sobre `data_demo/` (datos ficticios) para
+demostrarlo en una máquina que solo tenga Docker.
+
+| Archivo | Rol |
+| --- | --- |
+| `Dockerfile` | Imagen F4: `python:3.12-slim` + `requirements.txt` (subset del chatbot); `DATA_DIR=data_demo`, `PROVEEDOR_CHAT` vacío; healthcheck contra `/api/health` |
+| `Dockerfile.dashboard` | Imagen F3: `requirements-full.txt` (incluye Streamlit); `DATA_DIR=data_demo`; healthcheck contra `/_stcore/health` |
+| `.dockerignore` | Excluye `.env*`, `data/`, `logs/`, `.venv/`, `.git/` y entregables: la imagen **nunca** lleva secretos ni datos personales |
+| `docker-compose.yml` | Servicios `chatbot` y `dashboard`: F4 en `http://localhost:8000` y F3 en `http://localhost:8501` |
+
+```bash
+# Levanta F3 y F4 a la vez (recomendado)
+docker compose up --build
+#   chatbot  → http://localhost:8000   (F4, modo offline $0)
+#   dashboard → http://localhost:8501  (F3)
+
+# Opción 2: F4 a mano
+docker build -t agente-rrhh-chatbot:latest .
+docker run -d --name agente-rrhh-chatbot -p 8000:8000 agente-rrhh-chatbot:latest
+```
+
+> Ambas imágenes usan `data_demo/` (datos ficticios) y F4 arranca en **modo
+> offline** (0 tokens, $0). Para IA real de F4, define `PROVEEDOR_CHAT` y la
+> clave del proveedor como variables de entorno del contenedor.
+> El bind de F3 en `0.0.0.0` solo expone la interfaz dentro de la red interna
+> de Docker; el acceso desde el host queda gobernado por el mapeo de puerto del
+> `docker-compose` (por defecto publica en el host).
+
+### 8.6 Pruebas automatizadas (pytest)
+
+Suite de **124 tests** que corre contra `data_demo/` (datos ficticios, sin
+gastar cuota de IA ni tocar `data/`). Cubre las cuatro fases más la base común:
+
+| Módulo | Qué verifica |
+| --- | --- |
+| `tests/test_f1_extraccion.py` | Sanitización (tildes, control, espacios) y extracción de PDF/DOCX/TXT (incluye errores de formato e ilegibles) |
+| `tests/test_f1_persistencia.py` | Idempotencia, filtros por estado, flujo de reintento y ranking de gold (escritura atómica) |
+| `tests/test_f2_reglas.py` | Pesos 50/30/20, clamp 0-100, umbrales 80/50, `slug_vacante` y carga de requisitos |
+| `tests/test_f3_consultas.py` | Capa de consultas del dashboard (vacantes, ranking, detalle con silver, resumen de ingesta) |
+| `tests/test_f4_api.py` | Endpoints FastAPI (health, vacantes, ranking, brechas, costos, simular, faq, chat) y login 401/503 |
+| `tests/test_f4_motor.py` | Clasificación de intenciones del chat (offline, $0) y seguimiento de entidad en foco |
+| `tests/test_core_costo.py` | Cálculo de costo y bitácora jsonl |
+| `tests/test_tools_secretos.py` | Escáner anti-secretos (detecta claves, ignora placeholders) |
+| `tests/test_nuevas_capacidades.py` | Reportes F1 y `--desde-ultima`, reintentos con backoff, diccionario de habilidades, multi-proveedor de IA, agregador de tokens, límite por vacante, historial/persistencia de sesión, `/api/traza` y vista CLI `resumen` |
+
+```bash
+# Instalar dependencias de desarrollo e.g. con pip
+pip install -r requirements-dev.txt
+pytest              # o: uv sync --extra dev && uv run pytest
+```
+
+La configuración vive en `[tool.pytest.ini_options]` de `pyproject.toml`
+(`testpaths = ["tests"]`, `pythonpath = ["."]`).
 
 ---
 

@@ -54,6 +54,9 @@
         <button class="nav-item" data-view="tecnica">
           <span class="nav-ico">🎯</span> Fase técnica
         </button>
+        <button class="nav-item" data-view="traza">
+          <span class="nav-ico">🔎</span> Traza del dato
+        </button>
       </nav>
       <div class="sidebar-foot" id="sidebar-health"></div>
       <button class="ghost" id="btn-salir" hidden>Salir</button>
@@ -142,6 +145,19 @@
           <p class="subtle">Postulantes con compatibilidad Alta (80–100) que avanzan a la siguiente etapa.</p>
         </header>
         <div id="tecnica-tarjetas"></div>
+      </section>
+
+      <!-- VISTA: TRAZA DEL DATO -->
+      <section class="view" id="view-traza">
+        <header class="view-head">
+          <h1>Traza del dato</h1>
+          <p class="subtle">Recorrido auditable de cada postulante: correo → silver (F1) → gold y ranking (F2) → chatbot (F4).</p>
+        </header>
+        <div class="card">
+          <label>Vacante <select id="traza-vacante"></select></label>
+          <label>Postulante <select id="traza-candidato"></select></label>
+        </div>
+        <div id="traza-pasos"></div>
       </section>
     </main>
   </div>

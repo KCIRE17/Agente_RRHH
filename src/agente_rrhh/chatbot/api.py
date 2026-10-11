@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 
 from ..core import costo as costo_mod
 from ..core.config import PROVEEDOR_CHAT_OFFLINE, Config
+from ..evaluation.reglas import PESOS, UMBRAL_ALTA, UMBRAL_MEDIA
 from . import datos, preguntas_generales, sesion as sesion_mod, simulador
 from .motor import MotorChat
 
@@ -53,10 +54,15 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
     limite_ia = (
         conf.consultas_ia_demo if (conf.proveedor_chat or "").strip() else None
     )
+    dir_persist = (
+        str(Path(conf.gold_dir) / "chat_sesiones") if conf.chat_persistencia else None
+    )
     estado: dict[str, Any] = {
         "cfg": conf,
         "motor": None,
-        "sesiones": sesion_mod.AlmacenSesiones(limite_ia=limite_ia),
+        "sesiones": sesion_mod.AlmacenSesiones(
+            limite_ia=limite_ia, dir_persistencia=dir_persist
+        ),
         "tokens": {},
     }
     estado["motor"] = MotorChat(estado["cfg"])
@@ -155,6 +161,7 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             "modelo_chat": cfg.modelo_chat,
             "tarifas": costo_mod.leer_tarifas(cfg.tarifas_costo),
             "limite_ia_demo": limite_ia,
+            "persistencia_chat": estado["sesiones"].persistencia,
         }
 
     @app.post("/api/chat", dependencies=[Depends(_requiere_login)])
@@ -172,7 +179,28 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             if faq:
                 respuesta["faq"] = faq
         respuesta["sesion_id"] = sesion_id
+        sesion.agregar_historial("usuario", body.mensaje)
+        sesion.agregar_historial(
+            "asistente",
+            respuesta.get("mensaje", ""),
+            intencion=respuesta.get("intencion"),
+            modo=respuesta.get("modo"),
+        )
+        estado["sesiones"].guardar(sesion)
         return respuesta
+
+    @app.get(
+        "/api/sesiones/{sesion_id}/historial",
+        dependencies=[Depends(_requiere_login)],
+    )
+    def historial(sesion_id: str) -> dict[str, Any]:
+        sesion = estado["sesiones"].obtener(sesion_id)
+        return {
+            "sesion_id": sesion_id,
+            "historial": sesion.historial,
+            "resumen": sesion.resumen(),
+            "persistencia": estado["sesiones"].persistencia,
+        }
 
     @app.get("/api/vacantes", dependencies=[Depends(_requiere_login)])
     def vacantes() -> dict[str, Any]:
@@ -190,6 +218,83 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail="Vacante no encontrada")
         vacante_id, filas = datos.ranking(cfg, carpeta)
         return {"carpeta": carpeta, "vacante_id": vacante_id, "candidatos": filas}
+
+    @app.get("/api/traza", dependencies=[Depends(_requiere_login)])
+    def traza(carpeta: str = "", id_candidato: str = "") -> dict[str, Any]:
+        """Traza auditable silver -> gold -> ranking para un candidato (E9)."""
+        cfg = estado["cfg"]
+        vacs = datos.vacantes(cfg)
+        if not vacs:
+            raise HTTPException(status_code=404, detail="No hay vacantes evaluadas.")
+        carpetas = {v["carpeta"] for v in vacs}
+        if not carpeta:
+            carpeta = vacs[0]["carpeta"]
+        if carpeta not in carpetas:
+            raise HTTPException(status_code=404, detail="Vacante no encontrada.")
+        vacante_id, filas = datos.ranking(cfg, carpeta)
+        if not filas:
+            raise HTTPException(status_code=404, detail="Ranking vacio.")
+        if not id_candidato:
+            id_candidato = filas[0]["id_candidato"]
+        doc = datos.detalle(cfg, carpeta, id_candidato)
+        if doc is None:
+            raise HTTPException(status_code=404, detail="Candidato no encontrado.")
+        silver = doc.get("silver") or {}
+        fila = next((f for f in filas if f["id_candidato"] == id_candidato), None)
+        pasos = [
+            {
+                "fase": "F1",
+                "nombre": "Ingesta y extraccion",
+                "estado": silver.get("estado_procesamiento"),
+                "mensaje_id": silver.get("mensaje_id"),
+                "formato_origen": silver.get("formato_origen"),
+                "fecha_ingesta": silver.get("fecha_ingesta"),
+                "fuente": (
+                    f"data/silver/candidatos/{silver.get('id_candidato', '')}.json"
+                ),
+            },
+            {
+                "fase": "F2",
+                "nombre": "Evaluacion (Match Score)",
+                "match_score": doc.get("match_score"),
+                "clasificacion": doc.get("clasificacion"),
+                "desglose": doc.get("desglose"),
+                "proveedor": doc.get("proveedor"),
+                "modelo": doc.get("modelo"),
+                "uso_tokens": doc.get("uso_tokens"),
+                "fecha_evaluacion": doc.get("fecha_evaluacion"),
+                "fuente": f"data/gold/evaluacion/{carpeta}/{id_candidato}.json",
+            },
+            {
+                "fase": "F2",
+                "nombre": "Ranking",
+                "posicion": fila.get("posicion") if fila else None,
+                "total_candidatos": len(filas),
+                "vacante_id": vacante_id,
+                "fuente": f"data/gold/evaluacion/{carpeta}/ranking.json",
+            },
+            {
+                "fase": "F4",
+                "nombre": "Consulta (chatbot)",
+                "endpoint": "POST /api/chat",
+                "nota": (
+                    "El motor responde con estos datos verificados; la IA es "
+                    "opcional (PROVEEDOR_CHAT). En offline el costo es $0."
+                ),
+            },
+        ]
+        return {
+            "vacante_id": vacante_id,
+            "carpeta": carpeta,
+            "id_candidato": id_candidato,
+            "nombre": doc.get("nombre_completo"),
+            "pasos": pasos,
+            "reglas": {
+                "pesos": PESOS,
+                "umbral_alta": UMBRAL_ALTA,
+                "umbral_media": UMBRAL_MEDIA,
+            },
+        }
 
     @app.get("/api/brechas", dependencies=[Depends(_requiere_login)])
     def brechas() -> dict[str, Any]:
@@ -230,9 +335,13 @@ def crear_app(cfg: Config | None = None) -> FastAPI:
             str(Path(cfg.gold_dir) / "costo" / "uso_chat.jsonl")
         )
         chat = costo_mod.resumir(usos)
+        lotes_f2 = costo_mod.leer_usos(
+            str(Path(cfg.gold_dir) / "costo" / "uso_fase2.jsonl")
+        )
         return {
             "fase2": f2,
             "chat": chat,
+            "fase2_lotes": lotes_f2[-10:],
             "detalle_chat": usos[-10:],
             "total_tokens": f2["total_tokens"] + chat["total_tokens"],
             "costo_total_usd": round(chat["costo_usd"], 8),

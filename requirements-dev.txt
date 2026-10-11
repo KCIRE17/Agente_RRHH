@@ -1,0 +1,5 @@
+# Dependencias para desarrollo y pruebas (no van al build de Vercel ni al Docker).
+# Uso:  pip install -r requirements-dev.txt  &&  pytest
+# Con uv:  uv sync --extra dev  &&  uv run pytest
+-r requirements-full.txt
+pytest>=8.0

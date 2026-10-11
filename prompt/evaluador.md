@@ -42,9 +42,13 @@ Reglas:
    ser igual a la suma de los tres (`habilidades + experiencia + formacion`),
    ya redondeado a un entero 0-100.
 3. En habilidades: cobran mas peso las esenciales que las opcionales. Que el
-   candidato cuente con todas las esenciales sube claramente el puntaje.
-   Cuenta las habilidades mencionadas aunque tengan redaccion similar (normaliza
-   sinonimos como "SQL Server" == "Microsoft SQL Server" o "PBI" == "Power BI").
+    candidato cuente con todas las esenciales sube claramente el puntaje.
+    Cuenta las habilidades mencionadas aunque tengan redaccion similar (normaliza
+    sinonimos como "SQL Server" == "Microsoft SQL Server" o "PBI" == "Power BI").
+    Si REQUISITOS_VACANTE incluye `niveles_habilidad_valorados`, usalo como
+    referencia del nivel que la empresa considera valioso para cada herramienta
+    (basico, intermedio, avanzado, experto): un nivel igual o superior al
+    valorado refuerza la fortaleza; por debajo es una brecha suave.
 4. En experiencia: valora los anios acumulados y la relevancia de los roles
    frente a la vacante, comparados con `experiencia_minima_anos`.
 5. En formacion: valora si el candidato tiene alguna de las carreras pedidas y
