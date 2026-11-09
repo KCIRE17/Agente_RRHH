@@ -142,7 +142,8 @@ agente_rrhh/
 ├── vercel.json                # build @vercel/python + rutas
 ├── runtime.txt                # 3.12
 ├── requirements.txt           # subset mínimo para el build de Vercel
-├── .vercelignore              # excluye .env*, data/, logs/, tools/
+├── _entorno.bat               # resuelve .venv/uv para los .bat de Windows
+├── .vercelignore              # excluye .env*, data/, logs/, tools/, *.bat
 ├── tools/
 │   ├── generar_datos_demo.py  # 30+ candidatos ficticios → data_demo/ (o --destino data)
 │   └── verificar_secretos.py  # escáner anti-secretos (claves/tokens en el repo)
@@ -585,7 +586,7 @@ respetar la entidad en foco (`{{entidad_en_foco}}`), responder solo a
 - **`requirements.txt`**: subset mínimo (`fastapi`, `uvicorn`,
   `python-dotenv`, `openai`).
 - **`.vercelignore`**: excluye `.env`, `.env.*`, `data/`, `logs/`,
-  `.venv/`, `*.pdf`, `*.log`, `tools/`.
+  `.venv/`, `*.pdf`, `*.log`, `tools/`, `*.bat`, `requirements-full.txt`.
 - **`tools/generar_datos_demo.py`**: genera `data_demo/` con **30+ candidatos
   ficticios** (2–3 vacantes, silver + gold + ranking), versionable. Con
   `--destino data` re-siembra el flujo local (escribe/fusiona, no borra).
@@ -786,6 +787,9 @@ además de regenerar el código, hay que ponerlo operativo. Ejecutar en orden:
    `requirements-full.txt` y lanzan `main.py demo` (F3 + F4 con datos ficticios
    y estado de las 4 fases). Para F1/F2 con IA real hay que dejar el `.env` del
    responsable en la carpeta antes de entregarla, y borrarlo al terminar.
+   En Windows, `INSTALAR.bat` automatiza esto (instala uv si falta). Si uv es
+   imposible, cae a `.venv` + `requirements-full.txt` (dependencias
+   completas); `requirements.txt` es solo el subset de Vercel.
 2. **Credenciales**: copiar `.env.example` → `.env` y completar `EMAIL`/
    `API_EMAIL` (App Password), `GEMINI_API_KEY`, `GROQ_API_KEY` y, si se quiere
    proteger el chatbot, `ADMIN_USUARIO`/`ADMIN_CLAVE`. Nunca generar ni

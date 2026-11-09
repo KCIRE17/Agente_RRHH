@@ -1,0 +1,119 @@
+========================================================================
+ AGENTE RRHH - COMO EJECUTARLO (paso a paso para otra PC via USB)
+========================================================================
+Como Ejecutar: .\FLUJO_COMPLETO.bat
+=====================================================================
+ A) PRIMERA VEZ en la PC nueva (solo Python instalado)
+=====================================================================
+ 1) Instala Python 3.12 en la otra PC:
+       https://www.python.org/downloads/
+       -> MARCA la casilla "Add Python to PATH" al instalarlo.
+       -> Importante: reinicia la terminal/ventana despues.
+
+ 2) Copia la carpeta Agente_RRHH desde la USB al Escritorio o donde
+    prefieras (mantenla entera, no separes archivos).
+
+ 3) Doble clic en INSTALAR.bat  (en la raiz del proyecto)
+       - Detecta Python.
+       - Intenta instalar uv si hace falta (no pide admin):
+         primero con el instalador oficial; si falla, con pip.
+       - Con uv: ejecuta "uv sync" (dependencias exactas de uv.lock).
+       - Si uv es imposible: crea .venv e instala con pip usando
+         requirements-full.txt (dependencias completas).
+       - Si no existe, copia .env.example a .env (luego completa las claves).
+       - Activa el hook anti-secretos de git.
+
+ 4) Si es la primera vez que usas datos reales, edita el archivo .env
+    con tus claves (EMAIL, API_EMAIL=App Password, GEMINI_API_KEY,
+    GROQ_API_KEY, ADMIN_USUARIO/ADMIN_CLAVE). Devs SI lleva .env:
+       - Si traes tu .env en la USB, INSTALAR.bat NO lo sobreescribe.
+       - Las claves NUNCA van en git ni en repositorios publicos.
+
+ 5) Verifica que todo queda listo:
+       Doble clic en VERIFICAR.bat
+       (compila, escanea secretos y simula F1/F2 sin gastar cuota).
+       Si sale bien, ya puedes trabajar normal. Si falla algo, revisa
+       el punto A.3/A.4 y el mensaje en pantalla.
+
+=====================================================================
+ B) USO DIARIO - LO MAS FACIL
+=====================================================================
+ - Doble clic en FLUJO_COMPLETO.bat
+       -> Corre TODO en orden: F1 ingesta -> F2 evaluacion ->
+          F3 dashboard -> F4 chatbot, con pausas entre fases.
+
+ - O por fases, con doble clic en cada uno:
+       INGESTA.bat           F1: procesa los correos de hoy
+       EVALUAR.bat           F2: evalua y genera el ranking
+       DASHBOARD.bat         F3: abre el panel F3
+       CHAT.bat              F4: abre el chatbot F4
+
+ - INGESTA_DIARIA.bat        F1 programada (lote diario a la hora
+                             HORA_INGESTA del .env)
+
+=====================================================================
+ C) MODO MANUAL (terminal / linea de comandos)
+=====================================================================
+ Abre cmd en la carpeta del proyecto (Shift + clic derecho dentro de
+ la carpeta -> "Abrir ventana de comandos aqui") y usa estos comandos:
+
+   uv run python main.py                     F1: lote real
+   uv run python main.py --dry-run           F1: simula sin gastar cuota
+   uv run python main.py --max 5             F1: procesa como maximo 5
+   uv run python main.py evaluar             F2: evalua
+   uv run python main.py evaluar --dry-run   F2: simula sin gastar cuota
+   uv run python main.py dashboard --port 8501    F3: panel Streamlit
+   uv run python main.py chat --port 8510         F4: chatbot
+   uv run python main.py limpiar             F1: purga bronze antiguo
+   uv run python main.py limpiar --dias 7    F1: purga con retencion 7 dias
+
+ SI NO PUDISTE INSTALAR uv (PC bloqueada):
+   INSTALAR.bat usa el fallback pip con requirements-full.txt.
+   Luego ejecuta directamente el Python del entorno:
+   .venv\Scripts\python.exe main.py              F1 (equivalente)
+   .venv\Scripts\python.exe main.py evaluar      F2
+   .venv\Scripts\python.exe main.py dashboard --port 8501   F3
+   .venv\Scripts\python.exe main.py chat --port 8510        F4
+
+   IMPORTANTE: usa requirements-full.txt (completo), NO requirements.txt
+   (ese es solo el subset del deploy de Vercel y no sirve para local).
+
+=====================================================================
+ D) LLEVARLO A OTRA PC (resumen de que copiar)
+=====================================================================
+ EN LA USB (lo que SI llevas):
+   - Toda la carpeta del proyecto (main.py, INSTALAR.bat, _entorno.bat,
+     FLUJO_COMPLETO.bat, CHAT.bat, EVALUAR.bat, INGESTA.bat,
+     INGESTA_DIARIA.bat, DASHBOARD.bat, VERIFICAR.bat, COMO_EJECUTAR.txt,
+     src\, config\, prompt\, tools\, .githooks\, data_demo\, pyproject.toml,
+     uv.lock, requirements-full.txt, requirements.txt, .env.example, etc.)
+   - OPCIONAL pero util: data\ y logs\ si quieres llegar con tus datos
+     reales; y .env si quieres llevar tus credenciales.
+
+ NO INTENTES COPIAR (se regeneran solos):
+   - .venv\  (entorno virtual: se recrea con INSTALAR.bat / uv sync)
+   - __pycache__\, log cache, etc.
+
+ CONSEJO DE SEGURIDAD:
+   - .env y data\ van bien para uso PERSONAL en tu PC o tu propia USB.
+   - Si compartes la USB o la llevas a un teclado/publico, NO lleves el
+     .env ni data\, para no exponer datos de candidatos ni claves.
+   - Nunca subas a git/.batch con claves; verificar_secretos.py se encarga.
+
+=====================================================================
+ E) SOLUCION DE PROBLEMAS RAPIDOS
+=====================================================================
+ - "uv no se encuentra": corre INSTALAR.bat; intentara instalarlo solo
+   (instalador oficial y, si falla, pip). Si nada funciona, INSTALAR.bat
+   usa .venv + requirements-full.txt y los .bat igual funcionan.
+ - "Fallo uv sync / pip": revisa que tienes internet y que el PYTHON esta
+   marcado con "Add to PATH". Borra .venv y vuelve a INSTALAR.bat.
+ - "El panel no abre": verifica el puerto (8501 dashboard). A veces el
+   antivirus/firewall pide permiso para Streamlit -> aceptalo en localhost.
+ - "No veo correos": revisa ASUNTO en .env y que EMAIL/API_EMAIL sean la
+   cuenta y App Password correctos.
+ - Logs utiles: logs\ingesta.log, logs\evaluacion.log, logs\dashboard.log.
+
+ FIN - Si algo sigue fallando, abre VERIFICAR.bat y pasa el texto
+       que muestra; eso ayuda a encontrar el origen rapido.
+========================================================================

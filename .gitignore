@@ -40,3 +40,4 @@ desktop.ini
 *.bak
 *.orig
 *.pid
+/NUL

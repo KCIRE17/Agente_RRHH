@@ -112,6 +112,10 @@ Agente_RRHH/
   `main.py demo`); no replican lógica de negocio, la comparten en
   `core/arranque.py`. `main.py demo` **nunca** sobrescribe un `.env` real ni
   siembra `data_demo/` sobre datos existentes.
+- **Windows / sin uv**: los `.bat` resuelven el entorno con `_entorno.bat`
+  (prioriza `.venv\Scripts\python.exe`, luego `uv run python`). Si no se puede
+  instalar uv, `INSTALAR.bat` cae a `pip` con `requirements-full.txt`
+  (dependencias completas); `requirements.txt` es solo el subset de Vercel.
 - **Archivos personales**: `data/` y `logs/` no se suben a git
   (datos personales de candidatos). El dashboard F3 solo se ejecuta en red
   local.

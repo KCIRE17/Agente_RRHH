@@ -460,9 +460,14 @@ Todo el panel usa **lenguaje del área de talento**: los términos internos
 
 ### 7.2 Instalación de dependencias
 
+Forma recomendada (uv):
+
 ```bash
-uv add python-dotenv pdfplumber python-docx google-genai schedule
+uv sync          # crea .venv e instala lo fijado en uv.lock
 ```
+
+Atajo en Windows: doble clic en **`INSTALAR.bat`**, que intenta instalar
+`uv` si falta y ejecuta `uv sync`.
 
 | Librería | Función |
 | :--- | :--- |
@@ -479,6 +484,24 @@ uv add python-dotenv pdfplumber python-docx google-genai schedule
 > Sin `uv`, el arranque de un clic instala el mismo conjunto con
 > `pip install -r requirements-full.txt` (de ahí el nombre: es el superset de
 > `requirements.txt`, que queda solo para el build de Vercel).
+
+#### Instalación sin uv (fallback)
+
+Si en el equipo no se puede instalar `uv`, `INSTALAR.bat` cae a `pip`:
+
+```bat
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip
+.venv\Scripts\python.exe -m pip install -r requirements-full.txt
+```
+
+- **`requirements-full.txt`** tiene las dependencias completas (F1+F2+F3+F4).
+- **No uses `requirements.txt`** para local: es solo el subset del deploy de
+  Vercel (chatbot F4) y no incluye `google-genai`, `pdfplumber`,
+  `python-docx`, `schedule` ni `streamlit`.
+- Los `.bat` detectan automáticamente `.venv`; si existe, ejecutan
+  `.venv\Scripts\python.exe` sin depender de `uv`.
+- Equivalente manual: `.venv\Scripts\python.exe main.py evaluar`, etc.
 
 ### 7.3 Variables del `.env`
 

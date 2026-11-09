@@ -11,3 +11,6 @@ logs/
 
 # Herramientas auxiliares (no afectan el runtime)
 tools/
+*.bat
+requirements-full.txt
+COMO_EJECUTAR.txt
